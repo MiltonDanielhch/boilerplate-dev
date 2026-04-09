@@ -1,0 +1,13 @@
+# Ubicación: `pnpm-workspace.yaml`
+#
+# Descripción: Configuración del workspace de pnpm para el monorepo.
+#              Define qué aplicaciones JS son parte del workspace.
+#
+# ADRs relacionados: ADR 0022 (Frontend), ADR 0012 (Herramientas)
+
+packages:
+  - "apps/web"
+  - "apps/mailer"
+
+# Configuración del workspace
+prefer-workspace-packages: true

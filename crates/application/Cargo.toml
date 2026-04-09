@@ -1,0 +1,23 @@
+# Ubicación: `crates/application/Cargo.toml`
+#
+# Descripción: Casos de uso (Use Cases). Coordina el dominio.
+#              Depende SOLO de domain.
+#
+# ADRs relacionados: ADR 0001 (Arquitectura Hexagonal)
+
+[package]
+name    = "application"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+# ── Dominio ────────────────────────────────────────────────────────────────────
+domain = { path = "../domain" }
+
+# ── Errores ───────────────────────────────────────────────────────────────────
+thiserror = { workspace = true }
+anyhow    = { workspace = true }
+
+# ── Async ─────────────────────────────────────────────────────────────────────
+tokio = { workspace = true }
+

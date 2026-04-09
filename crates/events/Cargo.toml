@@ -1,0 +1,24 @@
+# Ubicación: `crates/events/Cargo.toml`
+#
+# Descripción: Eventos con NATS JetStream. 🟡 Fase 2 — NO usar hasta que
+#              exista el problema real de desacoplamiento.
+#
+# ADRs relacionados: ADR 0001, ADR 0025 (NATS)
+# Estado: 🟡 Diferido — solo se activa en Fase 2
+
+[package]
+name    = "events"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+# ── Dominio ───────────────────────────────────────────────────────────────────
+domain = { path = "../domain" }
+
+# ── Eventos (Fase 2) ────────────────────────────────────────────────────────
+async-nats = { workspace = true }
+
+# ── Runtime ──────────────────────────────────────────────────────────────────
+tokio = { workspace = true }
+serde = { workspace = true }
+

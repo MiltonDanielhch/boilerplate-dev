@@ -1,0 +1,23 @@
+# Ubicación: `crates/storage/Cargo.toml`
+#
+# Descripción: Puerto y adaptador de almacenamiento (S3/Tigris).
+#
+# ADRs relacionados: ADR 0001, ADR 0020 (Tigris)
+
+[package]
+name    = "storage"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+# ── Dominio ───────────────────────────────────────────────────────────────────
+domain = { path = "../domain" }
+
+# ── Storage ────────────────────────────────────────────────────────────────────
+aws-config = { workspace = true }
+aws-sdk-s3 = { workspace = true }
+
+# ── Runtime ──────────────────────────────────────────────────────────────────
+tokio = { workspace = true }
+uuid  = { workspace = true }
+

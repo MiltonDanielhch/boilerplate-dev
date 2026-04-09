@@ -1,0 +1,14 @@
+# Ubicación: `rust-toolchain.toml`
+#
+# Descripción: Define la versión exacta de Rust y componentes necesarios.
+#              Ref: https://rust-lang.github.io/rustup/overrides.html
+#
+# ADRs relacionados: ADR 0012 (Herramientas), ADR 0011 (Calidad)
+
+[toolchain]
+# Usar la versión específica 1.94.1 para consistencia total en el equipo
+channel = "1.94.1"
+components = ["rustfmt", "clippy", "rust-analyzer"]
+# Si planeas compilar para contenedores Alpine o targets pequeños (VPS 512MB):
+targets = ["x86_64-unknown-linux-musl"] 
+profile = "minimal" # Cambiado de 'default' a 'minimal' para ahorrar espacio en el VPS

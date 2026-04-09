@@ -1,0 +1,52 @@
+# Ubicación: `crates/infrastructure/Cargo.toml`
+#
+# Descripción: Adaptadores de infraestructura: HTTP, config, router.
+#              Conoce Axum y todos los crates de aplicación.
+#
+# ADRs relacionados: ADR 0001, ADR 0003 (Axum)
+
+[package]
+name    = "infrastructure"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+# ── Capas internas ───────────────────────────────────────────────────────────
+domain      = { path = "../domain" }
+application = { path = "../application" }
+database    = { path = "../database" }
+auth        = { path = "../auth" }
+mailer      = { path = "../mailer" }
+storage     = { path = "../storage" }
+
+# ── Web ───────────────────────────────────────────────────────────────────────
+axum           = { workspace = true }
+axum-extra     = { workspace = true }
+tower          = { workspace = true }
+tower-http     = { workspace = true }
+tower_governor = { workspace = true }
+
+# ── Config ──────────────────────────────────────────────────────────────────
+config  = { workspace = true }
+dotenvy = { workspace = true }
+
+# ── Runtime ──────────────────────────────────────────────────────────────────
+tokio       = { workspace = true }
+serde       = { workspace = true }
+serde_json  = { workspace = true }
+uuid        = { workspace = true }
+time        = { workspace = true }
+tracing     = { workspace = true }
+
+# ── Errores ──────────────────────────────────────────────────────────────────
+thiserror = { workspace = true }
+anyhow    = { workspace = true }
+
+# ── Docs API ─────────────────────────────────────────────────────────────────
+utoipa        = { workspace = true }
+utoipa-scalar = { workspace = true }
+
+# ── Observabilidad ───────────────────────────────────────────────────────────
+tracing-subscriber = { workspace = true }
+sentry             = { workspace = true }
+

@@ -1,0 +1,23 @@
+# Ubicación: `crates/domain/Cargo.toml`
+#
+# Descripción: Núcleo puro del dominio. Sin dependencias de infraestructura.
+#              Solo thiserror, uuid, time, serde. Si sqlx o axum aparecen aquí,
+#              la arquitectura está rota.
+#
+# ADRs relacionados: ADR 0001 (Arquitectura Hexagonal)
+# Regla: domain NO importa sqlx, NO importa axum, NO importa ningún framework
+
+[package]
+name    = "domain"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+# ── Core ─────────────────────────────────────────────────────────────────────
+thiserror = { workspace = true }
+uuid      = { workspace = true }
+time      = { workspace = true }
+serde     = { workspace = true }
+
+[dev-dependencies]
+# Tests unitarios puros, sin base de datos

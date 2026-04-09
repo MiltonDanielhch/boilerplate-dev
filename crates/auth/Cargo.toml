@@ -1,0 +1,27 @@
+# Ubicación: `crates/auth/Cargo.toml`
+#
+# Descripción: Autenticación y autorización. Argon2id + PASETO v4.
+#              JWT está PROHIBIDO (ADR 0008).
+#
+# ADRs relacionados: ADR 0001, ADR 0008 (PASETO)
+
+[package]
+name    = "auth"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+# ── Dominio ───────────────────────────────────────────────────────────────────
+domain = { path = "../domain" }
+
+# ── Auth ──────────────────────────────────────────────────────────────────────
+argon2   = { workspace = true }
+pasetors = { workspace = true }
+secrecy  = { workspace = true }
+
+# ── Runtime ──────────────────────────────────────────────────────────────────
+tokio = { workspace = true }
+uuid  = { workspace = true }
+time  = { workspace = true }
+serde = { workspace = true }
+

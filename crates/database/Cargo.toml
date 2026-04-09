@@ -1,0 +1,27 @@
+# Ubicación: `crates/database/Cargo.toml`
+#
+# Descripción: Adaptador de persistencia. ÚNICO crate con SQLx.
+#              Implementa los puertos (traits) del dominio.
+#
+# ADRs relacionados: ADR 0001, ADR 0004 (SQLite)
+
+[package]
+name    = "database"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+# ── Dominio ───────────────────────────────────────────────────────────────────
+domain = { path = "../domain" }
+
+# ── DB ────────────────────────────────────────────────────────────────────────
+sqlx = { workspace = true }
+
+# ── Runtime ──────────────────────────────────────────────────────────────────
+tokio = { workspace = true }
+uuid  = { workspace = true }
+time  = { workspace = true }
+
+# ── Cache ─────────────────────────────────────────────────────────────────────
+moka = { workspace = true }
+

@@ -1,0 +1,102 @@
+# Ubicación: `Cargo.toml`
+#
+# Descripción: Workspace root del monorepo boilerplate. Define todos los crates
+#              y apps, centraliza dependencias en [workspace.dependencies].
+#              Ref: ADR 0001 (Arquitectura Hexagonal), docs/03-STRUCTURE.md L95-184
+#
+# ADRs relacionados: ADR 0001, ADR 0003 (Axum), ADR 0004 (SQLite), ADR 0008 (PASETO)
+
+[workspace]
+resolver = "2"
+members  = [
+    # Apps
+    "apps/api",
+    "apps/cli",
+    # Crates
+    "crates/domain",
+    "crates/application",
+    "crates/infrastructure",
+    "crates/database",
+    "crates/auth",
+    "crates/mailer",
+    "crates/storage",
+    "crates/events",
+]
+
+[profile.release]
+opt-level     = "z"     # Optimizar por tamaño
+lto           = true    # Link Time Optimization (crítico para monorepos)
+codegen-units = 1
+panic         = "abort"
+strip         = true    # Elimina símbolos de debug automáticamente
+incremental   = false   # Desactivar para reducir tamaño final
+
+[profile.dev]
+opt-level = 0
+debug     = true
+
+[workspace.dependencies]
+# ── Runtime ──────────────────────────────────────────────────────────────────
+tokio           = { version = "1",   features = ["full"] }
+tokio-test      = { version = "1",   features = ["test", "macros"] }
+serde           = { version = "1",   features = ["derive"] }
+serde_json      = "1"
+uuid            = { version = "1",   features = ["v4", "v7", "serde"] }
+time            = { version = "0.3", features = ["serde", "macros"] }
+
+# ── Errores ───────────────────────────────────────────────────────────────────
+thiserror = "2"
+anyhow    = "1"
+
+# ── DB ────────────────────────────────────────────────────────────────────────
+sqlx = { version = "0.8", features = [
+    "sqlite", "runtime-tokio", "macros", "uuid", "time"
+] }
+
+# ── Web ───────────────────────────────────────────────────────────────────────
+axum           = { version = "0.8", features = ["macros"] }
+axum-extra     = { version = "0.12", features = ["cookie", "typed-header"] }
+tower          = "0.5"
+tower-http     = { version = "0.6", features = [
+    "cors", "compression-gzip", "compression-br",
+    "trace", "timeout", "request-id"
+] }
+tower_governor = "0.8"   # ADR 0009 (Rate Limiting)
+
+# ── Auth ──────────────────────────────────────────────────────────────────────
+argon2   = "0.5"
+pasetors = { version = "0.7", features = ["v4"] }
+secrecy  = "0.10"
+
+# ── Cache y Jobs ─────────────────────────────────────────────────────────────
+moka       = { version = "0.12", features = ["future"] }
+apalis     = { version = "0.7",  features = ["sqlite", "tracing", "retry"] }
+apalis-sql = { version = "0.7",  features = ["sqlite"] }
+
+# ── Observabilidad ────────────────────────────────────────────────────────────
+tracing            = "0.1"
+tracing-subscriber = { version = "0.3", features = ["json", "env-filter"] }
+sentry             = "0.47"
+
+# ── Docs API ──────────────────────────────────────────────────────────────────
+utoipa        = { version = "5", features = ["axum_extras", "uuid"] }
+utoipa-scalar = { version = "0.3", features = ["axum"] }
+
+# ── Config ──────────────────────────────────────────────────────────────────
+config  = "0.15"
+dotenvy = "0.15"
+
+# ── Email ────────────────────────────────────────────────────────────────────
+resend-rs = "0.22"
+
+# ── Storage ──────────────────────────────────────────────────────────────────
+aws-config = "1.1"
+aws-sdk-s3 = "1.129"
+
+# ── Eventos (Fase 2) ────────────────────────────────────────────────────────
+async-nats = "0.47"
+
+# ── CLI (Fase 2) ─────────────────────────────────────────────────────────────
+clap = { version = "4", features = ["derive"] }
+tera = "1"
+

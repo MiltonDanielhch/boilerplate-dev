@@ -26,8 +26,8 @@ Leyenda de Fases:
 
 | Fase | Nombre | Progreso |
 |------|--------|----------|
-| G.1 | Estructura física | 0% |
-| G.2 | Cargo.toml por crate | 0% |
+| G.1 | Estructura física | 100% |
+| G.2 | Cargo.toml por crate | 100% |
 | G.3 | Tooling | 0% |
 | G.4 | Profile release | 0% |
 | G.5 | Verificaciones | 0% |
@@ -37,64 +37,66 @@ Leyenda de Fases:
 ## G.1 — Estructura física del workspace
 
 ```
-[ ] mise.toml en la raíz (toolchain management)
+[x] mise.toml en la raíz (toolchain management)
     └─ Ref: ADR 0012, https://mise.jdx.dev
-    [ ] rust = "1.85"
-    [ ] node = "22"
-    [ ] pnpm = "10"
-    [ ] just = "1.39"
+    [x] rust = "1.94"  ← Actualizado 2026
+    [x] node = "24"    ← Actualizado 2026
+    [x] pnpm = "10"
+    [x] just = "1.40"  ← Actualizado 2026
     
-[ ] rust-toolchain.toml en la raíz
+[x] rust-toolchain.toml en la raíz
     └─ Ref: https://rust-lang.github.io/rustup/overrides.html
-    [ ] channel = "1.85.0"
-    [ ] components = ["rustfmt", "clippy", "rust-analyzer"]
+    [x] channel = "1.94.1"  ← Actualizado 2026
+    [x] components = ["rustfmt", "clippy", "rust-analyzer"]
+    [x] targets = ["x86_64-unknown-linux-musl"]  ← Para Alpine/VPS $5
+    [x] profile = "minimal"  ← Ahorra espacio en VPS
     
-[ ] .gitignore  (Rust, Node, SQLite, .env.local, /data, /target)
+[x] .gitignore  (Rust, Node, SQLite, .env.local, /data, /target)
     └─ Ref: ADR 0012 (Herramientas), ADR 0002 (Config)
     
-[ ] Cargo.toml workspace root con resolver = "2"
+[x] Cargo.toml workspace root con resolver = "2"
     └─ Ref: ADR 0001 (Arquitectura Hexagonal), docs/03-STRUCTURE.md L95-184
     
-[ ] Crear carpetas de crates:
-    [ ] crates/domain/        ← Ref: ADR 0001, docs/03-STRUCTURE.md L188-236
-    [ ] crates/application/   ← Ref: ADR 0001, docs/03-STRUCTURE.md L240-264
-    [ ] crates/infrastructure/← Ref: ADR 0003 (Axum), docs/03-STRUCTURE.md L268-292
-    [ ] crates/database/      ← Ref: ADR 0004 (SQLite), docs/03-STRUCTURE.md L296-321
-    [ ] crates/auth/          ← Ref: ADR 0008 (PASETO), docs/03-STRUCTURE.md L325-336
-    [ ] crates/mailer/        ← Ref: ADR 0019 (Resend), docs/03-STRUCTURE.md L340-350
-    [ ] crates/storage/       ← Ref: ADR 0020 (Tigris), docs/03-STRUCTURE.md L354-364
+[x] Crear carpetas de crates:
+    [x] crates/domain/        ← Ref: ADR 0001, docs/03-STRUCTURE.md L188-236
+    [x] crates/application/   ← Ref: ADR 0001, docs/03-STRUCTURE.md L240-264
+    [x] crates/infrastructure/← Ref: ADR 0003 (Axum), docs/03-STRUCTURE.md L268-292
+    [x] crates/database/      ← Ref: ADR 0004 (SQLite), docs/03-STRUCTURE.md L296-321
+    [x] crates/auth/          ← Ref: ADR 0008 (PASETO), docs/03-STRUCTURE.md L325-336
+    [x] crates/mailer/        ← Ref: ADR 0019 (Resend), docs/03-STRUCTURE.md L340-350
+    [x] crates/storage/       ← Ref: ADR 0020 (Tigris), docs/03-STRUCTURE.md L354-364
     [ ] crates/events/        🟡 Fase 2 — Ref: ADR 0025 (NATS), docs/03-STRUCTURE.md L368-380
         └─ No implementar hasta que exista el problema de desacoplamiento
     
-[ ] Crear carpetas de apps:
-    [ ] apps/api/             ← Ref: ADR 0003, docs/03-STRUCTURE.md L384-421
-    [ ] apps/web/             ← Ref: ADR 0022 (Astro+Svelte), docs/03-STRUCTURE.md L425-484
-    [ ] apps/mailer/          ← Ref: ADR 0019, docs/03-STRUCTURE.md L340-350
+[x] Crear carpetas de apps:
+    [x] apps/api/             ← Ref: ADR 0003, docs/03-STRUCTURE.md L384-421
+    [x] apps/web/             ← Ref: ADR 0022 (Astro+Svelte), docs/03-STRUCTURE.md L425-484
+    [x] apps/mailer/          ← Ref: ADR 0019, docs/03-STRUCTURE.md L340-350
     [ ] apps/cli/             🟡 Fase 2 — Ref: ADR 0028 (Sintonía CLI)
         └─ Solo después de 3 módulos implementados manualmente
     
-[ ] Crear carpetas de infraestructura:
-    [ ] infra/docker/         ← Ref: ADR 0013 (Build), ADR 0014 (Deploy)
-    [ ] infra/caddy/          ← Ref: ADR 0014
-    [ ] infra/litestream/     ← Ref: ADR 0004 (Backups)
-    [ ] infra/kamal/          ← Ref: ADR 0014
+[x] Crear carpetas de infraestructura:
+    [x] infra/docker/         ← Ref: ADR 0013 (Build), ADR 0014 (Deploy)
+    [x] infra/caddy/          ← Ref: ADR 0014
+    [x] infra/litestream/     ← Ref: ADR 0004 (Backups)
+    [x] infra/kamal/          ← Ref: ADR 0014
     
-[ ] Crear carpetas de datos:
-    [ ] data/migrations/      ← Ref: ADR 0005 (Migraciones), ADR 0006 (RBAC)
-    [ ] data/seeds/           ← Ref: ADR 0005
+[x] Crear carpetas de datos:
+    [x] data/migrations/      ← Ref: ADR 0005 (Migraciones), ADR 0006 (RBAC)
+    [x] data/seeds/           ← Ref: ADR 0005
     
-[ ] Crear carpetas de docs:
-    [ ] docs/adr/             ← Ref: docs/01-ARCHITECTURE.md L35, guia/adr/
-    [ ] docs/adr/future/      ← Ref: guia/adr/futura/
+[x] Crear carpetas de guia:
+    [x] guia/adr/             ← Ref: guia/01-ARCHITECTURE.md L35, guia/adr/
+    [x] guia/adr/future/      ← Ref: guia/adr/futura/
     
 [ ] proto/buf.yaml + proto/buf.gen.yaml + proto/user/v1/user.proto
     🟡 Fase 2 — Ref: ADR 0027 (ConnectRPC), docs/03-STRUCTURE.md L47-51
     └─ Solo si se necesita gRPC/ConnectRPC multi-plataforma
     
-[ ] pnpm-workspace.yaml  (packages: apps/web, apps/mailer)
+[x] pnpm-workspace.yaml  (packages: apps/web, apps/mailer)
     └─ Ref: ADR 0022, docs/03-STRUCTURE.md L22
     
-[ ] README.md en la raíz
+[x] README.md en la raíz
     └─ Ref: docs/01-ARCHITECTURE.md (copiar resumen de arquitectura)
 ```
 
@@ -107,91 +109,108 @@ Leyenda de Fases:
 Cada crate declara SOLO sus dependencias directas. El compilador hace cumplir las fronteras.
 
 ```
-[ ] Workspace root Cargo.toml — [workspace.dependencies] centralizado
+[x] Workspace root Cargo.toml — [workspace.dependencies] centralizado
     └─ Ref: docs/03-STRUCTURE.md L95-184, docs/02-STACK.md L511-531
+    [x] Todas las dependencias en [workspace.dependencies]
     
-[ ] [profile.release] en workspace root:
+[x] [profile.release] en workspace root:
     └─ Ref: ADR 0013 (Build), docs/02-STACK.md L389-402
-    [ ] opt-level = "z"
-    [ ] lto = true
-    [ ] codegen-units = 1
-    [ ] panic = "abort"
-    [ ] strip = true
+    [x] opt-level = "z"
+    [x] lto = true                    ← Link Time Optimization
+    [x] codegen-units = 1
+    [x] panic = "abort"
+    [x] strip = true
+    [x] incremental = false           ← Para reducir tamaño final
 
-[ ] crates/domain/Cargo.toml
+[x] crates/domain/Cargo.toml
     └─ Ref: ADR 0001, docs/03-STRUCTURE.md L223-236, docs/02-STACK.md L556
-    [ ] thiserror (workspace = true)    ← Ref: docs/02-STACK.md L93-95
-    [ ] uuid (workspace = true)         ← Ref: docs/02-STACK.md L86-88
-    [ ] time (workspace = true)         ← Ref: docs/02-STACK.md L87-88
-    [ ] serde (workspace = true)        ← Ref: docs/02-STACK.md L84-86
-    [ ] VERIFICAR: cargo grep "sqlx" crates/domain/ → cero resultados
+    [x] edition = "2024"              ← Actualizado 2026
+    [x] thiserror (workspace = true)    ← Ref: docs/02-STACK.md L93-95
+    [x] uuid (workspace = true)         ← Ref: docs/02-STACK.md L86-88
+    [x] time (workspace = true)         ← Ref: docs/02-STACK.md L87-88
+    [x] serde (workspace = true)        ← Ref: docs/02-STACK.md L84-86
+    [x] VERIFICAR: cargo grep "sqlx" crates/domain/ → cero resultados
         └─ Ref: ADR 0001 — domain SIN dependencias externas
 
-[ ] crates/application/Cargo.toml
+[x] crates/application/Cargo.toml
     └─ Ref: ADR 0001, docs/03-STRUCTURE.md L246-264
-    [ ] domain = { path = "../domain" }
-    [ ] tracing (workspace = true)       ← Ref: docs/02-STACK.md L339-342
+    [x] edition = "2024"              ← Actualizado 2026
+    [x] domain = { path = "../domain" }
+    [x] thiserror, anyhow, tokio
 
-[ ] crates/database/Cargo.toml
+[x] crates/database/Cargo.toml
     └─ Ref: ADR 0004, docs/03-STRUCTURE.md L296-321
-    [ ] domain = { path = "../domain" }
-    [ ] sqlx (workspace = true)          ← Ref: ADR 0004, docs/02-STACK.md L151-158
-    [ ] moka (workspace = true)          ← Ref: ADR 0017, docs/02-STACK.md L253-268
+    [x] edition = "2024"              ← Actualizado 2026
+    [x] domain = { path = "../domain" }
+    [x] sqlx (workspace = true)          ← Ref: ADR 0004, docs/02-STACK.md L151-158
+    [x] moka (workspace = true)          ← Ref: ADR 0017, docs/02-STACK.md L253-268
 
-[ ] crates/auth/Cargo.toml
+[x] crates/auth/Cargo.toml
     └─ Ref: ADR 0008, docs/03-STRUCTURE.md L325-336
-    [ ] domain = { path = "../domain" }
-    [ ] argon2 (workspace = true)        ← Ref: ADR 0008, docs/02-STACK.md L203-206
-    [ ] pasetors (workspace = true)      ← Ref: ADR 0008, docs/02-STACK.md L206
-    [ ] VERIFICAR: cargo grep "jsonwebtoken" → cero resultados
+    [x] edition = "2024"              ← Actualizado 2026
+    [x] domain = { path = "../domain" }
+    [x] argon2 (workspace = true)        ← Ref: ADR 0008, docs/02-STACK.md L203-206
+    [x] pasetors (workspace = true)      ← Ref: ADR 0008, docs/02-STACK.md L206
+    [x] secrecy (workspace = true)       ← Ref: ADR 0008
+    [x] VERIFICAR: cargo grep "jsonwebtoken" → cero resultados
         └─ Ref: ADR 0008 — JWT prohibido, solo PASETO
 
-[ ] crates/mailer/Cargo.toml
+[x] crates/mailer/Cargo.toml
     └─ Ref: ADR 0019, docs/03-STRUCTURE.md L340-350
-    [ ] domain = { path = "../domain" }
-    [ ] resend-rs (workspace = true)     ← Ref: ADR 0019, docs/02-STACK.md L298-302
+    [x] edition = "2024"              ← Actualizado 2026
+    [x] domain = { path = "../domain" }
+    [x] resend-rs (workspace = true)     ← Ref: ADR 0019, docs/02-STACK.md L298-302
 
-[ ] crates/storage/Cargo.toml
+[x] crates/storage/Cargo.toml
     └─ Ref: ADR 0020, docs/03-STRUCTURE.md L354-364
-    [ ] domain = { path = "../domain" }
-    [ ] aws-config (workspace = true)   ← Ref: ADR 0020, docs/02-STACK.md L320-324
-    [ ] aws-sdk-s3 (workspace = true)   ← Ref: ADR 0020, docs/02-STACK.md L324
+    [x] edition = "2024"              ← Actualizado 2026
+    [x] domain = { path = "../domain" }
+    [x] aws-config (workspace = true)   ← Ref: ADR 0020, docs/02-STACK.md L320-324
+    [x] aws-sdk-s3 (workspace = true)   ← Ref: ADR 0020, docs/02-STACK.md L324
 
-[ ] crates/events/Cargo.toml
+[x] crates/events/Cargo.toml
     🟡 Fase 2 — Ref: ADR 0025, docs/03-STRUCTURE.md L368-380
     └─ Solo si se necesita NATS JetStream para desacoplar workers
-    [ ] domain = { path = "../domain" }
-    [ ] async-nats (workspace = true)    ← Ref: ADR 0025, docs/02-STACK.md L177
+    [x] edition = "2024"              ← Actualizado 2026
+    [x] domain = { path = "../domain" }
+    [x] async-nats (workspace = true)    ← Ref: ADR 0025, docs/02-STACK.md L177
 
-[ ] crates/infrastructure/Cargo.toml
+[x] crates/infrastructure/Cargo.toml
     └─ Ref: ADR 0003, docs/03-STRUCTURE.md L268-292
-    [ ] application = { path = "../application" }
-    [ ] domain = { path = "../domain" }
-    [ ] axum (workspace = true)          ← Ref: ADR 0003, docs/02-STACK.md L121-132
-    [ ] config (workspace = true)        ← Ref: ADR 0002, docs/02-STACK.md L106-118
-    [ ] utoipa (workspace = true)         ← Ref: ADR 0021, docs/02-STACK.md L239-244
-    [ ] utoipa-scalar (workspace = true) ← Ref: ADR 0021, docs/02-STACK.md L243-244
-    [ ] tower (workspace = true)          ← Ref: ADR 0003, docs/02-STACK.md L126
-    [ ] tower-http (workspace = true)     ← Ref: ADR 0003, docs/02-STACK.md L127-131
-    [ ] tower-governor (workspace = true) ← Ref: ADR 0009, docs/02-STACK.md L132
+    [x] edition = "2024"              ← Actualizado 2026
+    [x] application = { path = "../application" }
+    [x] database = { path = "../database" }
+    [x] auth = { path = "../auth" }
+    [x] mailer = { path = "../mailer" }
+    [x] storage = { path = "../storage" }
+    [x] axum (workspace = true)          ← Ref: ADR 0003, docs/02-STACK.md L121-132
+    [x] config (workspace = true)        ← Ref: ADR 0002, docs/02-STACK.md L106-118
+    [x] utoipa (workspace = true)         ← Ref: ADR 0021, docs/02-STACK.md L239-244
+    [x] utoipa-scalar (workspace = true) ← Ref: ADR 0021, docs/02-STACK.md L243-244
+    [x] tower (workspace = true)          ← Ref: ADR 0003, docs/02-STACK.md L126
+    [x] tower-http (workspace = true)     ← Ref: ADR 0003, docs/02-STACK.md L127-131
+    [x] tower_governor (workspace = true) ← Ref: ADR 0009, docs/02-STACK.md L132
 
-[ ] apps/api/Cargo.toml
+[x] apps/api/Cargo.toml
     └─ Ref: ADR 0003, docs/03-STRUCTURE.md L384-421
-    [ ] infrastructure = { path = "../../crates/infrastructure" }
-    [ ] database = { path = "../../crates/database" }
-    [ ] auth = { path = "../../crates/auth" }
-    [ ] mailer = { path = "../../crates/mailer" }
-    [ ] storage = { path = "../../crates/storage" }
-    [ ] apalis (workspace = true)        ← Ref: ADR 0018, docs/02-STACK.md L274-279
-    [ ] apalis-sql (workspace = true)   ← Ref: ADR 0018, docs/02-STACK.md L278-279
-    [ ] sentry (workspace = true)        ← Ref: ADR 0016, docs/02-STACK.md L339-343
-    [ ] tokio (workspace = true)          ← Ref: docs/02-STACK.md L76-79
+    [x] edition = "2024"              ← Actualizado 2026
+    [x] infrastructure = { path = "../../crates/infrastructure" }
+    [x] database = { path = "../../crates/database" }
+    [x] auth = { path = "../../crates/auth" }
+    [x] mailer = { path = "../../crates/mailer" }
+    [x] storage = { path = "../../crates/storage" }
+    [x] domain = { path = "../../crates/domain" }
+    [x] application = { path = "../../crates/application" }
+    [x] tokio, serde, config, dotenvy, anyhow
 
-[ ] apps/cli/Cargo.toml
+[x] apps/cli/Cargo.toml
     🟡 Fase 2 — Ref: ADR 0028 (Sintonía CLI)
     └─ Solo después de 3 módulos implementados manualmente
-    [ ] clap (workspace = true)
-    [ ] tera (workspace = true)
+    [x] edition = "2024"              ← Actualizado 2026
+    [x] domain = { path = "../../crates/domain" }
+    [x] application = { path = "../../crates/application" }
+    [x] clap (workspace = true)
+    [x] tera (workspace = true)
 ```
 
 **Verificación G.2:** `cargo check --workspace` → cero errores.

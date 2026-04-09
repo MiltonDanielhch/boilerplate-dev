@@ -1,0 +1,29 @@
+# Ubicación: `apps/cli/Cargo.toml`
+#
+# Descripción: CLI de Sintonía para scaffolding y auditoría.
+#              🟡 Fase 2 — solo se activa después de 3 módulos manuales.
+#
+# ADRs relacionados: ADR 0001, ADR 0028 (Sintonía CLI)
+# Estado: 🟡 Diferido — activar en Fase 2
+
+[package]
+name    = "cli"
+version = "0.1.0"
+edition = "2024"
+
+[[bin]]
+name = "sintonia"
+path = "src/main.rs"
+
+[dependencies]
+# ── Capas del monorepo ──────────────────────────────────────────────────────
+domain      = { path = "../../crates/domain" }
+application = { path = "../../crates/application" }
+
+# ── CLI ───────────────────────────────────────────────────────────────────────
+clap = { workspace = true }
+tera = { workspace = true }
+
+# ── Runtime ──────────────────────────────────────────────────────────────────
+tokio = { workspace = true }
+anyhow = { workspace = true }

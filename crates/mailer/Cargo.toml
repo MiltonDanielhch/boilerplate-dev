@@ -1,0 +1,22 @@
+# Ubicación: `crates/mailer/Cargo.toml`
+#
+# Descripción: Puerto y adaptador de email. Puerto en domain, implementación con Resend.
+#
+# ADRs relacionados: ADR 0001, ADR 0019 (Resend)
+
+[package]
+name    = "mailer"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+# ── Dominio ───────────────────────────────────────────────────────────────────
+domain = { path = "../domain" }
+
+# ── Email ─────────────────────────────────────────────────────────────────────
+resend-rs = { workspace = true }
+
+# ── Runtime ──────────────────────────────────────────────────────────────────
+tokio = { workspace = true }
+serde = { workspace = true }
+

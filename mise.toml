@@ -1,0 +1,26 @@
+# Ubicación: `mise.toml`
+#
+# Descripción: Configuración de toolchains para el proyecto boilerplate.
+#              Gestiona versiones exactas de Rust, Node.js y herramientas CLI.
+#              Usa `mise install` para instalar todo automáticamente.
+#
+# ADRs relacionados: ADR 0012 (Herramientas), ADR 0002 (Configuración)
+
+[tools]
+# Usamos la última estable de Rust para aprovechar mejoras en tiempo de compilación
+rust = "1.94" 
+# Node 24 es la versión LTS actual, ideal para entornos de producción
+node = "24"   
+pnpm = "10"
+just = "1.40"
+
+[env]
+RUST_LOG = "info"
+ENVIRONMENT = "development"
+# Nueva práctica 2026: Definir el PATH de binarios locales para scripts de Bun/Node
+PATH = "{{config_root}}/node_modules/.bin:{{env.PATH}}"
+
+[settings]
+auto_install = true
+# Sugerencia: experimental para mayor velocidad en instalaciones
+experimental = true
