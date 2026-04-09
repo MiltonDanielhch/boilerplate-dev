@@ -1,0 +1,38 @@
+# Ubicación: `lefthook.yml`
+#
+# Descripción: Git hooks para calidad de código automática.
+#              Usa `lefthook install` para activar.
+#
+# ADRs relacionados: ADR 0012 (Herramientas), ADR 0011 (Calidad)
+# Versión: 2026.04
+
+# Hook pre-commit: formateo y linting
+pre-commit:
+  parallel: true
+  commands:
+    fmt-check:
+      run: cargo fmt --all --check
+      glob: "*.rs"
+    clippy:
+      run: cargo clippy --workspace -- -D warnings
+      glob: "*.rs"
+
+# Hook pre-push: tests y seguridad
+pre-push:
+  parallel: false
+  commands:
+    test:
+      run: cargo nextest run
+    audit:
+      run: cargo deny check
+
+# Comando personalizado para ejecutar manualmente
+checks:
+  parallel: true
+  commands:
+    fmt:
+      run: cargo fmt --all --check
+    lint:
+      run: cargo clippy --workspace -- -D warnings
+    test:
+      run: cargo nextest run

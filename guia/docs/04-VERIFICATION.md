@@ -7,6 +7,33 @@
 
 ---
 
+## Nota para usuarios Windows/PowerShell
+
+Este documento usa comandos bash por defecto. En PowerShell:
+
+| Bash | PowerShell equivalente |
+|------|------------------------|
+| `&&` | `;` (ejecutar separado) o `-and` |
+| `\|` | `\|` (funciona igual) |
+| `grep` | `Select-String` o `findstr` |
+| `sqlite3 file.db "query"` | `sqlite3 file.db "query"` (si está en PATH) |
+| `2>&1 \| grep` | `2>&1 \| Select-String` |
+| `cat file` | `Get-Content file` o `type file` |
+| `&&` entre comandos | Ejecutar comandos en líneas separadas |
+
+Ejemplo de conversión:
+```bash
+# Bash:
+grep -r "jsonwebtoken" . --include="*.toml"
+
+# PowerShell:
+Select-String -Path "*.toml" -Pattern "jsonwebtoken" -Recurse
+# O:
+findstr /s /i "jsonwebtoken" *.toml
+```
+
+---
+
 ## Cómo usar este documento
 
 ```
@@ -22,37 +49,83 @@
 
 > **Referencia:** ADR 0012 (Tooling), ADR 0013 (Build), ADR 0028 (Auditoría), docs/02-STACK.md L413-417
 
+### 1. El workspace compila
+
 ```bash
-# 1. El workspace compila
 cargo check --workspace
-# Esperado: "Finished" sin errores
-# └─ Ref: docs/03-STRUCTURE.md L169-172
-
-# 2. No hay JWT en ningún Cargo.toml
-grep -r "jsonwebtoken" . --include="*.toml"
-# Esperado: cero resultados
-# └─ Ref: ADR 0008 — JWT prohibido
-
-# 3. Licencias y CVEs limpios
-cargo deny check
-# Esperado: sin violations
-# └─ Ref: ADR 0013, docs/02-STACK.md L412
-
-# 4. Herramientas instaladas
-just --version && sqlx --version && cargo nextest --version
-# Esperado: versiones impresas sin error
-# └─ Ref: docs/02-STACK.md L411-417
-
-# 5. El hook de lefthook funciona
-git commit --allow-empty -m "test genesis"
-# Esperado: lefthook ejecuta fmt antes del commit
-# └─ Ref: ADR 0012, docs/02-STACK.md L413
-
-# 6. El proto es válido
-buf lint
-# Esperado: sin errores
-# └─ Ref: docs/02-STACK.md L419-424, ADR 0027
 ```
+```powershell
+cargo check --workspace
+```
+**Esperado:** `"Finished"` sin errores  
+**Ref:** `docs/03-STRUCTURE.md` L169-172
+
+### 2. No hay JWT en ningún Cargo.toml
+
+```bash
+# Bash/Linux/Mac
+grep -r "jsonwebtoken" . --include="*.toml"
+# o:
+find . -name "*.toml" -exec grep -l "jsonwebtoken" {} \;
+```
+```powershell
+# PowerShell (Windows)
+Select-String -Path "*.toml" -Pattern "jsonwebtoken" -Recurse
+# o alternativa más simple:
+findstr /s /i "jsonwebtoken" *.toml
+```
+**Esperado:** cero resultados  
+**Ref:** ADR 0008 — JWT prohibido
+
+### 3. Licencias y CVEs limpios
+
+```bash
+cargo deny check
+```
+```powershell
+cargo deny check
+```
+**Esperado:** sin violations  
+**Ref:** ADR 0013, `docs/02-STACK.md` L412
+
+### 4. Herramientas instaladas
+
+```bash
+# Bash - comandos con &&
+just --version && sqlx --version && cargo nextest --version
+```
+```powershell
+# PowerShell - comandos separados (&& no funciona)
+just --version
+sqlx --version
+cargo nextest --version
+# o en una línea con ; (semicolon)
+just --version; sqlx --version; cargo nextest --version
+```
+**Esperado:** versiones impresas sin error  
+**Ref:** `docs/02-STACK.md` L411-417
+
+### 5. El hook de lefthook funciona
+
+```bash
+git commit --allow-empty -m "test genesis"
+```
+```powershell
+git commit --allow-empty -m "test genesis"
+```
+**Esperado:** lefthook ejecuta fmt antes del commit  
+**Ref:** ADR 0012, `docs/02-STACK.md` L413
+
+### 6. El proto es válido (Fase 2)
+
+```bash
+buf lint
+```
+```powershell
+buf lint
+```
+**Esperado:** sin errores (o `"no .proto files"` en Fase 1)  
+**Ref:** `docs/02-STACK.md` L419-424, ADR 0027
 
 ---
 
@@ -62,31 +135,41 @@ buf lint
 
 ### Las 6 migraciones
 
+**Ejecutar migraciones:**
 ```bash
-# Ejecutar migraciones
+# Bash / PowerShell
 just migrate
+```
+**Esperado — exactamente esto:**
+```
+Applied 20260305135148/migrate create_users_table
+Applied 20260305135149/migrate create_rbac
+Applied 20260305135150/migrate create_tokens
+Applied 20260305135151/migrate create_audit_logs
+Applied 20260305135152/migrate seed_system_data
+Applied 20260305135153/migrate create_sessions
+```
+**Ref:** `docs/01-ARCHITECTURE.md` L139-164, `docs/02-STACK.md` L159-163
 
-# Esperado — exactamente esto:
-# Applied 20260305135148/migrate create_users_table
-# Applied 20260305135149/migrate create_rbac
-# Applied 20260305135150/migrate create_tokens
-# Applied 20260305135151/migrate create_audit_logs
-# Applied 20260305135152/migrate seed_system_data
-# Applied 20260305135153/migrate create_sessions
-# └─ Ref: docs/01-ARCHITECTURE.md L139-164, docs/02-STACK.md L159-163
-
-# Verificar tablas creadas
+**Verificar tablas creadas:**
+```bash
+# Bash / PowerShell (sqlite3 debe estar en PATH)
 sqlite3 ./data/boilerplate.db ".tables"
-# Esperado: audit_logs  permissions  role_permissions  roles
-#           sessions    tokens       user_roles        users
-# └─ Ref: docs/01-ARCHITECTURE.md L139-164
+```
+**Esperado:** `audit_logs  permissions  role_permissions  roles sessions tokens user_roles users`  
+**Ref:** `docs/01-ARCHITECTURE.md` L139-164
 
-# Verificar que el admin existe en el seed
+**Verificar que el admin existe:**
+```bash
+# Bash / PowerShell
 sqlite3 ./data/boilerplate.db "SELECT email FROM users;"
-# Esperado: admin@admin.com
-# └─ Ref: docs/01-ARCHITECTURE.md L143
+```
+**Esperado:** `admin@admin.com`  
+**Ref:** `docs/01-ARCHITECTURE.md` L143
 
-# Verificar que el admin tiene permisos
+**Verificar permisos del admin:**
+```bash
+# Bash (query multi-línea)
 sqlite3 ./data/boilerplate.db "
   SELECT p.name FROM permissions p
   JOIN role_permissions rp ON rp.permission_id = p.id
@@ -94,9 +177,13 @@ sqlite3 ./data/boilerplate.db "
   WHERE r.name = 'Admin'
   ORDER BY p.name;
 "
-# Esperado: audit:read, roles:read, roles:write, users:read, users:write
-# └─ Ref: ADR 0006, docs/02-STACK.md L228-233
 ```
+```powershell
+# PowerShell (query en una línea)
+sqlite3 ./data/boilerplate.db "SELECT p.name FROM permissions p JOIN role_permissions rp ON rp.permission_id = p.id JOIN roles r ON r.id = rp.role_id WHERE r.name = 'Admin' ORDER BY p.name;"
+```
+**Esperado:** `audit:read`, `roles:read`, `roles:write`, `users:read`, `users:write`  
+**Ref:** ADR 0006, `docs/02-STACK.md` L228-233
 
 ### El dominio no tiene dependencias externas
 

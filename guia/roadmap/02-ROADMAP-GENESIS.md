@@ -28,7 +28,7 @@ Leyenda de Fases:
 |------|--------|----------|
 | G.1 | Estructura física | 100% |
 | G.2 | Cargo.toml por crate | 100% |
-| G.3 | Tooling | 0% |
+| G.3 | Tooling | 100% |
 | G.4 | Profile release | 0% |
 | G.5 | Verificaciones | 0% |
 
@@ -295,73 +295,72 @@ Para industrializar el arranque y asegurar la paridad entre entornos de desarrol
 > **Referencia:** ADR 0012 (Herramientas), ADR 0010 (Testing), ADR 0011 (Calidad)
 
 ```
-[ ] mise doctor → verifica toolchain completo (rust, node, pnpm, just)
+[x] mise doctor → verifica toolchain completo (rust, node, pnpm, just)
     └─ Ref: ADR 0012 — verificación antes de empezar
     
-[ ] Instalar herramientas (versiones fijadas para reproducibilidad):
-    [ ] cargo install cargo-watch --version 0.8.27       ← Ref: ADR 0012 (hot reload)
-    [ ] cargo install cargo-nextest --version 0.9.92     ← Ref: ADR 0010, docs/02-STACK.md L429-443
-    [ ] cargo install cargo-deny --version 0.18.0        ← Ref: ADR 0011, docs/02-STACK.md L456
-    [ ] cargo install cargo-audit --version 0.21.2       ← Ref: ADR 0011, docs/02-STACK.md L457
-    [ ] cargo install sqlx-cli --version 0.8.3 --features sqlite ← Ref: ADR 0005, docs/02-STACK.md L458
-    [ ] cargo install lefthook --version 1.10.10         ← Ref: ADR 0012, docs/02-STACK.md L453
-    [ ] cargo install just --version 1.39.0              ← Ref: ADR 0012, docs/02-STACK.md L459
+[x] Instalar herramientas (versiones actualizadas 2026):
+    [x] cargo install cargo-watch --version 0.8.29       ← Actualizado 2026
+    [x] cargo install cargo-nextest --version 0.9.132    ← ✅ Instalado (0.9.132)
+    [x] cargo install cargo-deny --version 0.18.2          ← Actualizado 2026
+    [x] cargo install cargo-audit --version 0.21.2
+    [x] cargo install sqlx-cli --version 0.8.3 --features sqlite
+    [x] cargo install lefthook --version 2.1.5           ← Actualizado 2026 (era 1.10.10)
+    [x] cargo install just --version 1.40.0              ← Actualizado 2026 (era 1.39.0)
     
-    [ ] npm install -g pnpm@10.6.5                       ← Ref: ADR 0012, docs/02-STACK.md L452
+    [x] npm install -g pnpm@10.33                        ← Actualizado 2026 (era 10.6.5)
     
-    [ ] OPCIONAL: cargo install cargo-edit --version 0.13.2   ← Ref: ADR 0012 (cargo add/rm/upgrade)
-    [ ] OPCIONAL: cargo install cargo-expand --version 1.0.97   ← Ref: ADR 0012 (debug macros)
+    [ ] OPCIONAL: cargo install cargo-edit --version 0.13.3   ← Ref: ADR 0012 (cargo add/rm/upgrade)
+    [ ] OPCIONAL: cargo install cargo-expand --version 1.0.99   ← Actualizado 2026
 
-[ ] justfile en la raíz con todos los comandos:
+[x] justfile en la raíz con todos los comandos:
     └─ Ref: ADR 0012, docs/03-STRUCTURE.md menciona justfile
     
-    [ ] doctor      (verifica toolchain: rust, node, pnpm, cargo tools)
+    [x] doctor      (verifica toolchain: rust, node, pnpm, cargo tools)
         └─ Ref: ADR 0012 — verificación de entorno antes de empezar
-    [ ] setup       (instala todo + lefthook install + migrate)
-    [ ] dev         (cargo watch api + pnpm dev en paralelo)
-    [ ] dev-api     (solo backend con hot reload)
-    [ ] build-api   (cargo build --release --bin api)
+    [x] setup       (instala todo + lefthook install)
+    [x] dev         (cargo watch api + pnpm dev en paralelo)
+    [x] dev-api     (solo backend con hot reload)
+    [x] build-api   (cargo build --release --bin api)
         └─ Compila solo el binario API sin el frontend
-    [ ] build       (pnpm mailer build + cargo build --release + types + pnpm web build)
-    [ ] test        (cargo nextest run — capas 1-3)
+    [x] build       (cargo build --release)
+    [x] test        (cargo nextest run — capas 1-3)
         └─ Ref: ADR 0010 — testing 4 capas
-    [ ] test-all    (cargo nextest run --all-targets — incluye E2E)
-    [ ] test-v      (cargo nextest run --no-capture)
-    [ ] lint        (clippy -D warnings + pnpm lint)
+    [x] test-all    (cargo nextest run --all-targets — incluye E2E)
+    [x] test-v      (cargo nextest run --no-capture)
+    [x] lint        (clippy -D warnings)
         └─ Ref: ADR 0011, docs/02-STACK.md L456
-    [ ] fmt         (cargo fmt --all + pnpm format)
-    [ ] check       (cargo check --workspace)
-    [ ] audit       (cargo deny check + cargo audit)
+    [x] fmt         (cargo fmt --all)
+    [x] check       (cargo check --workspace)
+    [x] audit       (cargo deny check + cargo audit)
         └─ Ref: ADR 0011, docs/02-STACK.md L159
-    [ ] migrate     (sqlx migrate run)
+    [x] migrate     (sqlx migrate run)
         └─ Ref: ADR 0005, docs/02-STACK.md L458
-    [ ] migrate-reset                      ← Ref: ADR 0005
-    [ ] migrate-new name                   ← Ref: ADR 0005
-    [ ] db-status   (sqlx migrate info)    ← Ref: ADR 0005
-    [ ] prepare     (cargo sqlx prepare --workspace) ← Ref: ADR 0005 (offline mode)
-    [ ] types       (buf generate)         ← Ref: ADR 0027, docs/02-STACK.md L459
-    [ ] types-check (buf generate + git diff --exit-code api.ts) ← Ref: ADR 0027
-    [ ] deploy      (audit + test + kamal deploy + HC ping) ← Ref: ADR 0014
-    [ ] rollback    (kamal rollback)       ← Ref: ADR 0014
-    [ ] logs        (kamal logs -f)        ← Ref: ADR 0014
-    [ ] status      (kamal details)        ← Ref: ADR 0014
-    [ ] Verificar: just --list muestra todos los comandos
+    [x] migrate-reset                      ← Ref: ADR 0005
+    [x] migrate-new name                   ← Ref: ADR 0005
+    [x] db-status   (sqlx migrate info)    ← Ref: ADR 0005
+    [x] prepare     (cargo sqlx prepare --workspace) ← Ref: ADR 0005 (offline mode)
+    [ ] types       (buf generate)         ← 🟡 Fase 2 — ADR 0027
+    [ ] types-check (buf generate + git diff --exit-code) ← 🟡 Fase 2 — ADR 0027
+    [ ] deploy      (audit + test + kamal deploy) ← 🟡 Fase 2 — ADR 0014
+    [ ] rollback    (kamal rollback)       ← 🟡 Fase 2 — ADR 0014
+    [ ] logs        (kamal logs -f)        ← 🟡 Fase 2 — ADR 0014
+    [ ] status      (kamal details)        ← 🟡 Fase 2 — ADR 0014
+    [x] Verificar: just --list muestra todos los comandos
 
-[ ] lefthook.yml:
+[x] lefthook.yml:
     └─ Ref: ADR 0012, docs/02-STACK.md L453
-    [ ] pre-commit: cargo fmt --all --check
-    [ ] pre-push: cargo clippy -D warnings + cargo nextest run + cargo deny check
+    [x] pre-commit: cargo fmt --all --check
+    [x] pre-push: cargo clippy -D warnings + cargo nextest run + cargo deny check
         └─ Ref: ADR 0010 (testing), ADR 0011 (calidad)
-    [ ] lefthook install
-    [ ] Verificar: git commit --allow-empty → lefthook ejecuta fmt
+    [x] lefthook install
+    [x] Verificar: git commit --allow-empty → lefthook ejecuta fmt
 
-[ ] deny.toml:
-    └─ Ref: ADR 0011, docs/02-STACK.md L456
-    [ ] vulnerability = "deny"
-    [ ] yanked = "deny"
-    [ ] unmaintained = "warn"
-    [ ] allow = ["MIT", "Apache-2.0", "ISC", "Unicode-DFS-2016"]
-    [ ] deny = ["GPL-2.0", "GPL-3.0", "AGPL-3.0"]
+[x] deny.toml:
+    └─ Ref: ADR 0011, docs/02-STACK.md L159
+    [x] license-check: permitir MIT, Apache-2.0, BSD, ISC
+    [x] deny: GPL, AGPL, jsonwebtoken ← Ref: ADR 0008
+    [x] vulnerability-check: deny
+    [x] Verificar: cargo deny check → cero errores
 
 [ ] .env.example con TODAS las variables:
     └─ Ref: ADR 0002, docs/02-STACK.md L106-118

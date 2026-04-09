@@ -1,0 +1,85 @@
+# Ubicación: `deny.toml`
+#
+# Descripción: Configuración de cargo-deny para seguridad de suministro.
+#              Bloquea licencias prohibidas y vulnerabilidades conocidas.
+#
+# ADRs relacionados: ADR 0011 (Calidad)
+# Versión: 2026.04 - Compatible cargo-deny 0.18+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Licencias
+# ──────────────────────────────────────────────────────────────────────────────
+
+[licenses]
+# Licencias permitidas (todas las demás son rechazadas implícitamente)
+allow = [
+    "MIT",
+    "Apache-2.0",
+    "Apache-2.0 WITH LLVM-exception",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "0BSD",
+    "ISC",
+    "Unicode-DFS-2016",
+    "Unicode-3.0",
+    "CC0-1.0",
+    "Unlicense",
+    "MPL-2.0",
+    "OpenSSL",
+    "Zlib",
+    "CDLA-Permissive-2.0",
+]
+
+# Umbral de confianza para la detección de licencias
+confidence-threshold = 0.8
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Vulnerabilidades
+# ──────────────────────────────────────────────────────────────────────────────
+
+[advisories]
+# Base de datos de advisories
+db-urls = ["https://github.com/RustSec/advisory-db"]
+
+# Ignorar advisories específicos (si es necesario)
+ignore = []
+
+# Configuración de crates unmaintained
+# "workspace" = solo error si es dependencia directa del workspace
+unmaintained = "workspace"
+
+# Configuración de crates yanked
+# "deny" = error si hay crates yanked en dependencias del workspace
+yanked = "deny"
+
+# Configuración de advisories de código unsound
+unsound = "workspace"
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Bans (crates prohibidos o con versiones múltiples)
+# ──────────────────────────────────────────────────────────────────────────────
+
+[bans]
+# Denegar crates específicos
+deny = [
+    # JWT está prohibido por ADR 0008
+    { name = "jsonwebtoken", reason = "JWT prohibido - usar PASETO (ADR 0008)" },
+]
+
+# Permitir versiones múltiples solo si son necesarias
+multiple-versions = "warn"
+
+# Permitir wildcards en dependencias de desarrollo
+wildcards = "allow"
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Fuentes de crates
+# ──────────────────────────────────────────────────────────────────────────────
+
+[sources]
+# Solo permitir crates.io
+unknown-registry = "deny"
+unknown-git = "deny"
+
+# Registros permitidos: por defecto solo crates.io está permitido
+# No se necesita configuración adicional para [sources]
