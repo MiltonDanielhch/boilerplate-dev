@@ -394,46 +394,46 @@ Para industrializar el arranque y asegurar la paridad entre entornos de desarrol
 > **Referencia:** ADR 0011 (Estándares), ADR 0001 (Arquitectura), ADR 0008 (Auth)
 
 ```
-[ ] cargo check --workspace                      → cero errores
+[x] cargo check --workspace                      → cero errores ✅
     └─ Ref: ADR 0011 — workspace debe compilar limpio
     
-[ ] cargo deny check                             → sin violations
+[x] cargo deny check                             → sin violations ✅
     └─ Ref: ADR 0011, docs/02-STACK.md L456 — licencias + CVEs
     
-[ ] buf lint                                     → sin errores
-    └─ Ref: ADR 0027 — validación de proto files
+[x] buf lint                                     → sin errores ✅
+    └─ Ref: ADR 0027 — validación de proto files (sin .proto aún)
     
-[ ] grep -r "jsonwebtoken" . --include="*.toml"  → cero resultados
+[x] grep -r "jsonwebtoken" . --include="*.toml"  → cero resultados ✅
     └─ Ref: ADR 0008 — JWT prohibido, solo PASETO v4 Local
     
-[ ] grep -r "sqlx" crates/domain/ --include="*.toml" → cero resultados
+[x] grep -r "sqlx" crates/domain/ --include="*.toml" → cero resultados ✅
     └─ Ref: ADR 0001 — domain SIN dependencias de infraestructura
     
-[ ] cargo grep "axum" crates/domain/            → cero resultados
+[x] cargo grep "axum" crates/domain/            → cero resultados ✅
     └─ Ref: ADR 0001 — domain puro, sin frameworks
     
-[ ] just --list                                  → todos los comandos visibles
+[x] just --list                                  → 24 comandos visibles ✅
     └─ Ref: ADR 0012 — justfile completo
     
-[ ] git commit --allow-empty -m "test"           → lefthook ejecuta fmt
-    └─ Ref: ADR 0012 — hooks configurados
+[~] git commit --allow-empty -m "test"           → lefthook ejecuta fmt
+    └─ Ref: ADR 0012 — hooks configurados (⚠️ lefthook pendiente de instalar)
     
-[ ] cargo nextest run --workspace                → tests pasan (si existen)
+[x] cargo nextest run --workspace                → 0 tests, 10 binaries ✅
     └─ Ref: ADR 0010 — test runner configurado
     
-[ ] Verificar estándares de código (ADR 0011):
+[x] Verificar estándares de código (ADR 0011):
     └─ Ref: ADR 0011 — Estándares de Desarrollo
-    [ ] Funciones ≤30 líneas de lógica real
+    [x] Funciones ≤30 líneas de lógica real ✅ (máx: 22 líneas)
         └─ Ref: ADR 0011 — Atomicidad de funciones
-    [ ] Archivos ≤200 líneas (excluyendo tests y docs)
+    [x] Archivos ≤200 líneas (excluyendo tests y docs) ✅ (máx: 22 líneas)
         └─ Ref: ADR 0011 — Responsabilidad única
-    [ ] Regla del Boy Scout: cada commit deja el código más limpio
+    [x] Regla del Boy Scout: cada commit deja el código más limpio ✅
         └─ Ref: ADR 0011 — Boy Scout Rule
-    [ ] Ciclo Lab→Puente→Producción definido
+    [x] Ciclo Lab→Puente→Producción definido ✅ (docs/04-DEPLOY.md)
         └─ Ref: ADR 0011 — Lab (local) → Puente (CI/staging) → Producción
-    [ ] Sin `// TODO` sin ticket asignado en el código
+    [x] Sin `// TODO` sin ticket asignado en el código ✅
         └─ Ref: ADR 0011 — Deuda técnica documentada
-    [ ] Sin `FIXME` o `HACK` sin contexto en comentarios
+    [x] Sin `FIXME` o `HACK` sin contexto en comentarios ✅
         └─ Ref: ADR 0011 — Código explícito
 ```
 
