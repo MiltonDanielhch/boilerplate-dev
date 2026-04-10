@@ -217,35 +217,38 @@ Para maximizar la robustez, seguridad y observabilidad del backend:
 > **Referencia:** ADR 0001, docs/03-STRUCTURE.md L240-264, docs/01-ARCHITECTURE.md L69-95
 
 ```
-[ ] Cargo.toml: domain + tracing + uuid — sin sqlx, sin axum
+[x] Cargo.toml: domain + thiserror + anyhow + tokio — sin sqlx, sin axum ✅
     └─ Ref: docs/03-STRUCTURE.md L246 — solo domain como dependencia
 
-[ ] use_cases/auth/register.rs    (email → argon2id → save → EmailJob)
+[x] use_cases/auth/register.rs    (email → argon2id → save → EmailJob) ✅
     └─ Ref: docs/01-ARCHITECTURE.md L223-229 — flujo de register
-[ ] use_cases/auth/login.rs       (verify → PASETO 15min → refresh → session → audit)
+[x] use_cases/auth/login.rs       (verify → PASETO 15min → refresh → session → audit) ✅
     └─ Ref: docs/01-ARCHITECTURE.md L230-235 — flujo de login
-[ ] use_cases/auth/logout.rs      (revocar session + refresh token)
-[ ] use_cases/auth/refresh.rs     (verify refresh → nuevo PASETO + nuevo refresh)
+[x] use_cases/auth/logout.rs      (revocar session + refresh token) ✅
+[x] use_cases/auth/refresh.rs     (verify refresh → nuevo PASETO + nuevo refresh) ✅
 
-[ ] use_cases/users/get_user.rs
-[ ] use_cases/users/list_users.rs
-[ ] use_cases/users/update_user.rs
-[ ] use_cases/users/soft_delete_user.rs  (UPDATE deleted_at — NUNCA DELETE)
+[x] use_cases/users/get_user.rs ✅
+[x] use_cases/users/list_users.rs ✅
+[x] use_cases/users/update_user.rs ✅
+[x] use_cases/users/soft_delete_user.rs  (UPDATE deleted_at — NUNCA DELETE) ✅
     └─ Ref: ADR 0006 — Soft Delete obligatorio
 
-[ ] use_cases/leads/capture_lead.rs
+[x] use_cases/leads/capture_lead.rs ✅
     └─ Ref: ADR 0029 — Landing + Leads
-    [ ] deduplicación silenciosa (retorna Ok si ya existe)
-    [ ] encola LeadWelcomeJob sin bloquear HTTP
+    [x] deduplicación silenciosa (retorna Ok si ya existe)
+    [~] encola LeadWelcomeJob sin bloquear HTTP (PENDIENTE Bloque V)
 
-[ ] Tests con mockall:
+[~] Tests con mockall:
     └─ Ref: ADR 0010 — capa 2 Application, docs/02-STACK.md L424-427
-    [ ] registro_con_email_nuevo_funciona()
-    [ ] registro_con_email_duplicado_no_llama_save()
-    [ ] email_invalido_no_toca_la_db()
+    [~] Tests en use_cases.rs (legacy) — 3 pasando
+    [ ] registro_con_email_nuevo_funciona() — PENDIENTE mockall
+    [ ] registro_con_email_duplicado_no_llama_save() — PENDIENTE mockall
+    [ ] email_invalido_no_toca_la_db() — PENDIENTE mockall
+    → Se agregarán al implementar repositorios (I.5) con mockall
 
-[ ] Verificar que use cases NO importan sqlx ni axum
+[x] Verificar que use cases NO importan sqlx ni axum ✅
     └─ Ref: ADR 0001 — arquitectura hexagonal
+    └─ grep "sqlx\|axum" crates/application/Cargo.toml = 0 resultados
 ```
 
 ### I.5 — Repositorios SQLx — crates/database/ (ADR 0004, 0017)
