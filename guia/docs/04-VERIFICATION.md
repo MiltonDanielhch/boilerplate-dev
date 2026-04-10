@@ -171,16 +171,13 @@ sqlite3 ./data/boilerplate.db "SELECT email FROM users;"
 ```bash
 # Bash (query multi-línea)
 sqlite3 ./data/boilerplate.db "
-  SELECT p.name FROM permissions p
+  SELECT p.resource || ':' || p.action as permission
+  FROM permissions p
   JOIN role_permissions rp ON rp.permission_id = p.id
   JOIN roles r ON r.id = rp.role_id
   WHERE r.name = 'Admin'
-  ORDER BY p.name;
+  ORDER BY p.resource, p.action;
 "
-```
-```powershell
-# PowerShell (query en una línea)
-sqlite3 ./data/boilerplate.db "SELECT p.name FROM permissions p JOIN role_permissions rp ON rp.permission_id = p.id JOIN roles r ON r.id = rp.role_id WHERE r.name = 'Admin' ORDER BY p.name;"
 ```
 **Esperado:** `audit:read`, `roles:read`, `roles:write`, `users:read`, `users:write`  
 **Ref:** ADR 0006, `docs/02-STACK.md` L228-233

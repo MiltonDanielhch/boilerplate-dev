@@ -19,7 +19,7 @@
 
 | Bloque | Nombre | Progreso |
 |--------|--------|----------|
-| I | Fundación — Dominio + DB + RBAC 🔥 | 0% |
+| I | Fundación — Dominio + DB + RBAC ✅ | 100% |
 | II | API — Axum + Middleware + Errores | 0% |
 | III | Seguridad — Auth + RBAC + Audit | 0% |
 | IV | OpenAPI + Scalar | 0% |
@@ -132,66 +132,83 @@ Para maximizar la robustez, seguridad y observabilidad del backend:
 > Si sqlx o axum aparecen aquí → la arquitectura está rota.
 
 ```
-[ ] Cargo.toml: thiserror, uuid (v4+v7), time, serde — NADA MÁS
+[x] Cargo.toml: thiserror, uuid (v4+v7), time, serde, async-trait — NADA MÁS ✅
     └─ Ref: docs/03-STRUCTURE.md L223-236, docs/02-STACK.md L556
 
-[ ] entities/user.rs
+[x] entities/user.rs ✅
     └─ Ref: docs/03-STRUCTURE.md L198-203
-    [ ] struct User { id, username, email, email_verified, created_at, updated_at, deleted_at }
-    [ ] impl User: is_active(), soft_delete()  ← Ref: ADR 0006 (Soft Delete)
+    [x] struct User { id, email, password_hash, name, is_active, email_verified_at, created_at, updated_at, deleted_at }
+    [x] impl User: is_active(), soft_delete(), reactivate(), verify_email()  ← Ref: ADR 0006 (Soft Delete)
 
-[ ] entities/role.rs + entities/session.rs + entities/audit_log.rs
+[x] entities/role.rs + entities/session.rs + entities/audit_log.rs ✅
     └─ Ref: docs/03-STRUCTURE.md L201-202
-[ ] entities/lead.rs  (para la landing page — ADR 0029)
+[x] entities/lead.rs  (para la landing page — ADR 0029) ✅
     └─ Ref: docs/03-STRUCTURE.md L203, ADR 0029
 
-[ ] value_objects/user_id.rs     (newtype UserId(Uuid))
+[x] value_objects/user_id.rs     (newtype UserId(Uuid)) ✅
     └─ Ref: docs/03-STRUCTURE.md L205
-[ ] value_objects/email.rs       (Email — validado + normalizado a minúsculas)
+[x] value_objects/email.rs       (Email — validado + normalizado a minúsculas) ✅
     └─ Ref: docs/03-STRUCTURE.md L206
-[ ] value_objects/password_hash.rs (PasswordHash — nunca expone el hash)
+[x] value_objects/password_hash.rs (PasswordHash — nunca expone el hash) ✅
     └─ Ref: docs/03-STRUCTURE.md L207
-[ ] value_objects/permission.rs  (Permission — formato "recurso:acción")
+[x] value_objects/permission.rs  (Permission — formato "recurso:acción") ✅
     └─ Ref: docs/03-STRUCTURE.md L208, ADR 0006
 
-[ ] ports/user_repository.rs
+[x] ports/user_repository.rs ✅
     └─ Ref: docs/03-STRUCTURE.md L210
-    [ ] find_by_id, find_active_by_email, save, soft_delete, has_permission
-[ ] ports/session_repository.rs  (create, find_by_token, revoke, cleanup_expired)
+    [x] find_by_id, find_active_by_email, save, soft_delete, has_permission
+[x] ports/session_repository.rs  (create, find_by_token, revoke, cleanup_expired) ✅
     └─ Ref: docs/03-STRUCTURE.md L212
-[ ] ports/audit_repository.rs    (log — insert-only)
+[x] ports/audit_repository.rs    (log — insert-only) ✅
     └─ Ref: docs/03-STRUCTURE.md L213
-[ ] ports/token_repository.rs    (create, use_token, cleanup_expired)
+[x] ports/token_repository.rs    (create, use_token, cleanup_expired) ✅
     └─ Ref: docs/03-STRUCTURE.md L214
-[ ] ports/lead_repository.rs     (save, find_by_email)
+[x] ports/lead_repository.rs     (save, find_by_email) ✅
     └─ Ref: docs/03-STRUCTURE.md L215, ADR 0029
-[ ] ports/mailer.rs              (trait Mailer: Send + Sync)
+[x] ports/mailer.rs              (trait Mailer: Send + Sync) ✅
     └─ Ref: docs/03-STRUCTURE.md L216, ADR 0019
-[ ] ports/storage_repository.rs  (trait StorageRepository: Send + Sync)
+[x] ports/storage_repository.rs  (trait StorageRepository: Send + Sync) ✅
     └─ Ref: docs/03-STRUCTURE.md L217, ADR 0020
 
-[ ] errors/domain_error.rs
+[x] errors.rs ✅
     └─ Ref: docs/02-STACK.md L93-95 (thiserror), ADR 0007
-    [ ] InvalidEmail, PasswordTooShort
-    [ ] EmailAlreadyExists, InvalidCredentials, InvalidToken
-    [ ] NotFound { resource }, Forbidden { permission }
-    [ ] Database(String)
+    [x] InvalidEmail, InvalidPassword, InvalidPermission, InvalidId
+    [x] EmailAlreadyExists, InvalidCredentials, InvalidToken
+    [x] NotFound { resource }, Forbidden { message }, MissingPermission { permission }
+    [x] Database(String), Internal(String)
 
 [ ] errors/app_error.rs          (AppError + IntoResponse → HTTP — ADR 0007)
     └─ Ref: ADR 0007, docs/01-ARCHITECTURE.md L245-262
+    → FASE POSTERIOR (en crate application/infrastructure)
 
-[ ] Tests unitarios:
+[x] Tests unitarios ✅
     └─ Ref: ADR 0010 — capa 1 Domain
-    [ ] email_valido_se_crea()
-    [ ] email_normalizado_a_minusculas()
-    [ ] email_sin_arroba_invalido()
-    [ ] soft_delete_marca_deleted_at()
-    [ ] is_active_retorna_false_tras_soft_delete()
+    [x] email_valido_se_crea()
+    [x] email_normalizado_a_minusculas()
+    [x] email_sin_arroba_invalido()
+    [x] email_con_espacios_se_trimmea()
+    [x] email_domain_extrae_correctamente()
+    [x] password_hash_valido_se_crea()
+    [x] password_hash_vacio_falla()
+    [x] password_hash_sin_argon2_falla()
+    [x] password_hash_no_expone_en_display()
+    [x] user_id_new_genera_uuid()
+    [x] user_id_parse_valido()
+    [x] user_id_parse_invalido_falla()
+    [x] permission_new_valido()
+    [x] permission_parse_valido()
+    [x] permission_parse_invalido_falla()
+    [x] permission_implies_funciona()
+    [x] permission_diferente_recurso_no_implica()
+    [x] soft_delete_marca_deleted_at()
+    [x] is_active_retorna_false_tras_soft_delete()
+    [x] verify_email_works()
+    [x] email_not_verified_on_creation()
 
-[ ] cargo nextest run -p domain → todos pasan en <100ms
+[x] cargo nextest run -p domain → 24 tests pasan ✅
     └─ Ref: ADR 0010, docs/02-STACK.md L429-443
-[ ] cargo check -p domain → cero errores
-[ ] grep "sqlx" crates/domain/Cargo.toml → cero resultados ✓
+[x] cargo check -p domain → cero errores ✅
+[x] grep "sqlx" crates/domain/Cargo.toml → cero resultados ✓
     └─ Ref: ADR 0001 — violación crítica si falla
 ```
 
