@@ -42,7 +42,12 @@ confidence-threshold = 0.8
 db-urls = ["https://github.com/RustSec/advisory-db"]
 
 # Ignorar advisories específicos (si es necesario)
-ignore = []
+version = 2
+ignore = [
+    # RSA crate: Marvin Attack (timing sidechannel) - dependencia transitiva, no usamos RSA directamente
+    # Ref: https://rustsec.org/advisories/RUSTSEC-2023-0071
+    "RUSTSEC-2023-0071",
+]
 
 # Configuración de crates unmaintained
 # "workspace" = solo error si es dependencia directa del workspace

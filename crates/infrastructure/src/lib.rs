@@ -5,6 +5,6 @@
 //
 // ADRs relacionados: ADR 0001, ADR 0003 (Axum)
 
-pub mod http;
 pub mod config;
+pub mod http;
 pub mod router;

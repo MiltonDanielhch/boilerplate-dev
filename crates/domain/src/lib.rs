@@ -6,5 +6,5 @@
 // ADRs relacionados: ADR 0001 (Arquitectura Hexagonal)
 
 pub mod entities;
-pub mod value_objects;
 pub mod errors;
+pub mod value_objects;

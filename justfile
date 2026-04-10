@@ -6,6 +6,9 @@
 # ADRs relacionados: ADR 0012 (Herramientas)
 # Versión: 2026.04
 
+# Shell configuration para Windows (Git Bash / MINGW64)
+set windows-shell := ["sh", "-c"]
+
 # Default: mostrar ayuda
 _default:
     @just --list
@@ -74,7 +77,7 @@ build:
 # Ejecuta tests con nextest (capas 1-3)
 [no-cd]
 test:
-    cargo nextest run
+    cargo nextest run --no-tests=pass
 
 # Ejecuta todos los tests incluyendo E2E
 [no-cd]
@@ -115,25 +118,28 @@ audit:
 # Base de Datos
 # ──────────────────────────────────────────────────────────────────────────────
 
+# Fallback DATABASE_URL si no está configurado
+export DATABASE_URL := env_var_or_default("DATABASE_URL", "sqlite:data/database.sqlite3")
+
 # Ejecuta migraciones pendientes
 [no-cd]
 migrate:
-    sqlx migrate run
+    sqlx migrate run --source data/migrations
 
 # Reset de base de datos (cuidado!)
 [no-cd]
 migrate-reset:
-    sqlx migrate reset
+    sqlx migrate reset --source data/migrations
 
 # Crea nueva migración
 [no-cd]
 migrate-new name:
-    sqlx migrate add {{name}}
+    sqlx migrate add --source data/migrations {{name}}
 
 # Estado de migraciones
 [no-cd]
 db-status:
-    sqlx migrate info
+    sqlx migrate info --source data/migrations
 
 # Prepara queries para modo offline
 [no-cd]

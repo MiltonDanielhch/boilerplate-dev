@@ -352,8 +352,9 @@ Para industrializar el arranque y asegurar la paridad entre entornos de desarrol
     [x] pre-commit: cargo fmt --all --check
     [x] pre-push: cargo clippy -D warnings + cargo nextest run + cargo deny check
         └─ Ref: ADR 0010 (testing), ADR 0011 (calidad)
-    [x] lefthook install
-    [x] Verificar: git commit --allow-empty → lefthook ejecuta fmt
+    [~] lefthook install
+        └─ ⚠️ Instalar manualmente: `npm install -g lefthook` (no disponible en crates.io)
+    [ ] Verificar: git commit --allow-empty → lefthook ejecuta fmt
 
 [x] deny.toml:
     └─ Ref: ADR 0011, docs/02-STACK.md L159
@@ -362,25 +363,25 @@ Para industrializar el arranque y asegurar la paridad entre entornos de desarrol
     [x] vulnerability-check: deny
     [x] Verificar: cargo deny check → cero errores
 
-[ ] .env.example con TODAS las variables:
+[x] .env.example con TODAS las variables:
     └─ Ref: ADR 0002, docs/02-STACK.md L106-118
-    [ ] SERVER_PORT, ENVIRONMENT, RUST_LOG
-    [ ] DATABASE_URL
-    [ ] PASETO_SECRET  (comentario: generar con openssl rand -hex 16)
+    [x] SERVER_PORT, ENVIRONMENT, RUST_LOG
+    [x] DATABASE_URL
+    [x] PASETO_SECRET  (comentario: generar con openssl rand -hex 32)
         └─ Ref: ADR 0008, docs/02-STACK.md L203-226
-    [ ] RESEND_API_KEY, MAIL_FROM
+    [x] RESEND_API_KEY, MAIL_FROM
         └─ Ref: ADR 0019, docs/02-STACK.md L298-317
-    [ ] AWS_ENDPOINT_URL_S3, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, STORAGE_BUCKET
+    [x] AWS_ENDPOINT_URL_S3, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, STORAGE_BUCKET
         └─ Ref: ADR 0020, docs/02-STACK.md L320-332
-    [ ] LITESTREAM_BUCKET
+    [x] LITESTREAM_BUCKET
         └─ Ref: ADR 0004, docs/02-STACK.md L165-170
-    [ ] SENTRY_DSN (opcional)
+    [x] SENTRY_DSN (opcional)
         └─ Ref: ADR 0016, docs/02-STACK.md L339-348
-    [ ] OTLP_ENDPOINT (opcional)
+    [x] OTLP_ENDPOINT (opcional)
         └─ Ref: ADR 0016, docs/02-STACK.md L350-358
-    [ ] HC_LITESTREAM_UUID, HC_DEPLOY_UUID (opcional)
+    [x] HC_LITESTREAM_UUID, HC_DEPLOY_UUID (opcional)
         └─ Ref: ADR 0015, docs/02-STACK.md L348
-    [ ] .env.local copiado desde .env.example y añadido a .gitignore
+    [x] .env.local en .gitignore (copiar desde .env.example para desarrollo)
         └─ Ref: ADR 0002 (secretos locales)
 ```
 
