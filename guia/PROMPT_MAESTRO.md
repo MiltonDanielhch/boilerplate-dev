@@ -24,8 +24,8 @@
 
 | Fase | Roadmap | Estado | % | VPS |
 |------|---------|--------|---|-----|
-| 🔄 **Génesis** | `02-ROADMAP-GENESIS.md` | **ACTIVA** | 0% | $5 |
-| ⏳ Backend | `03-ROADMAP-BACKEND.md` | Pendiente | 0% | $5 |
+| ✅ **Génesis** | `02-ROADMAP-GENESIS.md` | **COMPLETADO** | 100% | $5 |
+| 🔄 **Backend I** | `03-ROADMAP-BACKEND.md` Bloque I | **ACTIVA** | 0% | $5 |
 | ⏳ Frontend | `04-ROADMAP-FRONTEND.md` | Pendiente | 0% | $5 |
 | ⏳ Auth | `05-ROADMAP-AUTH-FULLSTACK.md` | Pendiente | 0% | $5 |
 | ⏳ Landing | `06-ROADMAP-LANDING.md` | Pendiente | 0% | $5 |
@@ -73,7 +73,7 @@
 
 **Proyecto**: boilerplate  
 **Arquitectura**: Monorepo Rust + Hexagonal (Fronteras por Cargo.toml)  
-**Fase actual**: `Génesis` — Ver `guia/roadmap/02-ROADMAP-GENESIS.md`
+**Fase actual**: `Backend I — Fundación` — Ver `guia/roadmap/03-ROADMAP-BACKEND.md`
 
 ### Stack Backend
 

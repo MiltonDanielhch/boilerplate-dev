@@ -50,19 +50,19 @@ Para maximizar la robustez, seguridad y observabilidad del backend:
 > **Referencia:** ADR 0004, docs/02-STACK.md L151-170, docs/03-STRUCTURE.md L296-321
 
 ```
-[ ] crates/database/src/pool.rs — create_pool():
+[x] crates/database/src/pool.rs — create_pool():
     └─ Ref: docs/03-STRUCTURE.md L305 — pool.rs con PRAGMAs
-    [ ] PRAGMA journal_mode = WAL         ← Ref: ADR 0004 (SQLite WAL)
-    [ ] PRAGMA synchronous  = NORMAL      ← Ref: ADR 0004
-    [ ] PRAGMA temp_store   = MEMORY       ← Ref: ADR 0004
-    [ ] PRAGMA mmap_size    = 30000000000  ← Ref: ADR 0004
-    [ ] PRAGMA foreign_keys = ON          ← Ref: ADR 0004
-    [ ] PRAGMA cache_size   = -64000      ← Ref: ADR 0004
-    [ ] max_connections = 10, min_connections = 2
-    [ ] acquire_timeout = 5s
-    [ ] log_slow_statements → LevelFilter::Warn (100ms)
-[ ] Verificar que el pool conecta al arrancar
-    └─ Ref: ADR 0002 — fail-fast si no conecta
+    [x] PRAGMA journal_mode = WAL         ← Ref: ADR 0004 (SQLite WAL)
+    [x] PRAGMA synchronous  = NORMAL      ← Ref: ADR 0004
+    [x] PRAGMA temp_store   = MEMORY       ← Ref: ADR 0004
+    [x] PRAGMA mmap_size    = 30000000000  ← Ref: ADR 0004
+    [x] PRAGMA foreign_keys = ON          ← Ref: ADR 0004
+    [x] PRAGMA cache_size   = -64000      ← Ref: ADR 0004
+    [x] max_connections = 10, min_connections = 2
+    [x] acquire_timeout = 5s
+    [x] log_slow_statements → LevelFilter::Warn (100ms)
+[x] Verificar que el pool conecta al arrancar
+    └─ Ref: ADR 0002 — fail-fast si no conecta ✅ test incluido
 ```
 
 ### I.2 — 6 migraciones del sistema (ADR 0006) 🔥
