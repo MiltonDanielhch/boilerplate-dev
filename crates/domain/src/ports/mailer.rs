@@ -6,7 +6,7 @@
 // ADRs relacionados: ADR 0001, ADR 0019
 
 use crate::errors::DomainError;
-use async_trait::async_trait;
+use std::future::Future;
 
 /// Email con contenido HTML y/o texto plano.
 #[derive(Debug, Clone)]
@@ -39,23 +39,22 @@ impl EmailMessage {
 }
 
 /// Puerto para envío de emails.
-#[async_trait]
 pub trait Mailer: Send + Sync {
     /// Envía un email.
-    async fn send(&self, message: &EmailMessage) -> Result<(), DomainError>;
+    fn send(&self, message: &EmailMessage) -> impl Future<Output = Result<(), DomainError>> + Send;
 
     /// Envía email de verificación de cuenta.
-    async fn send_verification_email(
+    fn send_verification_email(
         &self,
         to: &str,
         name: &str,
         verification_url: &str,
-    ) -> Result<(), DomainError>;
+    ) -> impl Future<Output = Result<(), DomainError>> + Send;
 
     /// Envía email de reset de contraseña.
-    async fn send_password_reset(
+    fn send_password_reset(
         &self,
         to: &str,
         reset_url: &str,
-    ) -> Result<(), DomainError>;
+    ) -> impl Future<Output = Result<(), DomainError>> + Send;
 }

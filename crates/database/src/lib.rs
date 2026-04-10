@@ -4,5 +4,6 @@
 //
 // ADRs relacionados: ADR 0004 (SQLite), ADR 0001
 
+pub mod models;
 pub mod pool;
 pub mod repositories;

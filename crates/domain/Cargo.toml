@@ -20,8 +20,5 @@ uuid      = { workspace = true }
 time      = { workspace = true }
 serde     = { workspace = true }
 
-# ── Async ────────────────────────────────────────────────────────────────────
-async-trait = { workspace = true }
-
 [dev-dependencies]
 # Tests unitarios puros, sin base de datos

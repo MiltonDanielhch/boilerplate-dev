@@ -6,23 +6,22 @@
 
 use crate::entities::Lead;
 use crate::errors::DomainError;
-use async_trait::async_trait;
+use std::future::Future;
 
 /// Puerto para operaciones de persistencia de leads.
-#[async_trait]
 pub trait LeadRepository: Send + Sync {
     /// Guarda un nuevo lead.
-    async fn save(&self, lead: &Lead) -> Result<(), DomainError>;
+    fn save(&self, lead: &Lead) -> impl Future<Output = Result<(), DomainError>> + Send;
 
     /// Busca lead por email.
-    async fn find_by_email(&self, email: &str) -> Result<Option<Lead>, DomainError>;
+    fn find_by_email(&self, email: &str) -> impl Future<Output = Result<Option<Lead>, DomainError>> + Send;
 
     /// Busca lead por ID.
-    async fn find_by_id(&self, id: &str) -> Result<Option<Lead>, DomainError>;
+    fn find_by_id(&self, id: &str) -> impl Future<Output = Result<Option<Lead>, DomainError>> + Send;
 
     /// Lista leads con paginación.
-    async fn list(&self, limit: i64, offset: i64) -> Result<Vec<Lead>, DomainError>;
+    fn list(&self, limit: i64, offset: i64) -> impl Future<Output = Result<Vec<Lead>, DomainError>> + Send;
 
     /// Marca lead como contactado.
-    async fn mark_contacted(&self, id: &str, notes: Option<&str>) -> Result<(), DomainError>;
+    fn mark_contacted(&self, id: &str, notes: Option<&str>) -> impl Future<Output = Result<(), DomainError>> + Send;
 }

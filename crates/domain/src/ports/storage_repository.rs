@@ -6,7 +6,7 @@
 // ADRs relacionados: ADR 0001, ADR 0020
 
 use crate::errors::DomainError;
-use async_trait::async_trait;
+use std::future::Future;
 
 /// Metadatos de un objeto almacenado.
 #[derive(Debug, Clone)]
@@ -18,25 +18,24 @@ pub struct StorageObject {
 }
 
 /// Puerto para operaciones de almacenamiento.
-#[async_trait]
 pub trait StorageRepository: Send + Sync {
     /// Almacena un objeto.
-    async fn put(
+    fn put(
         &self,
         key: &str,
         data: Vec<u8>,
         content_type: Option<&str>,
-    ) -> Result<StorageObject, DomainError>;
+    ) -> impl Future<Output = Result<StorageObject, DomainError>> + Send;
 
     /// Recupera un objeto.
-    async fn get(&self, key: &str) -> Result<Option<Vec<u8>>, DomainError>;
+    fn get(&self, key: &str) -> impl Future<Output = Result<Option<Vec<u8>>, DomainError>> + Send;
 
     /// Elimina un objeto.
-    async fn delete(&self, key: &str) -> Result<(), DomainError>;
+    fn delete(&self, key: &str) -> impl Future<Output = Result<(), DomainError>> + Send;
 
     /// Verifica si existe.
-    async fn exists(&self, key: &str) -> Result<bool, DomainError>;
+    fn exists(&self, key: &str) -> impl Future<Output = Result<bool, DomainError>> + Send;
 
     /// Genera URL prefirmada para descarga (si soportado).
-    async fn get_presigned_url(&self, key: &str, expires_in_secs: u64) -> Result<String, DomainError>;
+    fn get_presigned_url(&self, key: &str, expires_in_secs: u64) -> impl Future<Output = Result<String, DomainError>> + Send;
 }

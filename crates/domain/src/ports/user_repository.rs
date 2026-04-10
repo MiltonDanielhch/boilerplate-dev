@@ -8,26 +8,25 @@
 use crate::entities::User;
 use crate::value_objects::{Email, UserId};
 use crate::errors::DomainError;
-use async_trait::async_trait;
+use std::future::Future;
 
 /// Puerto para operaciones de persistencia de usuarios.
-#[async_trait]
 pub trait UserRepository: Send + Sync {
     /// Busca usuario por ID.
-    async fn find_by_id(&self, id: &UserId) -> Result<Option<User>, DomainError>;
+    fn find_by_id(&self, id: &UserId) -> impl Future<Output = Result<Option<User>, DomainError>> + Send;
 
     /// Busca usuario activo por email (no soft-deleted).
-    async fn find_active_by_email(&self, email: &Email) -> Result<Option<User>, DomainError>;
+    fn find_active_by_email(&self, email: &Email) -> impl Future<Output = Result<Option<User>, DomainError>> + Send;
 
     /// Guarda (inserta o actualiza) un usuario.
-    async fn save(&self, user: &User) -> Result<(), DomainError>;
+    fn save(&self, user: &User) -> impl Future<Output = Result<(), DomainError>> + Send;
 
     /// Soft delete de usuario.
-    async fn soft_delete(&self, id: &UserId) -> Result<(), DomainError>;
+    fn soft_delete(&self, id: &UserId) -> impl Future<Output = Result<(), DomainError>> + Send;
 
     /// Verifica si un usuario tiene un permiso específico (vía roles).
-    async fn has_permission(&self, user_id: &UserId, permission: &str) -> Result<bool, DomainError>;
+    fn has_permission(&self, user_id: &UserId, permission: &str) -> impl Future<Output = Result<bool, DomainError>> + Send;
 
     /// Lista usuarios con paginación.
-    async fn list(&self, limit: i64, offset: i64) -> Result<Vec<User>, DomainError>;
+    fn list(&self, limit: i64, offset: i64) -> impl Future<Output = Result<Vec<User>, DomainError>> + Send;
 }
