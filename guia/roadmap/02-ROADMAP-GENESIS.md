@@ -352,9 +352,10 @@ Para industrializar el arranque y asegurar la paridad entre entornos de desarrol
     [x] pre-commit: cargo fmt --all --check
     [x] pre-push: cargo clippy -D warnings + cargo nextest run + cargo deny check
         └─ Ref: ADR 0010 (testing), ADR 0011 (calidad)
-    [~] lefthook install
-        └─ ⚠️ Instalar manualmente: `npm install -g lefthook` (no disponible en crates.io)
-    [ ] Verificar: git commit --allow-empty → lefthook ejecuta fmt
+    [x] lefthook install
+        └─ ✅ Instalado: `npm install -g lefthook`
+    [x] Verificar: git commit --allow-empty → lefthook ejecuta fmt
+        └─ ✅ Hooks activos: pre-commit, pre-push
 
 [x] deny.toml:
     └─ Ref: ADR 0011, docs/02-STACK.md L159
