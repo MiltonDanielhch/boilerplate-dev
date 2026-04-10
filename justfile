@@ -6,6 +6,9 @@
 # ADRs relacionados: ADR 0012 (Herramientas)
 # Versión: 2026.04
 
+# Carga automática de variables desde .env
+set dotenv-load := true
+
 # Shell configuration para Windows (Git Bash / MINGW64)
 set windows-shell := ["sh", "-c"]
 
@@ -132,11 +135,14 @@ audit:
 # ──────────────────────────────────────────────────────────────────────────────
 
 # Fallback DATABASE_URL si no está configurado
-export DATABASE_URL := env_var_or_default("DATABASE_URL", "sqlite:data/database.sqlite3")
+export DATABASE_URL := env_var_or_default("DATABASE_URL", "sqlite:./data/boilerplate.db")
 
 # Ejecuta migraciones pendientes
 [no-cd]
 migrate:
+    @echo "DATABASE_URL=$DATABASE_URL"
+    @mkdir -p data
+    @test -f data/boilerplate.db || sqlite3 data/boilerplate.db "SELECT 1;"
     sqlx migrate run --source data/migrations
 
 # Reset de base de datos (cuidado!)

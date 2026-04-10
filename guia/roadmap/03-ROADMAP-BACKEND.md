@@ -70,58 +70,58 @@ Para maximizar la robustez, seguridad y observabilidad del backend:
 > **Referencia:** ADR 0006, ADR 0005, docs/02-STACK.md L172-182, docs/01-ARCHITECTURE.md L139-164
 
 ```
-[ ] data/migrations/20260305135148_create_users_table.sql
+[x] data/migrations/20260305135148_create_users_table.sql ✅
     └─ Ref: docs/01-ARCHITECTURE.md L145-148 — users + user_roles
-    [ ] tabla users con Soft Delete (deleted_at)  ← Ref: ADR 0006
-    [ ] UNIQUE INDEX parcial en email WHERE deleted_at IS NULL  ← Ref: ADR 0006
-    [ ] trigger trg_users_updated_at
-    [ ] tabla user_roles (N:M)
+    [x] tabla users con Soft Delete (deleted_at)  ← Ref: ADR 0006
+    [x] UNIQUE INDEX parcial en email WHERE deleted_at IS NULL  ← Ref: ADR 0006
+    [x] trigger trg_users_updated_at
+    [x] tabla user_roles (N:M)
 
-[ ] data/migrations/20260305135149_create_rbac.sql
+[x] data/migrations/20260305135149_create_rbac.sql ✅
     └─ Ref: docs/01-ARCHITECTURE.md L149-151 — roles + permissions
-    [ ] tabla roles
-    [ ] tabla permissions (formato "recurso:acción")  ← Ref: ADR 0006
-    [ ] tabla role_permissions (N:M)
+    [x] tabla roles
+    [x] tabla permissions (formato "recurso:acción")  ← Ref: ADR 0006
+    [x] tabla role_permissions (N:M)
 
-[ ] data/migrations/20260305135150_create_tokens.sql
+[x] data/migrations/20260305135150_create_tokens.sql ✅
     └─ Ref: docs/01-ARCHITECTURE.md L152-153 — tokens
-    [ ] tabla tokens (verificación email + reset — un solo uso)
-    [ ] INDEX idx_tokens_user_lookup
+    [x] tabla tokens (verificación email + reset — un solo uso)
+    [x] INDEX idx_tokens_user_lookup
 
-[ ] data/migrations/20260305135151_create_audit_logs.sql
+[x] data/migrations/20260305135151_create_audit_logs.sql ✅
     └─ Ref: docs/01-ARCHITECTURE.md L155-157 — audit_logs
-    [ ] tabla audit_logs
-    [ ] FOREIGN KEY user_id ON DELETE SET NULL  ← Ref: ADR 0006
-    [ ] INDEX idx_audit_resource_search
-    [ ] INDEX idx_audit_user_history
+    [x] tabla audit_logs
+    [x] FOREIGN KEY user_id ON DELETE SET NULL  ← Ref: ADR 0006
+    [x] INDEX idx_audit_resource_search
+    [x] INDEX idx_audit_user_history
 
-[ ] data/migrations/20260305135152_seed_system_data.sql
+[x] data/migrations/20260305135152_seed_system_data.sql ✅
     └─ Ref: docs/01-ARCHITECTURE.md L158-161 — seed data
-    [ ] INSERT OR IGNORE usuarios admin (password: 12345678)
-    [ ] INSERT OR IGNORE roles Admin + User
-    [ ] INSERT OR IGNORE permissions (users:read, users:write, audit:read, roles:read, roles:write)
+    [x] INSERT OR IGNORE usuarios admin (password: 12345678)
+    [x] INSERT OR IGNORE roles Admin + User
+    [x] INSERT OR IGNORE permissions (users:read, users:write, audit:read, roles:read, roles:write)
         └─ Ref: ADR 0006 — permisos base
-    [ ] Admin recibe TODOS los permisos via CROSS JOIN
-    [ ] ⚠️ Cambiar password ANTES del primer deploy  ← Ref: ADR 0002 (seguridad)
+    [x] Admin recibe TODOS los permisos via CROSS JOIN
+    [x] ⚠️ Cambiar password ANTES del primer deploy  ← Ref: ADR 0002 (seguridad)
 
-[ ] data/migrations/20260305135153_create_sessions.sql
+[x] data/migrations/20260305135153_create_sessions.sql ✅
     └─ Ref: docs/01-ARCHITECTURE.md L162-164 — sessions
-    [ ] tabla sessions (IP + UA + expiry)
-    [ ] INDEX idx_sessions_token
-    [ ] INDEX parcial idx_sessions_expiry WHERE is_revoked = FALSE
-    [ ] trigger trg_sessions_activity
+    [x] tabla sessions (IP + UA + expiry)
+    [x] INDEX idx_sessions_token
+    [x] INDEX parcial idx_sessions_expiry WHERE is_revoked = FALSE
+    [x] trigger trg_sessions_activity
 
-[ ] just migrate → verificar 6 "Applied" en el output:
+[x] just migrate → verificar 6 "Applied" en el output:
     └─ Ref: ADR 0005, docs/02-STACK.md L458 — sqlx-cli
-    Applied 20260305135148/migrate create_users_table
-    Applied 20260305135149/migrate create_rbac
-    Applied 20260305135150/migrate create_tokens
-    Applied 20260305135151/migrate create_audit_logs
-    Applied 20260305135152/migrate seed_system_data
-    Applied 20260305135153/migrate create_sessions
-[ ] admin@admin.com existe en la DB
-[ ] just prepare → genera .sqlx/ para SQLX_OFFLINE=true
-    └─ Ref: ADR 0005 — offline mode para CI/build
+    Applied 20260305135148/migrate create_users_table ✅
+    Applied 20260305135149/migrate create_rbac ✅
+    Applied 20260305135150/migrate create_tokens ✅
+    Applied 20260305135151/migrate create_audit_logs ✅
+    Applied 20260305135152/migrate seed_system_data ✅
+    Applied 20260305135153/migrate create_sessions ✅
+[x] admin@admin.com existe en la DB ✅
+[~] just prepare → genera .sqlx/ para SQLX_OFFLINE=true
+    └─ Ref: ADR 0005 — offline mode para CI/build (⚠️ hacer después de I.3)
 ```
 
 ### I.3 — Dominio puro — crates/domain/ (ADR 0001)

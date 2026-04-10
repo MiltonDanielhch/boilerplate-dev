@@ -30,12 +30,19 @@
 # =============================================================================
 # DATOS LOCALES
 # =============================================================================
-/data
+# Database files (runtime)
 *.db
 *.db-wal
 *.db-shm
 *.sqlite
 *.sqlite3
+
+# Data directory except migrations and seeds
+/data/*
+!/data/migrations/
+!/data/migrations/*.sql
+!/data/seeds/
+!/data/seeds/*.sql
 
 # =============================================================================
 # NODE / PNPM

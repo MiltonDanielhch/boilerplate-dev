@@ -10,7 +10,7 @@ use sqlx::{
     ConnectOptions, Pool, Sqlite,
 };
 use std::time::Duration;
-use tracing::{info, warn};
+use tracing::info;
 
 /// Crea un pool de conexiones SQLite con configuración optimizada.
 ///
