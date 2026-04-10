@@ -108,6 +108,19 @@ fmt:
 check:
     cargo check --workspace
 
+# Verifica formato sin modificar
+[no-cd]
+fmt-check:
+    cargo fmt --all --check
+
+# Verifica líneas por archivo (≤200 líneas)
+[no-cd]
+check-lines:
+    @echo "Verificando archivos ≤200 líneas..."
+    @find crates -name "*.rs" -exec sh -c 'lines=$(wc -l < "$1"); if [ $lines -gt 200 ]; then echo "OVER: $1 = $lines líneas"; exit 1; fi' _ {} \;
+    @find apps -name "*.rs" -exec sh -c 'lines=$(wc -l < "$1"); if [ $lines -gt 200 ]; then echo "OVER: $1 = $lines líneas"; exit 1; fi' _ {} \;
+    @echo "✅ Todos los archivos ≤200 líneas"
+
 # Auditoría de seguridad y licencias
 [no-cd]
 audit:

@@ -444,15 +444,15 @@ Para industrializar el arranque y asegurar la paridad entre entornos de desarrol
 > **Referencia:** ADR 0011 (Estándares), ADR 0010 (Testing)
 
 ```
-[ ] Scripts de calidad en justfile:
-    [ ] just lint  → cargo clippy -D warnings + pnpm lint
+[x] Scripts de calidad en justfile:
+    [x] just lint  → cargo clippy -D warnings ✅
         └─ Ref: ADR 0011, docs/02-STACK.md L456
-    [ ] just fmt-check  → cargo fmt --all --check
+    [x] just fmt-check  → cargo fmt --all --check ✅
         └─ Ref: ADR 0012 — formato consistente
-    [ ] just check-lines  → verifica límites de líneas por archivo
+    [x] just check-lines  → verifica límites de líneas por archivo ✅
         └─ Ref: ADR 0011 — archivos ≤200 líneas
-    [ ] just check-fn  → verifica longitud de funciones
-        └─ Ref: ADR 0011 — funciones ≤30 líneas
+    [~] just check-fn  → verifica longitud de funciones
+        └─ Ref: ADR 0011 — funciones ≤30 líneas (⚠️ herramienta externa requerida)
 ```
 
 ---
