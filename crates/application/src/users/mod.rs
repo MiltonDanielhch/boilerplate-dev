@@ -11,6 +11,6 @@ pub mod update_user;
 
 // Re-exports
 pub use get_user::GetUserUseCase;
-pub use list_users::ListUsersUseCase;
+pub use list_users::{ListUsersUseCase, ListUsersInput};
 pub use soft_delete_user::SoftDeleteUserUseCase;
-pub use update_user::UpdateUserUseCase;
+pub use update_user::{UpdateUserUseCase, UpdateUserInput};

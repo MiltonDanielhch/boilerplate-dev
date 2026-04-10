@@ -27,6 +27,7 @@ storage        = { path = "../../crates/storage" }
 
 # ── Web ───────────────────────────────────────────────────────────────────────
 axum       = { workspace = true }
+tower      = { workspace = true }
 tower-http = { workspace = true }
 
 # ── Runtime ──────────────────────────────────────────────────────────────────
@@ -34,6 +35,8 @@ tokio      = { workspace = true }
 serde      = { workspace = true }
 serde_json = { workspace = true }
 tracing    = { workspace = true }
+tracing-subscriber = { workspace = true }
+uuid       = { workspace = true }
 
 # ── Config ─────────────────────────────────────────────────────────────────────
 config  = { workspace = true }
@@ -41,6 +44,10 @@ dotenvy = { workspace = true }
 
 # ── Errores ───────────────────────────────────────────────────────────────────
 anyhow = { workspace = true }
+thiserror = { workspace = true }
+
+# ── DB ────────────────────────────────────────────────────────────────────────
+sqlx = { workspace = true }
 
 [dev-dependencies]
 tokio-test = "0.4"
