@@ -519,10 +519,12 @@ curl http://localhost:3000/health  # → {"status":"ok", "database":"connected"}
         └─ Ref: ADR 0017 (Caché)
     [ ] retorna 403 si no tiene permiso
 
-[~] crates/infrastructure/src/http/middleware/audit.rs
-    [ ] fire-and-forget a audit.log()
-    [ ] no bloquea request (spawn o channel)
-    [ ] captura method, uri, ip, user_agent
+[x] apps/api/src/middleware/audit.rs ✅
+    [x] fire-and-forget a audit.log() (tokio::spawn) ✅
+    [x] no bloquea request (spawn + channel) ✅
+    [x] captura method, uri, ip, user_agent, user_id ✅
+    [x] formato JSON Lines para ingestión ✅
+    [x] dos variantes: full audit y success-only ✅
         └─ Ref: docs/01-ARCHITECTURE.md L198-200
     [ ] registra en audit_logs SOLO si response es 2xx
     [ ] fire-and-forget — no bloquea la respuesta

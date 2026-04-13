@@ -5,6 +5,7 @@
 // ADRs relacionados: ADR 0003 (Axum), ADR 0009 (Rate Limit)
 
 use crate::handlers::{auth, health, leads, users};
+use crate::middleware::audit::audit_middleware;
 use crate::middleware::auth::auth_middleware;
 use crate::middleware::request_id::request_id_middleware;
 use crate::middleware::trace::trace_middleware;
@@ -44,12 +45,13 @@ pub fn create_router(state: AppState) -> Router {
         .merge(public_routes)
         .merge(protected_routes)
         // State compartido
-        .with_state(state)
+        .with_state(state.clone())
         // Middleware tower (orden: outer → inner)
         .layer(TimeoutLayer::new(Duration::from_secs(30))) // Timeout 30s
         .layer(CompressionLayer::new()) // Gzip/Brotli
         .layer(CorsLayer::permissive()) // CORS (restringir en prod)
         // Middleware axum functions
+        .layer(middleware::from_fn_with_state(state, audit_middleware))
         .layer(middleware::from_fn(request_id_middleware))
         .layer(middleware::from_fn(trace_middleware))
 }

@@ -118,8 +118,8 @@
 - ✅ AuthClaims extractor — usable en handlers
 - ✅ optional_auth_middleware — endpoints opcionales
 - ✅ Router dividido — público (/auth/*, /health) vs protegido (/api/v1/*)
+- ✅ audit_middleware — fire-and-forget, formato JSON Lines, captura user_id
 - 🔄 has_permission() cacheado con Moka — PENDIENTE
-- 🔄 Audit middleware fire-and-forget — PENDIENTE
 
 **III.4 — Tests E2E 🔄 PENDIENTE**
 - 🔄 Flujo completo register → login → access → logout

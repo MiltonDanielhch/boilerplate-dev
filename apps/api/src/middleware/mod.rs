@@ -2,6 +2,7 @@
 //
 // Descripción: Módulos de middleware.
 
+pub mod audit;
 pub mod auth;
 pub mod request_id;
 pub mod trace;
