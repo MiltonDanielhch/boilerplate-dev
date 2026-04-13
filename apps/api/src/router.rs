@@ -7,12 +7,13 @@
 use crate::handlers::{auth, health, leads, users};
 use crate::middleware::audit::audit_middleware;
 use crate::middleware::auth::auth_middleware;
+use crate::middleware::rbac::{require_users_read, require_users_write};
 use crate::middleware::request_id::request_id_middleware;
 use crate::middleware::trace::trace_middleware;
 use crate::state::AppState;
 use axum::{
     middleware,
-    routing::{get, post},
+    routing::{get, post, put},
     Router,
 };
 use std::time::Duration;
@@ -28,21 +29,31 @@ pub fn create_router(state: AppState) -> Router {
         .route("/auth/refresh", post(auth::refresh))
         .route("/auth/logout", post(auth::logout));
 
-    // Router protegido (requiere Bearer token válido)
+    // Router de usuarios con auth + RBAC
+    // users:read para GET, users:write para POST/PUT/DELETE
+    // Orden de middleware: auth primero (extrae claims), luego RBAC (verifica permisos)
+    let users_read_routes = Router::new()
+        .route("/api/v1/users", get(users::list))
+        .route("/api/v1/users/{id}", get(users::get))
+        .layer(middleware::from_fn_with_state(state.clone(), require_users_read))
+        .layer(middleware::from_fn_with_state(state.clone(), auth_middleware));
+
+    let users_write_routes = Router::new()
+        .route("/api/v1/users", post(users::create))
+        .route("/api/v1/users/{id}", put(users::update).delete(users::soft_delete))
+        .layer(middleware::from_fn_with_state(state.clone(), require_users_write))
+        .layer(middleware::from_fn_with_state(state.clone(), auth_middleware));
+
+    // Router protegido general (solo auth, sin RBAC específico)
     let protected_routes = Router::new()
-        .route("/api/v1/users", get(users::list).post(users::create))
-        .route(
-            "/api/v1/users/{id}",
-            get(users::get)
-                .put(users::update)
-                .delete(users::soft_delete),
-        )
         .route("/api/v1/leads", post(leads::capture))
         .layer(middleware::from_fn_with_state(state.clone(), auth_middleware));
 
     // Combinar routers
     Router::new()
         .merge(public_routes)
+        .merge(users_read_routes)
+        .merge(users_write_routes)
         .merge(protected_routes)
         // State compartido
         .with_state(state.clone())

@@ -113,13 +113,14 @@
 - ✅ Persistencia real de usuarios con password_hash
 - 🔄 Repositorios Session y Token para refresh/logout
 
-**III.3 — Middleware Auth + RBAC ✅ PARCIAL**
+**III.3 — Middleware Auth + RBAC ✅ COMPLETADO**
 - ✅ auth_middleware — extrae Bearer token, verifica PASETO v4, inyecta claims
 - ✅ AuthClaims extractor — usable en handlers
 - ✅ optional_auth_middleware — endpoints opcionales
 - ✅ Router dividido — público (/auth/*, /health) vs protegido (/api/v1/*)
 - ✅ audit_middleware — fire-and-forget, formato JSON Lines, captura user_id
-- 🔄 has_permission() cacheado con Moka — PENDIENTE
+- ✅ rbac_middleware — verifica permisos vía UserRepository, retorna 403
+- 🔄 Cache Moka para permisos — optimización futura
 
 **III.4 — Tests E2E 🔄 PENDIENTE**
 - 🔄 Flujo completo register → login → access → logout

@@ -314,11 +314,10 @@ curl -H "Authorization: Bearer $USER_TOKEN" \
 # Esperado: 403 {"error":"forbidden","message":"requiere permiso: users:read"}
 # └─ Ref: ADR 0006, docs/02-STACK.md L228-233
 
-# 10. Audit log registrado
-sqlite3 ./data/boilerplate.db \
-  "SELECT action, resource FROM audit_logs ORDER BY created_at DESC LIMIT 5;"
-# Esperado: filas con las acciones que acabas de hacer
-# └─ Ref: ADR 0006, docs/02-STACK.md L313-316
+# 10. Audit log registrado (formato JSON Lines en logs)
+just dev-api 2>&1 | grep -E '"target":"audit"' | head -3
+# Esperado: logs JSON con target="audit", method, uri, status, user_id
+# └─ Ref: ADR 0006, docs/02-STACK.md L313-316, apps/api/src/middleware/audit.rs
 ```
 
 ---

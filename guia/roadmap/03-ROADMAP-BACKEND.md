@@ -514,10 +514,11 @@ curl http://localhost:3000/health  # → {"status":"ok", "database":"connected"}
     [x] extractor FromRequestParts para handlers ✅
     [x] optional_auth_middleware para endpoints opcionales ✅
 
-[~] crates/infrastructure/src/http/middleware/rbac.rs
-    [ ] has_permission() cacheado con Moka
-        └─ Ref: ADR 0017 (Caché)
-    [ ] retorna 403 si no tiene permiso
+[x] apps/api/src/middleware/rbac.rs ✅
+    [x] rbac_middleware — verifica permiso vía UserRepository.has_permission() ✅
+    [x] retorna 403 si no tiene permiso ✅
+    [x] helpers: require_users_read, require_users_write ✅
+    [ ] Cache con Moka — PENDIENTE (optimización futura)
 
 [x] apps/api/src/middleware/audit.rs ✅
     [x] fire-and-forget a audit.log() (tokio::spawn) ✅
