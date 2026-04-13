@@ -5,25 +5,20 @@
 //
 // ADRs relacionados: ADR 0003 (Axum), ADR 0001 (Hexagonal), ADR 0002 (Fail-Fast)
 
+use api::{
+    router::create_router,
+    setup::{build_state, load_config, init_telemetry},
+};
 use std::net::SocketAddr;
 use tracing::{info, warn};
-
-mod error;
-mod handlers;
-mod middleware;
-mod router;
-mod setup;
-mod state;
-
-use setup::build_state;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     // 1. Load config (fail-fast — ADR 0002)
-    let config = setup::load_config()?;
+    let config = load_config()?;
     
     // 2. Init telemetry
-    setup::init_telemetry(&config);
+    init_telemetry(&config);
     
     // 3. Create pool
     let pool: sqlx::SqlitePool = database::pool::create_pool(&config.database_url).await;
@@ -37,7 +32,7 @@ async fn main() -> anyhow::Result<()> {
     let state = build_state(pool, config);
     
     // 6. Build router with middleware
-    let app = router::create_router(state);
+    let app = create_router(state);
     
     // 7. Start server with graceful shutdown
     let addr = SocketAddr::from(([0, 0, 0, 0], 3000));

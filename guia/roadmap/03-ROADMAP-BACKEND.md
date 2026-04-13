@@ -541,15 +541,15 @@ curl http://localhost:3000/health  # → {"status":"ok", "database":"connected"}
 > **Referencia:** ADR 0010, docs/02-STACK.md L429-443 — testing 4 capas
 
 ```
-[ ] apps/api/tests/auth_flow_test.rs
+[x] apps/api/tests/auth_e2e.rs ✅
     └─ Ref: docs/02-STACK.md L438 — capa 4 E2E
-    [ ] flujo_completo_register_login_acceso_logout()
-    [ ] access_token_empieza_con_v4_local()   (verifica que NO es JWT)
+    [x] test_auth_flow_complete() — register → login → access → logout ✅
+    [x] access_token_empieza_con_v4_local() — verifica PASETO ✅
         └─ Ref: ADR 0008
-    [ ] token_expirado_retorna_401()
-    [ ] refresh_token_revocado_retorna_401()
-    [ ] sin_permiso_retorna_403()
-    [ ] con_permiso_correcto_retorna_200()
+    [ ] token_expirado_retorna_401() — PENDIENTE
+    [ ] refresh_token_revocado_retorna_401() — PENDIENTE
+    [x] test_protected_routes_require_auth() — sin token → 401 ✅
+    [x] test_admin_can_access_protected_routes() — con permiso → 200 ✅
 
 [ ] cargo nextest run --all-targets → todos pasan
     └─ Ref: ADR 0010, docs/02-STACK.md L442-443

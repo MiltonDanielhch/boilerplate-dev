@@ -122,6 +122,16 @@
 - ✅ rbac_middleware — verifica permisos vía UserRepository, retorna 403
 - 🔄 Cache Moka para permisos — optimización futura
 
+**III.4 — Tests E2E ✅ COMPLETADO**
+- ✅ apps/api/tests/auth_e2e.rs — tests de integración
+- ✅ test_auth_flow_complete() — register → login → access → logout
+- ✅ verifica PASETO tokens empiezan con "v4.local."
+- ✅ test_protected_routes_require_auth() — 401 sin token
+- ✅ test_admin_can_access_protected_routes() — 200 con permiso
+- ✅ test_public_routes_no_auth_required() — health público
+- 🔄 token_expirado_retorna_401() — pendiente implementación TTL
+- 🔄 refresh_token_revocado_retorna_401() — pendiente blacklist
+
 **III.4 — Tests E2E 🔄 PENDIENTE**
 - 🔄 Flujo completo register → login → access → logout
 
