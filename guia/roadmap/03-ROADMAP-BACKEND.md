@@ -433,32 +433,34 @@ curl http://localhost:3000/health  # → {"status":"ok", "database":"connected"}
 > **Referencia:** ADR 0008, docs/03-STRUCTURE.md L325-336, docs/02-STACK.md L203-226
 
 ```
-[ ] Cargo.toml: domain + argon2 + pasetors + secrecy — SIN jsonwebtoken
+[x] Cargo.toml: domain + argon2 + pasetors + secrecy — SIN jsonwebtoken ✅
     └─ Ref: docs/02-STACK.md L206 — pasetors v4, NO jsonwebtoken
-    [ ] secrecy = { workspace = true }  ← Ref: ADR 0008 — protege PASETO_SECRET
+    [x] secrecy = { workspace = true } ✅
+    [x] rand + sha2 + hex para tokens opacos ✅
 
-[ ] password.rs:
+[x] password.rs ✅
     └─ Ref: docs/03-STRUCTURE.md L333
-    [ ] hash_password(password) → argon2id, parámetros OWASP 2024
+    [x] hash_password(password) → argon2id, parámetros OWASP 2024 (m=19456, t=2, p=1) ✅
         └─ Ref: docs/02-STACK.md L205
-    [ ] verify_password(password, hash) → comparación en tiempo constante
+    [x] verify_password(password, hash) → comparación en tiempo constante ✅
+    [x] Tests unitarios ✅
 
-[ ] paseto.rs — PasetoService:
+[x] paseto.rs — PasetoService ✅
     └─ Ref: docs/03-STRUCTURE.md L334
-    [ ] new(&secret) → panic si secret ≠ 32 bytes (fail-fast intencional)
+    [x] new(&secret) → panic si secret ≠ 32 bytes (fail-fast) ✅
         └─ Ref: ADR 0002
-    [ ] generate_access_token(user_id, 15min) → "v4.local.xxx"
+    [x] generate_access_token(user_id, 15min) → "v4.local.xxx" ✅
         └─ Ref: docs/01-ARCHITECTURE.md L232, docs/02-STACK.md L213-217
-    [ ] verify(token) → Claims
-    [ ] NUNCA genera token con "eyJ" (JWT) — siempre "v4.local."
-        └─ Ref: ADR 0008 — JWT prohibido
+    [x] verify(token) → TokenClaims ✅
+    [x] Rechaza tokens JWT ("eyJ") — ADR 0008 ✅
 
-[ ] token.rs:
-    [ ] generate_opaque_token() → 32 bytes aleatorios (refresh tokens)
-    [ ] hash_token(raw) → SHA-256 para guardar en DB
+[x] token.rs ✅
+    [x] generate_opaque_token() → 32 bytes aleatorios (refresh tokens) ✅
+    [x] hash_token(raw) → SHA-256 para almacenar en DB ✅
+    [x] Tests unitarios ✅
 
-[ ] grep "jsonwebtoken" . → cero resultados ✓
-    └─ Ref: ADR 0008 — violación crítica si encuentra
+[x] grep "jsonwebtoken" . → cero resultados ✓
+    └─ Ref: ADR 0008 — JWT prohibido ✅
 ```
 
 ### III.2 — Endpoints de autenticación

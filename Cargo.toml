@@ -40,7 +40,7 @@ debug     = true
 tokio           = { version = "1",   features = ["full"] }
 tokio-test      = { version = "1",   features = ["test", "macros"] }
 serde           = { version = "1",   features = ["derive"] }
-serde_json      = "1"
+serde_json      = { version = "1",   features = ["raw_value"] }
 uuid            = { version = "1",   features = ["v4", "v7", "serde"] }
 time            = { version = "0.3", features = ["serde", "macros"] }
 
@@ -68,8 +68,11 @@ tower_governor = "0.8"   # ADR 0009 (Rate Limiting)
 
 # ── Auth ──────────────────────────────────────────────────────────────────────
 argon2   = "0.5"
-pasetors = { version = "0.7", features = ["v4"] }
+pasetors = { version = "0.7", features = ["v4", "serde"] }
 secrecy  = "0.10"
+rand     = { version = "0.8", features = ["getrandom"] }
+sha2     = "0.10"
+hex      = "0.4"
 
 # ── Cache y Jobs ─────────────────────────────────────────────────────────────
 moka       = { version = "0.12", features = ["future"] }
@@ -90,7 +93,7 @@ config  = "0.15"
 dotenvy = "0.15"
 
 # ── Email ────────────────────────────────────────────────────────────────────
-resend-rs = "0.22"
+resend-rs = "0.23"
 
 # ── Storage ──────────────────────────────────────────────────────────────────
 aws-config = "1.1"
