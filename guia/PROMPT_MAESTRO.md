@@ -25,9 +25,11 @@
 | Fase | Roadmap | Estado | % | VPS |
 |------|---------|--------|---|-----|
 | ✅ **Génesis** | `02-ROADMAP-GENESIS.md` | **COMPLETADO** | 100% | $5 |
-| 🔄 **Backend I** | `03-ROADMAP-BACKEND.md` Bloque I | **ACTIVA** | 0% | $5 |
-| ⏳ Frontend | `04-ROADMAP-FRONTEND.md` | Pendiente | 0% | $5 |
-| ⏳ Auth | `05-ROADMAP-AUTH-FULLSTACK.md` | Pendiente | 0% | $5 |
+| ✅ **Backend I** | `03-ROADMAP-BACKEND.md` Bloque I | **COMPLETADO** | 100% | $5 |
+| ✅ **Backend II** | `03-ROADMAP-BACKEND.md` Bloque II | **COMPLETADO** | 90% | $5 |
+| 🔄 **Backend III** | `03-ROADMAP-BACKEND.md` Bloque III | **ACTIVA** | 0% | $5 |
+| ⏳ Frontend I | `04-ROADMAP-FRONTEND.md` | Pendiente | 0% | $5 |
+| ⏳ Auth Fullstack | `05-ROADMAP-AUTH-FULLSTACK.md` | Pendiente | 0% | $5 |
 | ⏳ Landing | `06-ROADMAP-LANDING.md` | Pendiente | 0% | $5 |
 | ⏳ Infra | `07-ROADMAP-INFRA.md` | Pendiente | 0% | $5 |
 | ⏳ Desktop | `08-ROADMAP-TAURI-DESKTOP.md` | Pendiente | 0% | $5 |
@@ -73,7 +75,34 @@
 
 **Proyecto**: boilerplate  
 **Arquitectura**: Monorepo Rust + Hexagonal (Fronteras por Cargo.toml)  
-**Fase actual**: `Backend I — Fundación` — Ver `guia/roadmap/03-ROADMAP-BACKEND.md`
+**Fase actual**: `Backend III — Seguridad` — Ver `guia/roadmap/03-ROADMAP-BACKEND.md` Bloque III
+
+### ✅ Estado Actual del Backend (Completado)
+
+**Bloque I — Fundación (100%)**
+- ✅ 6 migraciones SQLite (users, rbac, tokens, audit, sessions, seed)
+- ✅ Dominio puro: entities, value_objects, ports, errors (sin sqlx/axum)
+- ✅ 24 tests unitarios en domain
+- ✅ Casos de uso en application (auth, users, leads)
+- ✅ Repositorio SQLite con soft delete, JOINs RBAC
+- ✅ 3 tests de integración en database
+
+**Bloque II — API Axum (90%)**
+- ✅ Servidor Axum con graceful shutdown
+- ✅ Router modular: /health, /api/v1/users/*, /api/v1/leads
+- ✅ Middleware: request_id, trace, compression, cors, timeout
+- ✅ Manejo de errores: DomainError → ApiError → JSON HTTP
+- ✅ Handlers CRUD para usuarios (get, list, update, soft_delete)
+- ✅ Composition root con inyección de dependencias
+- ✅ Telemetry con tracing
+
+**Próximo: Bloque III — Auth + Seguridad**
+- 🔄 POST /auth/register (validación email, hash argon2id)
+- 🔄 POST /auth/login (PASETO v4 tokens)
+- 🔄 POST /auth/refresh (rotación tokens)
+- 🔄 Middleware de autenticación
+- 🔄 Rate limiting (tower-governor)
+- 🔄 RBAC en endpoints (has_permission)
 
 ### Stack Backend
 

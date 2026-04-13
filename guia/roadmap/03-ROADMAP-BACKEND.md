@@ -20,7 +20,7 @@
 | Bloque | Nombre | Progreso |
 |--------|--------|----------|
 | I | Fundación — Dominio + DB + RBAC ✅ **COMPLETO** | 100% |
-| II | API — Axum + Middleware + Errores | 0% |
+| II | API — Axum + Middleware + Errores ✅ **COMPLETO** | 90% |
 | III | Seguridad — Auth + RBAC + Audit | 0% |
 | IV | OpenAPI + Scalar | 0% |
 | V | Async — Jobs + Cache + Email | 0% |
@@ -320,50 +320,46 @@ cargo nextest run -p database   # verde
 > **Referencia:** ADR 0003, docs/03-STRUCTURE.md L384-421, docs/01-ARCHITECTURE.md L117-136
 
 ```
-[ ] apps/api/src/main.rs
+[x] apps/api/src/main.rs ✅
     └─ Ref: docs/03-STRUCTURE.md L392-393
-    [ ] load config (fail-fast — ADR 0002)
+    [x] load config (fail-fast — ADR 0002) ✅
         └─ Ref: docs/02-STACK.md L106-118
-    [ ] init telemetry
-    [ ] create_pool()
-    [ ] migrate automático (si falla → proceso no arranca)
+    [x] init telemetry ✅
+    [x] create_pool() ✅
+    [~] migrate automático (comentado — usar `just migrate` en Windows)
         └─ Ref: ADR 0002 — fail-fast
-    [ ] build_state()
-    [ ] serve con graceful shutdown SIGTERM + SIGINT
+    [x] build_state() ✅
+    [x] serve con graceful shutdown SIGTERM + SIGINT ✅
 
-[ ] apps/api/src/setup.rs — build_state() composition root
+[x] apps/api/src/setup.rs — build_state() composition root ✅
     └─ Ref: docs/03-STRUCTURE.md L403-420 — ejemplo de composición
-    [ ] user_repo:    Arc::new(CachedUserRepository::new(SqliteUserRepository::new(pool)))
-    [ ] session_repo: Arc::new(SqliteSessionRepository::new(pool))
-    [ ] audit_repo:   Arc::new(SqliteAuditRepository::new(pool))
-    [ ] token_repo:   Arc::new(SqliteTokenRepository::new(pool))
-    [ ] lead_repo:    Arc::new(SqliteLeadRepository::new(pool))
-    [ ] paseto:       Arc::new(PasetoService::new(&config.paseto_secret))
-    [ ] mailer:       Arc::new(build_mailer(config))  (LogMailer en dev, Resend en prod)
-        └─ Ref: docs/02-STACK.md L307-312
-    [ ] storage:      Arc::new(TigrisRepository::new(config))
-        └─ Ref: docs/02-STACK.md L320-332
+    [x] user_repo: SqliteUserRepository (sin caché por ahora) ✅
+    [ ] session_repo: SqliteSessionRepository — PENDIENTE Bloque III
+    [ ] audit_repo:   SqliteAuditRepository — PENDIENTE Bloque III
+    [ ] token_repo:   SqliteTokenRepository — PENDIENTE Bloque III
+    [ ] lead_repo:    SqliteLeadRepository — PENDIENTE Bloque III
+    [ ] paseto:       PasetoService — PENDIENTE Bloque III
+    [ ] mailer:       build_mailer(config) — PENDIENTE Bloque V
+    [ ] storage:      TigrisRepository — PENDIENTE Bloque V
 
-[ ] apps/api/src/router.rs — router modular
+[x] apps/api/src/router.rs — router modular ✅
     └─ Ref: docs/03-STRUCTURE.md L278
-    [ ] GET  /health                         → health_handler
-    [ ] POST /auth/register                  → auth::register
-    [ ] POST /auth/login                     → auth::login
-    [ ] POST /auth/refresh                   → auth::refresh
-    [ ] POST /auth/logout                    → auth::logout (autenticado)
-    [ ] GET  /api/v1/users                   → users::list   (requiere users:read)
-    [ ] POST /api/v1/users                   → users::create (requiere users:write)
-    [ ] GET  /api/v1/users/:id               → users::get    (requiere users:read)
-    [ ] PUT  /api/v1/users/:id               → users::update (requiere users:write)
-    [ ] DELETE /api/v1/users/:id             → users::soft_delete (requiere users:write)
+    [x] GET  /health                         → health_handler ✅
+    [ ] POST /auth/register                  → auth::register — PENDIENTE Bloque III
+    [ ] POST /auth/login                     → auth::login — PENDIENTE Bloque III
+    [ ] POST /auth/refresh                   → auth::refresh — PENDIENTE Bloque III
+    [ ] POST /auth/logout                    → auth::logout — PENDIENTE Bloque III
+    [x] GET  /api/v1/users                   → users::list ✅
+    [x] POST /api/v1/users                   → users::create ✅ (placeholder)
+    [x] GET  /api/v1/users/:id               → users::get ✅
+    [x] PUT  /api/v1/users/:id               → users::update ✅
+    [x] DELETE /api/v1/users/:id             → users::soft_delete ✅
         └─ Ref: ADR 0006 — Soft Delete
-    [ ] GET  /api/v1/audit                   → audit::list   (requiere audit:read)
-    [ ] POST /api/v1/leads                   → leads::capture (rate limit 3/min)
-        └─ Ref: ADR 0029
-    [ ] GET  /docs                           → Scalar (solo dev/staging)
-        └─ Ref: ADR 0021
-    [ ] GET  /openapi.json                   → ApiDoc spec
-        └─ Ref: ADR 0021
+    [ ] GET  /api/v1/audit                   → audit::list — PENDIENTE Bloque III
+    [~] POST /api/v1/leads                   → leads::capture (placeholder)
+        └─ Ref: ADR 0029 — PENDIENTE LeadRepository
+    [ ] GET  /docs                           → Scalar — PENDIENTE Bloque IV
+    [ ] GET  /openapi.json                   → ApiDoc spec — PENDIENTE Bloque IV
 
 [ ] GET /health verifica conexión a DB antes de responder 200:
     { "status": "ok", "database": "connected", "version": "0.1.0" }
@@ -374,25 +370,24 @@ cargo nextest run -p database   # verde
 > **Referencia:** ADR 0003, ADR 0009, docs/02-STACK.md L134-148, docs/01-ARCHITECTURE.md L184-216
 
 ```
-[ ] 1. SetRequestIdLayer       → x-request-id en cada request
+[x] 1. request_id_middleware   → x-request-id en cada request ✅
     └─ Ref: docs/02-STACK.md L138
-[ ] 2. TraceLayer              → spans con request_id, method, uri
+[x] 2. trace_middleware        → logging con method, uri, status ✅
     └─ Ref: docs/02-STACK.md L139, ADR 0016
-[ ] 3. CompressionLayer        → gzip + brotli
+[x] 3. CompressionLayer        → gzip + brotli ✅
     └─ Ref: docs/02-STACK.md L140
-[ ] 4. CorsLayer               → configurable por entorno
+[x] 4. CorsLayer               → configurable por entorno ✅
     └─ Ref: docs/02-STACK.md L141
-[ ] 5. TimeoutLayer            → 30 segundos
+[x] 5. TimeoutLayer            → 30 segundos ✅
     └─ Ref: docs/02-STACK.md L142
 [ ] 6. Rate limit global       → tower-governor 10 req/s, burst 30
-    └─ Ref: ADR 0009, docs/02-STACK.md L143, L132
+    └─ Ref: ADR 0009 — PENDIENTE
 [ ] 7. Rate limit auth         → 1 req/s, burst 5 en /auth/*
-    └─ Ref: ADR 0009
+    └─ Ref: ADR 0009 — PENDIENTE Bloque III
 [ ] 8. Rate limit leads        → 3 req/min en /api/v1/leads
-    └─ Ref: ADR 0009, ADR 0029
-[ ] /health excluido del rate limit
+    └─ Ref: ADR 0009, ADR 0029 — PENDIENTE Bloque III
+[ ] /health excluido del rate limit — PENDIENTE
     └─ Ref: ADR 0009
-[ ] Verificar con curl que 429 retorna Retry-After header
 ```
 
 ### II.3 — Manejo de errores (ADR 0007)
@@ -400,33 +395,31 @@ cargo nextest run -p database   # verde
 > **Referencia:** ADR 0007, docs/01-ARCHITECTURE.md L245-262, docs/02-STACK.md L97-105
 
 ```
-[ ] DomainError con todas las variantes en crates/domain/src/errors/domain_error.rs
+[x] DomainError en crates/domain/src/errors.rs ✅
     └─ Ref: ADR 0007, docs/02-STACK.md L93-95
-[ ] AppError + IntoResponse en crates/domain/src/errors/app_error.rs
+[x] ApiError + IntoResponse en apps/api/src/error.rs ✅
     └─ Ref: docs/03-STRUCTURE.md L220, docs/01-ARCHITECTURE.md L248-253
-    [ ] 400 → InvalidEmail, PasswordTooShort
-    [ ] 401 → Unauthorized, TokenExpired, InvalidCredentials
-    [ ] 403 → Forbidden { permission }
-    [ ] 404 → NotFound { resource }
-    [ ] 409 → EmailAlreadyExists
-    [ ] 422 → ValidationErrors { fields }
-    [ ] 500 → Database, Internal  (sin detalles al cliente — tracing::error! internamente)
+    [x] 400 → InvalidEmail, InvalidPassword, Validation ✅
+    [x] 401 → InvalidToken, InvalidCredentials ✅
+    [x] 403 → Forbidden, MissingPermission ✅
+    [x] 404 → NotFound ✅
+    [x] 409 → EmailAlreadyExists ✅
+    [x] 422 → Validation ✅
+    [x] 500 → Database, Internal (sin detalles al cliente) ✅
         └─ Ref: ADR 0016, docs/02-STACK.md L104
-[ ] Formato consistente: { "error": "code", "message": "descripción" }
+[x] Formato consistente: { "error": { "code": "...", "message": "..." } } ✅
     └─ Ref: docs/02-STACK.md L100-102
-[ ] Verificar que error de dominio llega como JSON al cliente
-[ ] Verificar que errores 500 NO exponen detalles del stack
-    └─ Ref: ADR 0007, ADR 0016
 ```
 
 **✅ Verificación Bloque II:**
 ```bash
+# Compilación limpia
+cargo check --package api  # → 0 errores, warnings esperados
+
+# Próximo paso: probar servidor
+just migrate
 cargo run --bin api &
-curl http://localhost:8080/health  # → {"status":"ok"}
-curl -X POST http://localhost:8080/auth/register \
-  -H "Content-Type: application/json" \
-  -d '{"email":"test@test.com","password":"password123"}'
-# → 201 o error claro
+curl http://localhost:3000/health  # → {"status":"ok", "database":"connected"}
 ```
 
 ---

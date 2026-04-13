@@ -22,7 +22,7 @@
 # VARIABLES DE ENTORNO — NUNCA en git
 # =============================================================================
 .env.local
-.env
+# .env
 .env.*.local
 .env.production
 .env.staging

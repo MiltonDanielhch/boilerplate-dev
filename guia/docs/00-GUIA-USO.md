@@ -46,9 +46,9 @@ Este es un **sistema de navegación para construir productos reales** con arquit
 | # | Fase | Roadmap | Cuándo | Estado |
 |---|------|---------|--------|--------|
 | 0 | **Génesis** | `02-ROADMAP-GENESIS.md` | Día 1 | ✅ |
-| 1 | **Backend I** | `03-ROADMAP-BACKEND.md` Bloque I | Día 1-2 | 🔄 |
-| 2 | Backend II | `03-ROADMAP-BACKEND.md` Bloque II | Día 2-3 | ⏳ |
-| 3 | Frontend I | `04-ROADMAP-FRONTEND.md` Bloque I | Paralelo con Backend II | ⏳ |
+| 1 | **Backend I** | `03-ROADMAP-BACKEND.md` Bloque I | Día 1-2 | ✅ |
+| 2 | Backend II | `03-ROADMAP-BACKEND.md` Bloque II | Día 2-3 | ✅ |
+| 3 | Frontend I | `04-ROADMAP-FRONTEND.md` Bloque I | Paralelo con Backend III | ⏳ |
 | 4 | Backend III | `03-ROADMAP-BACKEND.md` Bloque III | Día 3-4 | ⏳ |
 | 5 | Frontend II | `04-ROADMAP-FRONTEND.md` Bloque II | Paralelo con Backend III | ⏳ |
 | 6 | Auth Fullstack | `05-ROADMAP-AUTH-FULLSTACK.md` | Después de Backend III + Frontend III | ⏳ |

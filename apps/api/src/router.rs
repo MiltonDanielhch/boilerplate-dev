@@ -13,12 +13,8 @@ use axum::{
     routing::{get, post},
     Router,
 };
-use tower_http::{
-    compression::CompressionLayer,
-    cors::CorsLayer,
-    timeout::TimeoutLayer,
-};
 use std::time::Duration;
+use tower_http::{compression::CompressionLayer, cors::CorsLayer, timeout::TimeoutLayer};
 
 /// Crea el router con todos los endpoints y middleware.
 pub fn create_router(state: AppState) -> Router {
@@ -33,8 +29,10 @@ pub fn create_router(state: AppState) -> Router {
         // User endpoints
         .route("/api/v1/users", get(users::list).post(users::create))
         .route(
-            "/api/v1/users/:id",
-            get(users::get).put(users::update).delete(users::soft_delete),
+            "/api/v1/users/{id}",
+            get(users::get)
+                .put(users::update)
+                .delete(users::soft_delete),
         )
         // Lead endpoints
         .route("/api/v1/leads", post(leads::capture))

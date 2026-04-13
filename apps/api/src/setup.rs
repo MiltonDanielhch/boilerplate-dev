@@ -15,14 +15,19 @@ pub fn load_config() -> anyhow::Result<AppConfig> {
     // Cargar .env si existe (silently ignore error)
     let _ = dotenvy::dotenv();
 
-    let database_url = std::env::var("DATABASE_URL")
-        .unwrap_or_else(|_| "sqlite:boilerplate.db".to_string());
+    let database_url = std::env::var("DATABASE_URL").unwrap_or_else(|_| {
+        let mut path = std::env::current_exe().unwrap_or_default();
+        path.pop(); // bin/debug o bin/release
+        path.pop();
+        path.push("data");
+        path.push("boilerplate.db");
+        format!("sqlite:{}", path.display())
+    });
 
-    let paseto_secret = std::env::var("PASETO_SECRET")
-        .expect("PASETO_SECRET must be set"); // Fail-fast
+    let paseto_secret = std::env::var("PASETO_SECRET").expect("PASETO_SECRET must be set"); // Fail-fast
 
-    let environment = std::env::var("APP_ENVIRONMENT")
-        .unwrap_or_else(|_| "development".to_string());
+    let environment =
+        std::env::var("APP_ENVIRONMENT").unwrap_or_else(|_| "development".to_string());
 
     Ok(AppConfig {
         database_url,

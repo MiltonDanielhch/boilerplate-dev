@@ -33,8 +33,9 @@ use tracing::info;
 pub async fn create_pool(database_url: &str) -> Pool<Sqlite> {
     info!("Inicializando pool SQLite: {}", database_url);
 
+    let path = database_url.trim_start_matches("sqlite:");
     let options = SqliteConnectOptions::new()
-        .filename(database_url)
+        .filename(path)
         .create_if_missing(true)
         .journal_mode(sqlx::sqlite::SqliteJournalMode::Wal)
         .synchronous(sqlx::sqlite::SqliteSynchronous::Normal)
