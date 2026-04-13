@@ -473,14 +473,14 @@ curl http://localhost:3000/health  # → {"status":"ok", "database":"connected"}
     [x] Email::new() valida + normaliza ✅
     [x] find_active_by_email() → 409 si ya existe ✅
     [x] hash_password(argon2id) ✅
-    [~] save user — PLACEHOLDER (necesita password_hash en DB)
+    [x] save user con password_hash ✅
     [ ] encolar EmailJob:Welcome — PENDIENTE Bloque V
     [x] retorna 201 + { user_id } ✅
 
 [x] POST /auth/login ✅
     └─ Ref: docs/01-ARCHITECTURE.md L230-235
     [x] find_active_by_email() → 401 si no existe ✅
-    [~] verify_password() — PLACEHOLDER (necesita password_hash en DB)
+    [x] verify_password() con argon2id ✅
     [x] generate_access_token(15min) ✅
     [x] create_refresh_token() → opaque 32 bytes ✅
     [~] create_session(ip, user_agent, expiry) — PLACEHOLDER

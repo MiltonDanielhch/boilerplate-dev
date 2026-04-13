@@ -15,7 +15,7 @@ use axum::{
 use domain::{
     entities::User,
     ports::UserRepository,
-    value_objects::Email,
+    value_objects::{Email, PasswordHash},
 };
 use serde::{Deserialize, Serialize};
 use std::sync::Arc;
@@ -58,26 +58,27 @@ pub async fn register(
     }
 
     // Hashear password con argon2id
-    let password_hash = hash_password(&body.password)
+    let password_hash_str = hash_password(&body.password)
         .map_err(|e| ApiError::Internal(format!("Password hashing failed: {}", e)))?;
 
-    // Crear usuario (placeholder — necesita implementación completa)
-    // User::new requiere email, password_hash, name
-    // let user = User::new(email.clone(), password_hash, body.name.clone())
-    //     .map_err(|e| ApiError::Validation(format!("Invalid user data: {:?}", e)))?;
+    // Crear PasswordHash value object
+    let password_hash = PasswordHash::new(&password_hash_str)
+        .map_err(|e| ApiError::Internal(format!("Invalid password hash: {}", e)))?;
 
-    // Guardar usuario (implementación placeholder — necesita repositorio completo)
-    // TODO: Implementar save() en SqliteUserRepository con password_hash
+    // Crear usuario
+    let user = User::new(email.clone(), password_hash, body.name.clone())
+        .map_err(|e| ApiError::Validation(format!("Invalid user data: {:?}", e)))?;
+
+    // Guardar usuario en DB
+    state.user_repo.save(&user).await
+        .map_err(|e| ApiError::Internal(format!("Failed to save user: {}", e)))?;
     
-    // Placeholder user_id para la respuesta
-    let user_id = uuid::Uuid::new_v4().to_string();
-    
-    info!(user_id = %user_id, "User registered successfully (placeholder)");
+    info!(user_id = %user.id, "User registered successfully");
 
     Ok(Json(RegisterResponse {
-        user_id,
-        email: email.value().to_string(),
-        message: "User registered successfully (placeholder — not persisted)".to_string(),
+        user_id: user.id.to_string(),
+        email: user.email.value().to_string(),
+        message: "User registered successfully".to_string(),
     }))
 }
 
@@ -112,13 +113,12 @@ pub async fn login(
     let user = state.user_repo.find_active_by_email(&email).await?
         .ok_or_else(|| ApiError::Unauthorized("Invalid credentials".to_string()))?;
 
-    // Verificar password (placeholder — necesita almacenar password_hash)
-    // TODO: Obtener password_hash del usuario y verificar
-    // let valid = verify_password(&body.password, &password_hash)
-    //     .map_err(|e| ApiError::Internal(format!("Password verification error: {}", e)))?;
-    // if !valid {
-    //     return Err(ApiError::Unauthorized("Invalid credentials".to_string()));
-    // }
+    // Verificar password
+    let valid = verify_password(&body.password, user.password_hash.as_str())
+        .map_err(|e| ApiError::Internal(format!("Password verification error: {}", e)))?;
+    if !valid {
+        return Err(ApiError::Unauthorized("Invalid credentials".to_string()));
+    }
 
     // Generar access token PASETO v4 (15 minutos)
     let access_token = state.paseto.generate_access_token(&user.id.uuid())
