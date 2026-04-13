@@ -6,8 +6,7 @@
 
 use crate::error::{ApiError, ApiResult};
 use crate::state::AppState;
-use application::auth::{RegisterUseCase, LoginUseCase};
-use auth::{hash_password, verify_password, PasetoService};
+use auth::{hash_password, verify_password};
 use axum::{
     extract::State,
     response::Json,
@@ -18,9 +17,7 @@ use domain::{
     value_objects::{Email, PasswordHash},
 };
 use serde::{Deserialize, Serialize};
-use std::sync::Arc;
 use tracing::info;
-use uuid::Uuid;
 
 /// Request para registro de usuario
 #[derive(Debug, Deserialize)]

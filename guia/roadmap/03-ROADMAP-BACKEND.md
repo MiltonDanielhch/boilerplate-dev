@@ -505,25 +505,23 @@ curl http://localhost:3000/health  # → {"status":"ok", "database":"connected"}
 > **Referencia:** ADR 0008, ADR 0006, docs/03-STRUCTURE.md L280-283, docs/01-ARCHITECTURE.md L184-216
 
 ```
-[ ] crates/infrastructure/src/http/middleware/auth.rs
+[x] apps/api/src/middleware/auth.rs ✅
     └─ Ref: docs/03-STRUCTURE.md L281
-    [ ] extrae Bearer token del header Authorization
-    [ ] paseto.verify(token) → UserId en Extensions
-        └─ Ref: docs/01-ARCHITECTURE.md L194-196
-    [ ] 401 si no hay token o es inválido
-    [ ] tracing::Span::current().record("user_id", ...)
-        └─ Ref: ADR 0016
+    [x] extrae Bearer token del header Authorization ✅
+    [x] rechaza JWT (tokens que empiecen con "eyJ") ✅ (en paseto.verify)
+    [x] verifica PASETO v4 con PasetoService ✅
+    [x] inyecta AuthClaims en request.extensions ✅
+    [x] extractor FromRequestParts para handlers ✅
+    [x] optional_auth_middleware para endpoints opcionales ✅
 
-[ ] crates/infrastructure/src/http/middleware/permission.rs
-    └─ Ref: docs/03-STRUCTURE.md L282
-    [ ] require_permission("recurso:acción") → función reutilizable
-        └─ Ref: docs/02-STACK.md L227-233
-    [ ] llama has_permission(user_id, perm) (cacheado con Moka)
-        └─ Ref: docs/01-ARCHITECTURE.md L203-206, ADR 0017
-    [ ] 403 con { "error": "forbidden", "message": "requiere permiso: x:y" }
+[~] crates/infrastructure/src/http/middleware/rbac.rs
+    [ ] has_permission() cacheado con Moka
+        └─ Ref: ADR 0017 (Caché)
+    [ ] retorna 403 si no tiene permiso
 
-[ ] crates/infrastructure/src/http/middleware/audit.rs
-    └─ Ref: docs/03-STRUCTURE.md L283, ADR 0006
+[~] crates/infrastructure/src/http/middleware/audit.rs
+    [ ] fire-and-forget a audit.log()
+    [ ] no bloquea request (spawn o channel)
     [ ] captura method, uri, ip, user_agent
         └─ Ref: docs/01-ARCHITECTURE.md L198-200
     [ ] registra en audit_logs SOLO si response es 2xx

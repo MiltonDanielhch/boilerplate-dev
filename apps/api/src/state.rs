@@ -6,6 +6,7 @@
 
 use auth::PasetoService;
 use database::repositories::SqliteUserRepository;
+use std::sync::Arc;
 
 /// Configuración de la aplicación.
 #[derive(Debug, Clone)]
@@ -20,14 +21,14 @@ pub struct AppConfig {
 pub struct AppState {
     pub config: AppConfig,
     pub user_repo: SqliteUserRepository,
-    pub paseto: PasetoService,
+    pub paseto: Arc<PasetoService>,
 }
 
 impl AppState {
     pub fn new(
         config: AppConfig,
         user_repo: SqliteUserRepository,
-        paseto: PasetoService,
+        paseto: Arc<PasetoService>,
     ) -> Self {
         Self {
             config,

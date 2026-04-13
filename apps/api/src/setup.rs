@@ -8,6 +8,7 @@
 use crate::state::{AppConfig, AppState};
 use database::repositories::SqliteUserRepository;
 use sqlx::SqlitePool;
+use std::sync::Arc;
 use tracing::info;
 
 /// Carga configuración desde variables de entorno (fail-fast).
@@ -66,8 +67,8 @@ pub fn build_state(pool: SqlitePool, config: AppConfig) -> AppState {
     // let token_repo = SqliteTokenRepository::new(pool.clone());
     // let lead_repo = SqliteLeadRepository::new(pool.clone());
 
-    // Servicio PASETO v4 para tokens de acceso
-    let paseto = PasetoService::new(&config.paseto_secret);
+    // Servicio PASETO v4 para tokens de acceso (Arc para compartir entre threads)
+    let paseto = Arc::new(PasetoService::new(&config.paseto_secret));
 
     info!("Application state built successfully");
 
