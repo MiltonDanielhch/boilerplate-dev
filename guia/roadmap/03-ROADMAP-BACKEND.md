@@ -468,40 +468,36 @@ curl http://localhost:3000/health  # → {"status":"ok", "database":"connected"}
 > **Referencia:** docs/01-ARCHITECTURE.md L220-241 — flujo completo de auth
 
 ```
-[ ] POST /auth/register
+[x] POST /auth/register ✅
     └─ Ref: docs/01-ARCHITECTURE.md L223-229
-    [ ] Email::new() valida + normaliza
-    [ ] find_active_by_email() → 409 si ya existe
-    [ ] hash_password(argon2id)
-    [ ] save user
-    [ ] encolar EmailJob:Welcome (no bloquea HTTP)
-        └─ Ref: ADR 0018, ADR 0019
-    [ ] retorna 201 + { user_id }
+    [x] Email::new() valida + normaliza ✅
+    [x] find_active_by_email() → 409 si ya existe ✅
+    [x] hash_password(argon2id) ✅
+    [~] save user — PLACEHOLDER (necesita password_hash en DB)
+    [ ] encolar EmailJob:Welcome — PENDIENTE Bloque V
+    [x] retorna 201 + { user_id } ✅
 
-[ ] POST /auth/login
+[x] POST /auth/login ✅
     └─ Ref: docs/01-ARCHITECTURE.md L230-235
-    [ ] find_active_by_email() → 401 si no existe
-    [ ] verify_password() → 401 si no coincide
-    [ ] generate_access_token(15min)
-    [ ] create_refresh_token() → opaque 32 bytes
-    [ ] create_session(ip, user_agent, expiry)
-    [ ] audit.log(login_success)
-        └─ Ref: ADR 0006
-    [ ] retorna 200 + { access_token, refresh_token }
-    [ ] access_token empieza con "v4.local." — verificar en test E2E
-        └─ Ref: ADR 0008
+    [x] find_active_by_email() → 401 si no existe ✅
+    [~] verify_password() — PLACEHOLDER (necesita password_hash en DB)
+    [x] generate_access_token(15min) ✅
+    [x] create_refresh_token() → opaque 32 bytes ✅
+    [~] create_session(ip, user_agent, expiry) — PLACEHOLDER
+    [~] audit.log(login_success) — PENDIENTE Bloque III.3
+    [x] retorna 200 + { access_token, refresh_token } ✅
+    [x] access_token empieza con "v4.local." — verificado ✅
 
-[ ] POST /auth/refresh
-    [ ] verify refresh token hash en DB
-    [ ] REVOCAR el refresh token anterior (rotación obligatoria)
-        └─ Ref: ADR 0008
-    [ ] generar nuevo access_token + nuevo refresh_token
-    [ ] retorna 200 + { access_token, refresh_token }
+[x] POST /auth/refresh — ESTRUCTURA LISTA
+    [~] verify refresh token hash en DB — PLACEHOLDER
+    [~] REVOCAR el refresh token anterior — PLACEHOLDER
+    [~] generar nuevo access_token + nuevo refresh_token — PLACEHOLDER
+    [ ] retorna 200 + { access_token, refresh_token } — PENDIENTE
 
-[ ] POST /auth/logout
-    [ ] revocar session
-    [ ] revocar refresh token
-    [ ] retorna 200
+[x] POST /auth/logout — ESTRUCTURA LISTA
+    [~] revocar session — PLACEHOLDER
+    [~] revocar refresh token — PLACEHOLDER
+    [x] retorna 200 ✅
 ```
 
 ### III.3 — Middleware de Auth + RBAC

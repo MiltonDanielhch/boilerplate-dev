@@ -105,11 +105,13 @@
 - ✅ Rechazo explícito de JWT (tokens 'eyJ' rechazados)
 - ✅ Tests unitarios
 
-**III.2 — Endpoints de autenticación 🔄 PENDIENTE**
-- 🔄 POST /auth/register
-- 🔄 POST /auth/login
-- 🔄 POST /auth/refresh
-- 🔄 POST /auth/logout
+**III.2 — Endpoints de autenticación ✅ ESTRUCTURA LISTA**
+- ✅ POST /auth/register — valida email, hashea password, genera user_id
+- ✅ POST /auth/login — busca usuario, genera PASETO v4 + refresh token
+- ✅ POST /auth/refresh — estructura lista (placeholder)
+- ✅ POST /auth/logout — estructura lista (placeholder)
+- 🔄 Persistencia real de usuarios con password_hash
+- 🔄 Repositorios Session y Token para refresh/logout
 
 **III.3 — Middleware Auth + RBAC 🔄 PENDIENTE**
 - 🔄 Middleware extract Bearer token
