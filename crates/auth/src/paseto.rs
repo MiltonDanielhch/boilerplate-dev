@@ -31,7 +31,17 @@ pub struct TokenClaims {
 
 /// Servicio para generar y verificar tokens PASETO v4 Local.
 pub struct PasetoService {
-    key: SecretBox<Vec<u8>>,
+    key: SecretBox<[u8; 32]>,
+}
+
+impl Clone for PasetoService {
+    fn clone(&self) -> Self {
+        // Copiar los bytes de la clave secreta
+        let key_copy = *self.key.expose_secret();
+        Self {
+            key: SecretBox::new(Box::new(key_copy)),
+        }
+    }
 }
 
 impl PasetoService {
@@ -50,8 +60,12 @@ impl PasetoService {
             );
         }
 
+        // Convertir Vec<u8> a [u8; 32]
+        let key_bytes: [u8; 32] = secret_bytes.try_into()
+            .expect("PASETO_SECRET debe tener exactamente 32 bytes");
+        
         Self {
-            key: SecretBox::new(Box::new(secret_bytes)),
+            key: SecretBox::new(Box::new(key_bytes)),
         }
     }
 

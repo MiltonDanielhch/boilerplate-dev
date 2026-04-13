@@ -55,6 +55,8 @@ pub fn init_telemetry(config: &AppConfig) {
 
 /// Construye el estado de la aplicación (composition root).
 pub fn build_state(pool: SqlitePool, config: AppConfig) -> AppState {
+    use auth::PasetoService;
+
     // Repositorios (sin caché por ahora — se agrega en Bloque III)
     let user_repo = SqliteUserRepository::new(pool);
 
@@ -64,7 +66,10 @@ pub fn build_state(pool: SqlitePool, config: AppConfig) -> AppState {
     // let token_repo = SqliteTokenRepository::new(pool.clone());
     // let lead_repo = SqliteLeadRepository::new(pool.clone());
 
+    // Servicio PASETO v4 para tokens de acceso
+    let paseto = PasetoService::new(&config.paseto_secret);
+
     info!("Application state built successfully");
 
-    AppState::new(config, user_repo)
+    AppState::new(config, user_repo, paseto)
 }

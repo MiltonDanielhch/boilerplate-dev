@@ -33,9 +33,11 @@ pub struct ErrorDetail {
 pub enum ApiError {
     Domain(DomainError),
     Validation(String),
+    BadRequest(String),
     Unauthorized(String),
     Forbidden(String),
     NotFound(String),
+    Conflict(String),
     Internal(String),
 }
 
@@ -46,11 +48,13 @@ impl IntoResponse for ApiError {
             ApiError::Validation(msg) => {
                 (StatusCode::BAD_REQUEST, "VALIDATION_ERROR", msg.clone())
             }
+            ApiError::BadRequest(msg) => (StatusCode::BAD_REQUEST, "BAD_REQUEST", msg.clone()),
             ApiError::Unauthorized(msg) => {
                 (StatusCode::UNAUTHORIZED, "UNAUTHORIZED", msg.clone())
             }
             ApiError::Forbidden(msg) => (StatusCode::FORBIDDEN, "FORBIDDEN", msg.clone()),
             ApiError::NotFound(msg) => (StatusCode::NOT_FOUND, "NOT_FOUND", msg.clone()),
+            ApiError::Conflict(msg) => (StatusCode::CONFLICT, "CONFLICT", msg.clone()),
             ApiError::Internal(msg) => {
                 error!("Internal error: {}", msg);
                 (

@@ -4,6 +4,7 @@
 //
 // ADRs relacionados: ADR 0001 (Hexagonal), ADR 0003 (Axum)
 
+use auth::PasetoService;
 use database::repositories::SqliteUserRepository;
 
 /// Configuración de la aplicación.
@@ -15,14 +16,33 @@ pub struct AppConfig {
 }
 
 /// Estado compartido de la aplicación (inyección de dependencias).
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 pub struct AppState {
     pub config: AppConfig,
     pub user_repo: SqliteUserRepository,
+    pub paseto: PasetoService,
 }
 
 impl AppState {
-    pub fn new(config: AppConfig, user_repo: SqliteUserRepository) -> Self {
-        Self { config, user_repo }
+    pub fn new(
+        config: AppConfig,
+        user_repo: SqliteUserRepository,
+        paseto: PasetoService,
+    ) -> Self {
+        Self {
+            config,
+            user_repo,
+            paseto,
+        }
+    }
+}
+
+impl std::fmt::Debug for AppState {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("AppState")
+            .field("config", &self.config)
+            .field("user_repo", &self.user_repo)
+            .field("paseto", &"<PasetoService>")
+            .finish()
     }
 }

@@ -4,7 +4,7 @@
 //
 // ADRs relacionados: ADR 0003 (Axum), ADR 0009 (Rate Limit)
 
-use crate::handlers::{health, leads, users};
+use crate::handlers::{auth, health, leads, users};
 use crate::middleware::request_id::request_id_middleware;
 use crate::middleware::trace::trace_middleware;
 use crate::state::AppState;
@@ -22,10 +22,10 @@ pub fn create_router(state: AppState) -> Router {
         // Health check
         .route("/health", get(health::handler))
         // Auth endpoints
-        // .route("/auth/register", post(auth::register))
-        // .route("/auth/login", post(auth::login))
-        // .route("/auth/refresh", post(auth::refresh))
-        // .route("/auth/logout", post(auth::logout))
+        .route("/auth/register", post(auth::register))
+        .route("/auth/login", post(auth::login))
+        .route("/auth/refresh", post(auth::refresh))
+        .route("/auth/logout", post(auth::logout))
         // User endpoints
         .route("/api/v1/users", get(users::list).post(users::create))
         .route(

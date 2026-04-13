@@ -96,13 +96,28 @@
 - ✅ Composition root con inyección de dependencias
 - ✅ Telemetry con tracing
 
-**Próximo: Bloque III — Auth + Seguridad**
-- 🔄 POST /auth/register (validación email, hash argon2id)
-- 🔄 POST /auth/login (PASETO v4 tokens)
-- 🔄 POST /auth/refresh (rotación tokens)
-- 🔄 Middleware de autenticación
-- 🔄 Rate limiting (tower-governor)
-- 🔄 RBAC en endpoints (has_permission)
+**Bloque III — Auth + Seguridad (en progreso)**
+
+**III.1 — crates/auth/ ✅ COMPLETADO**
+- ✅ Argon2id OWASP 2024 (m=19456, t=2, p=1)
+- ✅ PasetoService v4 Local (access tokens 15min)
+- ✅ Opaque refresh tokens (SHA-256)
+- ✅ Rechazo explícito de JWT (tokens 'eyJ' rechazados)
+- ✅ Tests unitarios
+
+**III.2 — Endpoints de autenticación 🔄 PENDIENTE**
+- 🔄 POST /auth/register
+- 🔄 POST /auth/login
+- 🔄 POST /auth/refresh
+- 🔄 POST /auth/logout
+
+**III.3 — Middleware Auth + RBAC 🔄 PENDIENTE**
+- 🔄 Middleware extract Bearer token
+- 🔄 has_permission() cacheado con Moka
+- 🔄 Audit middleware fire-and-forget
+
+**III.4 — Tests E2E 🔄 PENDIENTE**
+- 🔄 Flujo completo register → login → access → logout
 
 ### Stack Backend
 
