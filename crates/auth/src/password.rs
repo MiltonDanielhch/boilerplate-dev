@@ -52,8 +52,9 @@ mod tests {
 
     #[test]
     fn test_hash_and_verify_password() {
-        let password = "my_secure_password123";
+        let password = "12345678";
         let hash = hash_password(password).expect("Should hash password");
+        println!("Hash generado: {}", hash);
 
         // Verificación correcta
         assert!(verify_password(password, &hash).expect("Should verify"));

@@ -80,10 +80,10 @@ impl PasetoService {
             DomainError::Internal(format!("Failed to create claims: {}", e))
         })?;
 
-        claims.subject(&user_id.to_string());
-        claims.token_identifier(&Uuid::new_v4().to_string());
-        claims.issued_at(&now.format(&time::format_description::well_known::Rfc3339).unwrap());
-        claims.expiration(&expiration.format(&time::format_description::well_known::Rfc3339).unwrap());
+        let _ = claims.subject(&user_id.to_string());
+        let _ = claims.token_identifier(&Uuid::new_v4().to_string());
+        let _ = claims.issued_at(&now.format(&time::format_description::well_known::Rfc3339).unwrap());
+        let _ = claims.expiration(&expiration.format(&time::format_description::well_known::Rfc3339).unwrap());
 
         let key = SymmetricKey::<V4>::from(self.key.expose_secret().as_slice())
             .map_err(|e| DomainError::Internal(format!("Invalid PASETO key: {}", e)))?;

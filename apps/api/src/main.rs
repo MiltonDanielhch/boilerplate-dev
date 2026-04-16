@@ -9,6 +9,7 @@ use api::{
     router::create_router,
     setup::{build_state, load_config, init_telemetry},
 };
+use axum::extract::connect_info::ConnectInfo;
 use std::net::SocketAddr;
 use tracing::{info, warn};
 
@@ -23,9 +24,8 @@ async fn main() -> anyhow::Result<()> {
     // 3. Create pool
     let pool: sqlx::SqlitePool = database::pool::create_pool(&config.database_url).await;
     
-    // 4. Verificar conexión a DB (migraciones se ejecutan con `just migrate`)
-    // Nota: sqlx::migrate! macro tiene issues con rutas relativas en Windows
-    // Ejecutar: just migrate (antes de iniciar el servidor)
+    // 4. Ejecutar migraciones automáticamente
+    database::pool::run_migrations(&pool).await?;
     info!("Database pool created successfully");
     
     // 5. Build application state (composition root)
@@ -40,7 +40,7 @@ async fn main() -> anyhow::Result<()> {
     
     let listener = tokio::net::TcpListener::bind(addr).await?;
     
-    axum::serve(listener, app)
+    axum::serve(listener, app.into_make_service_with_connect_info::<SocketAddr>())
         .with_graceful_shutdown(shutdown_signal())
         .await?;
     

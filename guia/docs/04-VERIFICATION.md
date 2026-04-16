@@ -224,26 +224,26 @@ just prepare
 ```bash
 # Arrancar el servidor
 just dev-api
-# Esperado: "servidor iniciado en puerto 8080"
+# Esperado: "servidor iniciado en puerto 3000"
 # └─ Ref: docs/02-STACK.md L148
 
 # Health check
-curl http://localhost:8080/health
+curl http://localhost:3000/health
 # Esperado: {"status":"ok","database":"connected"}
 # └─ Ref: docs/03-STRUCTURE.md L278
 
 # La API responde JSON
-curl http://localhost:8080/api/v1/users
+curl http://localhost:3000/api/v1/users
 # Esperado: 401 Unauthorized (ruta protegida)
 # └─ Ref: ADR 0008, docs/02-STACK.md L203-226
 
 # El rate limit funciona — superar 30 requests
-for i in {1..35}; do curl -s -o /dev/null -w "%{http_code}\n" http://localhost:8080/api/v1/users; done
+for i in {1..35}; do curl -s -o /dev/null -w "%{http_code}\n" http://localhost:3000/api/v1/users; done
 # Esperado: los últimos retornan 429
 # └─ Ref: ADR 0009, docs/02-STACK.md L143
 
 # Sin JWT en los headers de respuesta
-curl -I http://localhost:8080/health | grep -i "x-powered-by\|server"
+curl -I http://localhost:3000/health | grep -i "x-powered-by\|server"
 # Esperado: sin headers que revelen tecnología
 # └─ Ref: ADR 0014, docs/02-STACK.md L360-368
 ```
@@ -256,14 +256,14 @@ curl -I http://localhost:8080/health | grep -i "x-powered-by\|server"
 
 ```bash
 # 1. Registro de usuario
-curl -X POST http://localhost:8080/auth/register \
+curl -X POST http://localhost:3000/auth/register \
   -H "Content-Type: application/json" \
   -d '{"email":"test@example.com","password":"password123"}'
 # Esperado: 201 Created {"id":"...","email":"test@example.com"}
 # └─ Ref: docs/03-STRUCTURE.md L273-276
 
 # 2. Login y obtener token
-TOKEN=$(curl -s -X POST http://localhost:8080/auth/login \
+TOKEN=$(curl -s -X POST http://localhost:3000/auth/login \
   -H "Content-Type: application/json" \
   -d '{"email":"test@example.com","password":"password123"}' \
   | jq -r '.access_token')
@@ -273,13 +273,13 @@ echo "Token: $TOKEN"
 
 # 3. Request autenticado
 curl -H "Authorization: Bearer $TOKEN" \
-  http://localhost:8080/api/v1/users
+  http://localhost:3000/api/v1/users
 # Esperado: 200 OK con lista de usuarios (vacía o con admin)
 # └─ Ref: docs/03-STRUCTURE.md L281
 
 # 4. Token inválido es rechazado
 curl -H "Authorization: Bearer invalid.token.here" \
-  http://localhost:8080/api/v1/users
+  http://localhost:3000/api/v1/users
 # Esperado: 401 {"error":"unauthorized","message":"no autenticado"}
 # └─ Ref: ADR 0007, docs/02-STACK.md L100-102
 
@@ -290,19 +290,19 @@ echo $TOKEN | cut -c1-10
 
 # 6. Logout
 curl -X POST -H "Authorization: Bearer $TOKEN" \
-  http://localhost:8080/auth/logout
+  http://localhost:3000/auth/logout
 # Esperado: 200 OK
 # └─ Ref: docs/03-STRUCTURE.md L273-276
 
 # 7. Token revocado ya no funciona
 curl -H "Authorization: Bearer $TOKEN" \
-  http://localhost:8080/api/v1/users
+  http://localhost:3000/api/v1/users
 # Esperado: 401 Unauthorized
 # └─ Ref: ADR 0008
 
 # 8. Soft Delete — verificar que no hace DELETE real
 curl -X DELETE -H "Authorization: Bearer $ADMIN_TOKEN" \
-  http://localhost:8080/api/v1/users/USER_ID
+  http://localhost:3000/api/v1/users/USER_ID
 sqlite3 ./data/boilerplate.db \
   "SELECT deleted_at FROM users WHERE email='test@example.com';"
 # Esperado: fecha ISO — NO es NULL. El registro sigue en la DB.
@@ -310,7 +310,7 @@ sqlite3 ./data/boilerplate.db \
 
 # 9. RBAC — usuario sin permiso es rechazado
 curl -H "Authorization: Bearer $USER_TOKEN" \
-  http://localhost:8080/api/v1/users
+  http://localhost:3000/api/v1/users
 # Esperado: 403 {"error":"forbidden","message":"requiere permiso: users:read"}
 # └─ Ref: ADR 0006, docs/02-STACK.md L228-233
 
@@ -328,22 +328,22 @@ just dev-api 2>&1 | grep -E '"target":"audit"' | head -3
 
 ```bash
 # Scalar UI disponible
-curl http://localhost:8080/docs
+curl http://localhost:3000/docs
 # Esperado: HTML con la UI de Scalar
 # └─ Ref: ADR 0021, docs/02-STACK.md L248
 
 # OpenAPI spec válido
-curl http://localhost:8080/openapi.json | jq '.info.title'
+curl http://localhost:3000/openapi.json | jq '.info.title'
 # Esperado: "boilerplate API"
 # └─ Ref: ADR 0021, docs/02-STACK.md L246
 
 # El spec tiene los endpoints de auth
-curl http://localhost:8080/openapi.json | jq '.paths | keys[]'
+curl http://localhost:3000/openapi.json | jq '.paths | keys[]'
 # Esperado: /auth/register, /auth/login, /api/v1/users, etc.
 # └─ Ref: docs/03-STRUCTURE.md L278
 
 # El spec tiene el esquema de seguridad PASETO
-curl http://localhost:8080/openapi.json | jq '.components.securitySchemes'
+curl http://localhost:3000/openapi.json | jq '.components.securitySchemes'
 # Esperado: {"PasetoAuth":{"type":"http","scheme":"bearer",...}}
 # └─ Ref: ADR 0021, ADR 0008
 ```
@@ -356,7 +356,7 @@ curl http://localhost:8080/openapi.json | jq '.components.securitySchemes'
 
 ```bash
 # 1. Registrar un usuario y verificar que el EmailJob se encola
-curl -X POST http://localhost:8080/auth/register \
+curl -X POST http://localhost:3000/auth/register \
   -H "Content-Type: application/json" \
   -d '{"email":"job-test@example.com","password":"password123"}'
 
@@ -373,8 +373,8 @@ just dev-api 2>&1 | grep -i "email"
 
 # 3. Cache — verificar que reduce queries repetidas
 # Pedir el mismo usuario dos veces y ver los logs de SQLx
-curl -H "Authorization: Bearer $TOKEN" http://localhost:8080/api/v1/users/USER_ID
-curl -H "Authorization: Bearer $TOKEN" http://localhost:8080/api/v1/users/USER_ID
+curl -H "Authorization: Bearer $TOKEN" http://localhost:3000/api/v1/users/USER_ID
+curl -H "Authorization: Bearer $TOKEN" http://localhost:3000/api/v1/users/USER_ID
 # Esperado: en logs, la segunda llamada no muestra query SQL (L1 HIT)
 # └─ Ref: ADR 0017, docs/02-STACK.md L253-268
 ```
@@ -477,7 +477,7 @@ curl http://localhost:4321 | grep -i "lang="
 
 ```bash
 # 1. El formulario de leads funciona
-curl -X POST http://localhost:8080/api/v1/leads \
+curl -X POST http://localhost:3000/api/v1/leads \
   -H "Content-Type: application/json" \
   -d '{"email":"lead@example.com","name":"Test Lead"}'
 # Esperado: 200 OK
@@ -486,7 +486,7 @@ curl -X POST http://localhost:8080/api/v1/leads \
 # 2. Rate limit en leads — más de 3 por minuto
 for i in {1..5}; do
   curl -s -o /dev/null -w "%{http_code}\n" \
-    -X POST http://localhost:8080/api/v1/leads \
+    -X POST http://localhost:3000/api/v1/leads \
     -H "Content-Type: application/json" \
     -d "{\"email\":\"lead$i@example.com\"}"
 done
@@ -499,7 +499,7 @@ done
 # └─ Ref: ADR 0022
 
 # 4. Honeypot funciona (bots retornan 200 silencioso)
-curl -X POST http://localhost:8080/api/v1/leads \
+curl -X POST http://localhost:3000/api/v1/leads \
   -H "Content-Type: application/json" \
   -d '{"email":"bot@test.com","honeypot":"filled"}'
 # Esperado: 200 OK (silencioso, sin guardar)
@@ -562,9 +562,9 @@ SQLX_OFFLINE=true cargo build --release
 # └─ Ref: ADR 0013, docs/02-STACK.md L415
 
 # 5. Health check responde dentro del contenedor
-podman run --rm -p 8080:8080 boilerplate &
+podman run --rm -p 3000:3000 boilerplate &
 sleep 3
-curl http://localhost:8080/health
+curl http://localhost:3000/health
 # Esperado: {"status":"ok"}
 # └─ Ref: ADR 0014, docs/02-STACK.md L366
 

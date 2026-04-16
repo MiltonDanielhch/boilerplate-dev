@@ -12,6 +12,14 @@ use sqlx::{
 use std::time::Duration;
 use tracing::info;
 
+/// Ejecuta las migraciones de SQLx.
+pub async fn run_migrations(pool: &Pool<Sqlite>) -> Result<(), sqlx::Error> {
+    info!("Ejecutando migraciones...");
+    sqlx::migrate!("../../data/migrations").run(pool).await?;
+    info!("Migraciones completadas");
+    Ok(())
+}
+
 /// Crea un pool de conexiones SQLite con configuración optimizada.
 ///
 /// # PRAGMAs aplicados (ADR 0004):

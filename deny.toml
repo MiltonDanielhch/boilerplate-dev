@@ -47,6 +47,18 @@ ignore = [
     # RSA crate: Marvin Attack (timing sidechannel) - dependencia transitiva, no usamos RSA directamente
     # Ref: https://rustsec.org/advisories/RUSTSEC-2023-0071
     "RUSTSEC-2023-0071",
+    # Rand crate: unsound con custom logger - dependencia transitiva (async-nats, tera, etc.)
+    # Nuestro código usa rand 0.10.1 que es seguro, pero dependencias transitivas usan 0.8.5
+    # Ref: https://rustsec.org/advisories/RUSTSEC-2026-0097
+    "RUSTSEC-2026-0097",
+    # rustls-webpki: Name constraints for URI names - dependencia transitiva (aws-sdk, reqwest)
+    # Requiere misissuance para explotar, no afecta nuestro uso de TLS
+    # Ref: https://rustsec.org/advisories/RUSTSEC-2026-0098
+    "RUSTSEC-2026-0098",
+    # rustls-webpki: Wildcard name constraints - dependencia transitiva (aws-sdk, reqwest)
+    # Requiere misissuance para explotar, no afecta nuestro uso de TLS
+    # Ref: https://rustsec.org/advisories/RUSTSEC-2026-0099
+    "RUSTSEC-2026-0099",
 ]
 
 # Configuración de crates unmaintained

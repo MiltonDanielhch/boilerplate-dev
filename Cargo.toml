@@ -71,7 +71,7 @@ tower_governor = "0.8"   # ADR 0009 (Rate Limiting)
 argon2   = "0.5"
 pasetors = { version = "0.7", features = ["v4", "serde"] }
 secrecy  = "0.10"
-rand     = { version = "0.8", features = ["getrandom"] }
+rand     = { version = "0.8.5", features = ["getrandom"] }
 sha2     = "0.10"
 hex      = "0.4"
 
