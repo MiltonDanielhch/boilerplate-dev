@@ -1,0 +1,33 @@
+---
+// Ubicación: `apps/web/src/pages/login.astro`
+//
+// Descripción: Página de login con formulario validado por ArkType.
+//              Integra con auth store y redirige al dashboard tras éxito.
+//
+// ADRs relacionados: 0022 (Frontend), 0008 (PASETO), 0021 (OpenAPI)
+
+import BaseLayout from "../layouts/BaseLayout.astro";
+import LoginForm from "../components/auth/LoginForm.svelte";
+---
+
+<BaseLayout title="Login - Boilerplate">
+	<div class="min-h-screen flex items-center justify-center px-4">
+		<div class="w-full max-w-md space-y-6">
+			<div class="text-center">
+				<h1 class="text-2xl font-bold tracking-tight">Welcome back</h1>
+				<p class="text-sm text-muted-foreground mt-2">
+					Enter your credentials to access your account
+				</p>
+			</div>
+
+			<LoginForm client:only="svelte" />
+
+			<p class="text-center text-sm text-muted-foreground">
+				Don't have an account?{" "}
+				<a href="/register" class="font-medium text-primary hover:underline">
+					Sign up
+				</a>
+			</p>
+		</div>
+	</div>
+</BaseLayout>

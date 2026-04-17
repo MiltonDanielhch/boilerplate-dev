@@ -1,0 +1,33 @@
+---
+// Ubicación: `apps/web/src/pages/register.astro`
+//
+// Descripción: Página de registro con validación ArkType.
+//              Crea cuenta nueva y redirige a login.
+//
+// ADRs relacionados: 0022 (Frontend), 0008 (PASETO), 0021 (OpenAPI)
+
+import BaseLayout from "../layouts/BaseLayout.astro";
+import RegisterForm from "../components/auth/RegisterForm.svelte";
+---
+
+<BaseLayout title="Register - Boilerplate">
+	<div class="min-h-screen flex items-center justify-center px-4">
+		<div class="w-full max-w-md space-y-6">
+			<div class="text-center">
+				<h1 class="text-2xl font-bold tracking-tight">Create an account</h1>
+				<p class="text-sm text-muted-foreground mt-2">
+					Enter your details to get started
+				</p>
+			</div>
+
+			<RegisterForm client:only="svelte" />
+
+			<p class="text-center text-sm text-muted-foreground">
+				Already have an account?{" "}
+				<a href="/login" class="font-medium text-primary hover:underline">
+					Sign in
+				</a>
+			</p>
+		</div>
+	</div>
+</BaseLayout>

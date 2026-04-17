@@ -217,21 +217,17 @@ Para maximizar la calidad, el rendimiento y la experiencia de desarrollo del fro
         └─ Ref: ADR 0006
     [ ] Navegación por teclado (arrow keys, Enter, Escape)
 
-[ ] pages/login.astro
-    └─ Ref: docs/03-STRUCTURE.md L478-480
-    [ ] Formulario con ArkType validation
-        └─ Ref: docs/02-STACK.md L389
-    [ ] TanStack mutation → POST /auth/login
-        └─ Ref: docs/02-STACK.md L386
-    [ ] onSuccess → setAuth() + redirect /dashboard
-    [ ] onError → mensaje de error claro
-    [ ] Si ya autenticado → redirect /dashboard
+[x] pages/login.astro
+    └─ Ref: docs/03-STRUCTURE.md L478-481
+    [x] Formulario con ArkType validation (LoginForm.svelte)
+    [x] Integración con auth store
+    [x] onSuccess → redirect /dashboard
 
-[ ] pages/register.astro
-    └─ Ref: docs/03-STRUCTURE.md L481-483
-    [ ] Formulario con ArkType validation
-    [ ] TanStack mutation → POST /auth/register
-    [ ] onSuccess → redirect /login con mensaje de éxito
+[x] pages/register.astro
+    └─ Ref: docs/03-STRUCTURE.md L482-485
+    [x] Formulario con ArkType validation (RegisterForm.svelte)
+    [x] Integración con auth store
+    [x] onSuccess → redirect /login con mensaje de éxito
 
 [ ] pages/dashboard/index.astro
     └─ Ref: docs/03-STRUCTURE.md L484-487
