@@ -125,25 +125,27 @@ Para maximizar la calidad, el rendimiento y la experiencia de desarrollo del fro
 [ ] just types-check en CI → falla si api.ts tiene diff sin commitear
     └─ Ref: docs/03-STRUCTURE.md L438-440
 
-[ ] apps/web/src/lib/stores/auth.svelte.ts — estado global con Runes:
+[x] apps/web/src/lib/stores/auth.svelte.ts — estado global con Runes:
     └─ Ref: docs/02-STACK.md L386-388, ADR 0022
-    [ ] user = $state<User | null>(null)
-    [ ] accessToken = $state<string | null>(null)
-    [ ] get isLoggedIn() { return user !== null }
-    [ ] setAuth(user, token)
-    [ ] clearAuth()
+    [x] user = $state<User | null>(null)
+    [x] accessToken = $state<string | null>(null)
+    [x] get isLoggedIn() { return user !== null }
+    [x] isAdmin() + hasPermission(permission)
+    [x] setAuth(user, token) + clearAuth()
+    [x] Persistencia en localStorage
+    [x] initFromStorage() para recuperar sesión
 
-[ ] QueryClient configurado en BaseLayout.astro:
+[x] QueryClient configurado en QueryProvider.svelte:
     └─ Ref: docs/02-STACK.md L386, docs/03-STRUCTURE.md L454-458
-    [ ] @tanstack/svelte-query QueryClientProvider
+    [x] @tanstack/svelte-query QueryClientProvider con staleTime 5min
 
-[ ] apps/web/src/lib/validation/schemas.ts — ArkType:
+[x] apps/web/src/lib/validation/schemas.ts — ArkType:
     └─ Ref: docs/02-STACK.md L389
-    [ ] LoginSchema = type({ email: 'string.email', password: 'string >= 8' })
-    [ ] RegisterSchema = type({ email: 'string.email', password: 'string >= 12' })
-    [ ] LeadSchema = type({ email: 'string.email', name: 'string?', honeypot: 'string?' })
+    [x] LoginSchema = type({ email: 'string.email', password: 'string >= 8' })
+    [x] RegisterSchema = type({ email: 'string.email', password: 'string >= 12' })
+    [x] LeadSchema = type({ email: 'string.email', name: 'string?', honeypot: 'string?' })
         └─ Ref: ADR 0029
-    [ ] CreateUserSchema
+    [x] CreateUserSchema + UpdateUserSchema
 
 [ ] apps/web/src/lib/api/client.ts — fetch base:
     └─ Ref: docs/02-STACK.md L418-420
