@@ -1,6 +1,8 @@
 # Roadmap — Frontend
 
-> **Stack:** Astro 5 SSR · Svelte 5 Runes · Tailwind v4 · shadcn-svelte · TanStack Query · ArkType · Paraglide JS
+> **Stack:** Astro 6 SSR · Svelte 5 Runes · Tailwind v4 · shadcn-svelte · TanStack Query · ArkType · Paraglide JS
+>
+> **Ejemplos shadcn-svelte:** [Dashboard](https://shadcn-svelte.com/examples/dashboard) · [Tasks](https://shadcn-svelte.com/examples/tasks) · [Authentication](https://shadcn-svelte.com/examples/authentication)
 >
 > **ADRs clave:** 0022 (Frontend) · 0023 (i18n) · 0006 (RBAC UI) · 0008 (PASETO) · 0021 (OpenAPI)
 >
@@ -20,7 +22,7 @@
 
 | Bloque | Nombre | Progreso |
 |--------|--------|----------|
-| FE.I | Fundación — setup e infraestructura | 0% |
+| FE.I | Fundación — setup e infraestructura | 90% |
 | FE.II | Tipos, estado y validación | 0% |
 | FE.III | Layouts y navegación | 0% |
 | FE.IV | Componentes del dashboard | 0% |
@@ -50,46 +52,53 @@ Para maximizar la calidad, el rendimiento y la experiencia de desarrollo del fro
 > **Referencia:** ADR 0022, docs/02-STACK.md L368-400
 
 ```
-[ ] Astro SSR setup en apps/web/:
-    └─ Ref: docs/02-STACK.md L371-378
-    [ ] output: 'server'
+[x] Astro 6 SSR setup en apps/web/:
+    └─ Ref: docs/02-STACK.md L371-378, https://astro.build/blog/astro-6/
+    [x] npm create astro@latest apps/web -- --template minimal
+    [x] output: 'server'
         └─ Ref: docs/02-STACK.md L371
-    [ ] adapter: @astrojs/node (mode: 'standalone')
+    [x] adapter: @astrojs/node (mode: 'standalone')
         └─ Ref: docs/02-STACK.md L371
-    [ ] @astrojs/svelte
+    [x] @astrojs/svelte
         └─ Ref: docs/02-STACK.md L375
-    [ ] @astrojs/tailwind con applyBaseStyles: false
+    [x] @astrojs/tailwind con applyBaseStyles: false
         └─ Ref: docs/02-STACK.md L376
-    [ ] @inlang/paraglide-astro
+    [x] @inlang/paraglide-js
         └─ Ref: docs/02-STACK.md L377, ADR 0023
+    [ ] Experimental: rustCompiler para ~2x build speed
+        └─ Ref: https://docs.astro.build/en/reference/experimental-flags/rust-compiler/
 
-[ ] Dependencias JS:
+[x] Dependencias JS:
     └─ Ref: docs/02-STACK.md L381-391
-    [ ] pnpm add @tanstack/svelte-query arktype
+    [x] pnpm add @tanstack/svelte-query arktype
         └─ Ref: docs/02-STACK.md L386-388 — TanStack Query + ArkType
     [ ] 🟡 Fase 2: pnpm add @connectrpc/connect-query
         └─ Solo después de implementar proto/ + buf generate (ADR 0027)
-    [ ] pnpm add -D shadcn-svelte bits-ui lucide-svelte clsx tailwind-merge
+    [x] pnpm add -D shadcn-svelte bits-ui lucide-svelte clsx tailwind-merge
         └─ Ref: docs/02-STACK.md L390 — shadcn-svelte + componentes
     [ ] pnpm add @tauri-apps/api  (para detección de entorno Tauri)
         └─ Ref: docs/02-STACK.md L382
-    [ ] npx shadcn-svelte@latest init (Configuración oficial de temas y alias)
+    [x] npx shadcn-svelte@latest init (Configuración oficial de temas y alias)
+    [x] npx @inlang/paraglide-js init (i18n con Sherlock VSCode extension)
         └─ Ref: docs/02-STACK.md L390
 
-[ ] src/styles/global.css — CSS variables de marca:
-    └─ Ref: docs/02-STACK.md L394
-    [ ] --color-primary: #534AB7
-    [ ] --color-primary-50, --color-primary-800
-    [ ] --color-canvas: #F8F8F6
-    [ ] --color-card: #FFFFFF
-    [ ] --color-border: rgba(0,0,0,0.08)
-    [ ] --font-sans: 'Inter Variable', system-ui, sans-serif
-    [ ] --font-mono: 'JetBrains Mono', monospace
-    [ ] --sidebar-width: 256px, --topbar-height: 60px
-    [ ] [data-theme="dark"] con colores invertidos
+[x] src/styles/global.css — CSS variables (shadcn-svelte default):
+    └─ Ref: docs/02-STACK.md L394, theme: neutral
+    [x] --background, --foreground, --primary, --secondary
+    [x] --card, --popover, --muted, --accent, --destructive
+    [x] --border, --input, --ring, --radius
+    [x] Dark mode con .dark class
+    [x] Font: 'Inter Variable' via @fontsource-variable/inter
+    [x] --font-mono: 'JetBrains Mono', monospace
+    [x] --sidebar-width: 256px, --topbar-height: 60px
+    [x] [data-theme="dark"] con colores invertidos
         └─ Ref: docs/02-STACK.md L397-400
 
-[ ] Verificar: pnpm dev arranca sin errores
+[x] Verificar: pnpm dev arranca sin errores
+    [x] http://localhost:4321/ responde 200 OK — Astro v6.1.7 ready
+    [x] SSR con @astrojs/node (mode: standalone)
+    [x] Hot Module Replacement (HMR) funciona
+    [x] No errores críticos (solo warning de FSWatcher, normal en monorepos)
 ```
 
 ---
@@ -486,10 +495,10 @@ Para maximizar la calidad, el rendimiento y la experiencia de desarrollo del fro
 
 | Herramienta/Librería | URL | Útil para |
 |----------------------|-----|-----------|
-| **Astro** | https://docs.astro.build | SSR, layouts, routing, islands |
+| **Astro 6** | https://docs.astro.build | SSR, layouts, routing, islands, Rust compiler |
 | **Svelte 5 Runes** | https://svelte.dev/docs/svelte/what-are-runes | $state, $derived, $effect |
 | **Tailwind CSS v4** | https://tailwindcss.com/docs | Utility classes, theming |
-| **shadcn-svelte** | https://shadcn-svelte.com | Componentes UI accesibles |
+| **shadcn-svelte** | https://shadcn-svelte.com | Componentes UI — ver [Dashboard](https://shadcn-svelte.com/examples/dashboard), [Auth](https://shadcn-svelte.com/examples/authentication) |
 | **TanStack Query** | https://tanstack.com/query/latest | Caching, mutations, loading states |
 | **ArkType** | https://arktype.io | Validación runtime type-safe |
 | **Paraglide JS** | https://inlang.com/m/gerre34r/library-inlang-paraglideJs | i18n type-safe |

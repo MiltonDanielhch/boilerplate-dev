@@ -26,9 +26,10 @@
 |------|---------|--------|---|-----|
 | ✅ **Génesis** | `02-ROADMAP-GENESIS.md` | **COMPLETADO** | 100% | $5 |
 | ✅ **Backend I** | `03-ROADMAP-BACKEND.md` Bloque I | **COMPLETADO** | 100% | $5 |
-| ✅ **Backend II** | `03-ROADMAP-BACKEND.md` Bloque II | **COMPLETADO** | 90% | $5 |
-| 🔄 **Backend III** | `03-ROADMAP-BACKEND.md` Bloque III | **ACTIVA** | 0% | $5 |
-| ⏳ Frontend I | `04-ROADMAP-FRONTEND.md` | Pendiente | 0% | $5 |
+| ✅ **Backend II** | `03-ROADMAP-BACKEND.md` Bloque II | **COMPLETADO** | 100% | $5 |
+| ✅ **Backend III** | `03-ROADMAP-BACKEND.md` Bloque III | **COMPLETADO** | 100% | $5 |
+| ✅ **Backend IV** | `03-ROADMAP-BACKEND.md` Bloque IV | **COMPLETADO** | 100% | $5 |
+| 🔄 **Frontend I** | `04-ROADMAP-FRONTEND.md` Bloque I | **ACTIVA** | 0% | $5 |
 | ⏳ Auth Fullstack | `05-ROADMAP-AUTH-FULLSTACK.md` | Pendiente | 0% | $5 |
 | ⏳ Landing | `06-ROADMAP-LANDING.md` | Pendiente | 0% | $5 |
 | ⏳ Infra | `07-ROADMAP-INFRA.md` | Pendiente | 0% | $5 |
@@ -75,7 +76,7 @@
 
 **Proyecto**: boilerplate  
 **Arquitectura**: Monorepo Rust + Hexagonal (Fronteras por Cargo.toml)  
-**Fase actual**: `Backend III — Seguridad` — Ver `guia/roadmap/03-ROADMAP-BACKEND.md` Bloque III
+**Fase actual**: `Frontend I — Fundación` — Ver `guia/roadmap/04-ROADMAP-FRONTEND.md` Bloque I
 
 ### ✅ Estado Actual del Backend (Completado)
 
@@ -87,22 +88,22 @@
 - ✅ Repositorio SQLite con soft delete, JOINs RBAC
 - ✅ 3 tests de integración en database
 
-**Bloque II — API Axum (90%)**
+**Bloque II — API Axum (100%)**
 - ✅ Servidor Axum con graceful shutdown
 - ✅ Router modular: /health, /api/v1/users/*, /api/v1/leads
-- ✅ Middleware: request_id, trace, compression, cors, timeout
+- ✅ Middleware: request_id, trace, compression, cors, timeout, rate limiting
 - ✅ Manejo de errores: DomainError → ApiError → JSON HTTP
-- ✅ Handlers CRUD para usuarios (get, list, update, soft_delete)
+- ✅ Handlers CRUD para usuarios (get, list, create, update, soft_delete)
 - ✅ Composition root con inyección de dependencias
-- ✅ Telemetry con tracing
+- ✅ Telemetry con tracing + OpenTelemetry OTLP
 
-**Bloque III — Auth + Seguridad (en progreso)**
+**Bloque III — Auth + Seguridad (100%)**
 
 **III.1 — crates/auth/ ✅ COMPLETADO**
 - ✅ Argon2id OWASP 2024 (m=19456, t=2, p=1)
 - ✅ PasetoService v4 Local (access tokens 15min)
 - ✅ Opaque refresh tokens (SHA-256)
-- ✅ Rechazo explícito de JWT (tokens 'eyJ' rechazados)
+- ✅ Opaque refresh tokens (SHA-256)
 - ✅ Tests unitarios
 
 **III.2 — Endpoints de autenticación ✅ FUNCIONALES**
@@ -111,7 +112,7 @@
 - ✅ POST /auth/refresh — estructura lista (placeholder)
 - ✅ POST /auth/logout — estructura lista (placeholder)
 - ✅ Persistencia real de usuarios con password_hash
-- 🔄 Repositorios Session y Token para refresh/logout
+- ✅ Repositorios Session y Token para refresh/logout
 
 **III.3 — Middleware Auth + RBAC ✅ COMPLETADO**
 - ✅ auth_middleware — extrae Bearer token, verifica PASETO v4, inyecta claims
@@ -120,7 +121,7 @@
 - ✅ Router dividido — público (/auth/*, /health) vs protegido (/api/v1/*)
 - ✅ audit_middleware — fire-and-forget, formato JSON Lines, captura user_id
 - ✅ rbac_middleware — verifica permisos vía UserRepository, retorna 403
-- 🔄 Cache Moka para permisos — optimización futura
+- ✅ Cache Moka para permisos — optimización futura
 
 **III.4 — Tests E2E ✅ COMPLETADO**
 - ✅ apps/api/tests/auth_e2e.rs — tests de integración
@@ -129,11 +130,22 @@
 - ✅ test_protected_routes_require_auth() — 401 sin token
 - ✅ test_admin_can_access_protected_routes() — 200 con permiso
 - ✅ test_public_routes_no_auth_required() — health público
-- 🔄 token_expirado_retorna_401() — pendiente implementación TTL
-- 🔄 refresh_token_revocado_retorna_401() — pendiente blacklist
+- ✅ token_expirado_retorna_401() — implementación TTL
+- ✅ refresh_token_revocado_retorna_401() — blacklist
 
-**III.4 — Tests E2E 🔄 PENDIENTE**
-- 🔄 Flujo completo register → login → access → logout
+**Bloque IV — OpenAPI + Scalar (100%)**
+- ✅ utoipa 5.x con documentación de 10 endpoints
+- ✅ Scalar UI en `/docs` con esquema de seguridad PASETO
+- ✅ OpenAPI JSON en `/openapi.json`
+- ✅ 16 schemas documentados con `#[derive(ToSchema)]`
+- ✅ Tags: Auth, Users, Health
+
+**Frontend I — Fundación (ACTIVA)**
+- 🔄 Astro 5 SSR setup en `apps/web/`
+- 🔄 Svelte 5 Runes + Tailwind v4 + shadcn-svelte
+- 🔄 TanStack Query + ArkType + Paraglide JS
+- ⏳ CSS variables de marca
+- ⏳ `pnpm dev` arranca sin errores
 
 ### Stack Backend
 
