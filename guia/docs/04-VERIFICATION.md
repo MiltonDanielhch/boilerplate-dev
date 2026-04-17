@@ -442,6 +442,91 @@ curl http://localhost:4321 | grep -i "lang="
 
 ---
 
+## Bloque FE.II — Tipos, Estado y Validación
+
+> **Referencia:** ADR 0022 (Frontend), ADR 0021 (OpenAPI), docs/02-STACK.md L381-391
+
+```bash
+# 1. Schemas de ArkType compilan sin errores
+cd apps/web && npx tsc --noEmit src/lib/validation/schemas.ts
+# Esperado: sin errores de TypeScript
+# └─ Ref: docs/02-STACK.md L389
+
+# 2. Auth store tiene todas las propiedades exportadas
+cd apps/web && grep -E "(user|accessToken|isLoggedIn|isAdmin|setAuth|clearAuth)" src/lib/stores/auth.svelte.ts | wc -l
+# Esperado: 7+ líneas (todas las exports presentes)
+# └─ Ref: docs/02-STACK.md L386-388
+
+# 3. API client exporta métodos HTTP
+cd apps/web && grep -E "(get:|post:|put:|patch:|delete:)" src/lib/api/client.ts
+# Esperado: 5 métodos definidos
+# └─ Ref: docs/02-STACK.md L418-420
+
+# 4. Módulos auth y users tienen funciones exportadas
+cd apps/web && grep "export async function" src/lib/api/auth.ts src/lib/api/users.ts | wc -l
+# Esperado: 9+ funciones (4 auth + 5 users)
+# └─ Ref: docs/02-STACK.md L422-424
+```
+
+**Verificación en navegador:**
+
+```
+1. Abrir http://localhost:4321/
+   ✓ Landing carga sin errores de consola
+   ✓ Componentes shadcn (Card, Button) renderizan correctamente
+
+2. Abrir http://localhost:4321/dashboard
+   ✓ Sidebar colapsable funciona (click en botón < >)
+   ✓ DashboardLayout renderiza sin errores
+   ✓ No hay errores de TypeScript en consola del browser
+```
+
+---
+
+## Bloque FE.III — Layouts y Navegación
+
+> **Referencia:** ADR 0022 (Frontend), docs/03-STRUCTURE.md L450-467
+
+```bash
+# 1. Los layouts existen y exportan correctamente
+cd apps/web && ls src/layouts/*.astro | wc -l
+# Esperado: 2+ archivos (BaseLayout.astro, DashboardLayout.astro)
+# └─ Ref: docs/03-STRUCTURE.md L450-458
+
+# 2. Sidebar componente existe y usa Svelte 5 Runes
+cd apps/web && grep -E "\$state|\$props" src/components/layout/Sidebar.svelte | wc -l
+# Esperado: 2+ usos de Runes
+# └─ Ref: docs/02-STACK.md L375
+
+# 3. Dashboard page usa DashboardLayout
+cd apps/web && grep "DashboardLayout" src/pages/dashboard.astro
+# Esperado: import y uso presente
+# └─ Ref: docs/03-STRUCTURE.md L484-487
+
+# 4. Verificar que los comentarios de documentación están presentes
+cd apps/web && head -5 src/layouts/BaseLayout.astro | grep -c "Ubicación:"
+# Esperado: 1 (encabezado de documentación presente)
+```
+
+**Verificación visual en navegador:**
+
+```
+1. Landing page http://localhost:4321/
+   ✓ Card centrada con shadow
+   ✓ Badge "v0.1.0" visible
+   ✓ Dos botones con hover effects
+   ✓ Links a API docs y Health Check funcionan
+
+2. Dashboard http://localhost:4321/dashboard
+   ✓ Sidebar izquierdo visible (256px ancho)
+   ✓ Topbar sticky con título "Dashboard"
+   ✓ 4 KPI cards en grid (Usuarios, Sesiones, Health, DB)
+   ✓ Toggle sidebar colapsa a 64px
+   ✓ Tooltips aparecen en modo colapsado (hover en iconos)
+```
+
+---
+
 ## Bloque FE.IV-VI — Frontend Components + RBAC + i18n
 
 > **Referencia:** ADR 0022 (Frontend), ADR 0006 (RBAC), docs/03-STRUCTURE.md L454-467

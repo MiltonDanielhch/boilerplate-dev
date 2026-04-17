@@ -23,9 +23,9 @@
 | Bloque | Nombre | Progreso |
 |--------|--------|----------|
 | FE.I | Fundación — setup e infraestructura | 100% |
-| FE.III | Layouts y navegación | 75% |
-| FE.II | Tipos, estado y validación | 0% |
-| FE.IV | Componentes del dashboard | 0% |
+| FE.III | Layouts y navegación | 100% |
+| FE.II | Tipos, estado y validación | 90% |
+| FE.IV | Componentes del dashboard | 50% |
 | FE.V | RBAC en la UI | 0% |
 | FE.VI | i18n y formatters | 0% |
 
@@ -147,19 +147,19 @@ Para maximizar la calidad, el rendimiento y la experiencia de desarrollo del fro
         └─ Ref: ADR 0029
     [x] CreateUserSchema + UpdateUserSchema
 
-[ ] apps/web/src/lib/api/client.ts — fetch base:
+[x] apps/web/src/lib/api/client.ts — fetch base:
     └─ Ref: docs/02-STACK.md L418-420
-    [ ] Authorization: Bearer ${accessToken} en headers
+    [x] Authorization: Bearer ${accessToken} en headers
         └─ Ref: ADR 0008 — PASETO
-    [ ] Detecta window.__TAURI__ → usa invoke() en Tauri
+    [x] Detecta window.__TAURI__ → usa invoke() en Tauri
         └─ Ref: docs/02-STACK.md L419
-    [ ] Manejo de errores consistente
+    [x] Manejo de errores consistente (ApiError custom)
         └─ Ref: ADR 0007, docs/02-STACK.md L97-105
 
-[ ] apps/web/src/lib/api/ — módulos por dominio:
+[x] apps/web/src/lib/api/ — módulos por dominio:
     └─ Ref: docs/02-STACK.md L422-424
-    [ ] auth.ts   (login, register, refresh, logout)
-    [ ] users.ts  (list, get, create, update, softDelete)
+    [x] auth.ts   (login, register, refresh, logout, getCurrentUser)
+    [x] users.ts  (list, get, create, update, softDelete, restore, hardDelete)
         └─ Ref: ADR 0006 — Soft Delete
     [ ] leads.ts  (capture)
         └─ Ref: ADR 0029
@@ -268,10 +268,15 @@ Para maximizar la calidad, el rendimiento y la experiencia de desarrollo del fro
 > **Referencia:** ADR 0022, ADR 0006, ADR 0023, docs/02-STACK.md L228-233, docs/03-STRUCTURE.md L500-520
 
 ```
-[ ] components/dashboard/KpiCard.svelte
+[x] components/dashboard/KpiCard.svelte
     └─ Ref: docs/03-STRUCTURE.md L500-503
-    [ ] createQuery con endpoint prop
-        └─ Ref: docs/02-STACK.md L386 — TanStack Query
+    [x] Props: title, value, badge, change con iconos TrendingUp/Down
+
+[x] components/dashboard/StatsOverview.svelte
+    └─ Ref: docs/03-STRUCTURE.md L500-503
+    [x] createQuery para usuarios totales
+    [x] createQuery para health de API
+    [x] 4 KpiCards conectados a datos reales
     [ ] staleTime: 30_000, refetchInterval: 60_000
     [ ] Estado loading: Skeleton
     [ ] Estado datos: value + delta
