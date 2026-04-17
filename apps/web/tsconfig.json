@@ -5,7 +5,12 @@
     "paths": {
       "$lib": ["./src/lib"],
       "$lib/*": ["./src/lib/*"]
-    }
+    },
+    "moduleResolution": "bundler",
+    "strict": true,
+    "strictNullChecks": true,
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "target": "ES2022"
   },
   "include": [".astro/types.d.ts", "**/*"],
   "exclude": ["dist"]
