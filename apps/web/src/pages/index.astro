@@ -1,5 +1,8 @@
 ---
 import "../styles/global.css";
+import Button from "$lib/components/ui/button/button.svelte";
+import * as Card from "$lib/components/ui/card/index.js";
+import Badge from "$lib/components/ui/badge/badge.svelte";
 ---
 
 <html lang="en">
@@ -14,29 +17,28 @@ import "../styles/global.css";
 	</head>
 	<body class="min-h-screen bg-background text-foreground">
 		<main class="container mx-auto px-4 py-20">
-			<div class="max-w-2xl mx-auto text-center">
-				<h1 class="text-4xl font-bold tracking-tight mb-4">
-					🚀 Boilerplate
-				</h1>
-				<p class="text-xl text-muted-foreground mb-8">
-					Rust Hexagonal + Astro 6 SSR + Svelte 5
-				</p>
-				<div class="flex gap-4 justify-center">
-					<a
-						href="http://localhost:3000/docs"
-						target="_blank"
-						class="inline-flex items-center justify-center rounded-md bg-primary px-6 py-3 text-sm font-medium text-primary-foreground shadow hover:bg-primary/90"
-					>
-						📚 API Docs
-					</a>
-					<a
-						href="http://localhost:3000/health"
-						target="_blank"
-						class="inline-flex items-center justify-center rounded-md border border-input bg-background px-6 py-3 text-sm font-medium shadow-sm hover:bg-accent hover:text-accent-foreground"
-					>
-						💓 Health Check
-					</a>
-				</div>
+			<div class="max-w-2xl mx-auto">
+				<Card.Root class="text-center">
+					<Card.Header>
+						<Card.Title class="text-4xl font-bold tracking-tight flex items-center justify-center gap-2">
+							🚀 Boilerplate
+							<Badge variant="secondary">v0.1.0</Badge>
+						</Card.Title>
+						<Card.Description class="text-xl text-muted-foreground">
+							Rust Hexagonal + Astro 6 SSR + Svelte 5 + shadcn-svelte
+						</Card.Description>
+					</Card.Header>
+					<Card.Content>
+						<div class="flex gap-4 justify-center">
+							<Button href="http://localhost:3000/docs" target="_blank" size="lg">
+								📚 API Docs
+							</Button>
+							<Button href="http://localhost:3000/health" target="_blank" variant="outline" size="lg">
+								💓 Health Check
+							</Button>
+						</div>
+					</Card.Content>
+				</Card.Root>
 			</div>
 		</main>
 	</body>

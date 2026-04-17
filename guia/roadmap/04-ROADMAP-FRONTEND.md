@@ -94,6 +94,13 @@ Para maximizar la calidad, el rendimiento y la experiencia de desarrollo del fro
     [x] [data-theme="dark"] con colores invertidos
         └─ Ref: docs/02-STACK.md L397-400
 
+[x] shadcn-svelte components instalados:
+    [x] Base: button, card, badge, separator, avatar
+    [x] Forms: input, label, form
+    [x] Feedback: alert, dialog, dropdown-menu
+    [x] Navigation: tabs, navigation-menu, sidebar, sheet
+    [x] Extras: tooltip, skeleton, is-mobile hook
+
 [x] Verificar: pnpm dev arranca sin errores
     [x] http://localhost:4321/ responde 200 OK — Astro v6.1.7 ready
     [x] SSR con @astrojs/node (mode: standalone)
