@@ -1,0 +1,55 @@
+---
+// Ubicación: `apps/web/src/layouts/BaseLayout.astro`
+//
+// Descripción: Layout base de la aplicación con SEO completo, meta tags,
+//              soporte para Open Graph, Twitter Cards y tema oscuro.
+//              Todos los demás layouts deben extender este.
+//
+// ADRs relacionados: 0022 (Frontend), 0023 (i18n)
+
+import "../styles/global.css";
+
+interface Props {
+	title?: string;
+	description?: string;
+	canonical?: string;
+	ogImage?: string;
+}
+
+const {
+	title = "Boilerplate — Rust + Astro",
+	description = "Fullstack boilerplate with Rust backend and Astro frontend",
+	canonical,
+	ogImage = "/og-image.png"
+} = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en" class="dark">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="generator" content={Astro.generator} />
+		
+		<title>{title}</title>
+		<meta name="description" content={description} />
+		
+		{canonical && <link rel="canonical" href={canonical} />}
+		
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="icon" href="/favicon.ico" />
+		
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:image" content={ogImage} />
+		<meta property="og:type" content="website" />
+		
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:title" content={title} />
+		<meta name="twitter:description" content={description} />
+		<meta name="twitter:image" content={ogImage} />
+	</head>
+	<body class="min-h-screen bg-background text-foreground antialiased">
+		<slot />
+	</body>
+</html>

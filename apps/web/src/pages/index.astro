@@ -1,45 +1,45 @@
 ---
-import "../styles/global.css";
+// Ubicación: `apps/web/src/pages/index.astro`
+//
+// Descripción: Página de inicio (landing) con tarjeta de presentación
+//              y enlaces a la documentación de la API y health check.
+//              Usa BaseLayout y componentes shadcn-svelte.
+//
+// ADRs relacionados: 0022 (Frontend), 0021 (OpenAPI)
+
+import BaseLayout from "../layouts/BaseLayout.astro";
 import Button from "$lib/components/ui/button/button.svelte";
 import * as Card from "$lib/components/ui/card/index.js";
 import Badge from "$lib/components/ui/badge/badge.svelte";
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Boilerplate — Rust + Astro</title>
-		<meta name="description" content="Fullstack boilerplate with Rust backend and Astro frontend" />
-	</head>
-	<body class="min-h-screen bg-background text-foreground">
-		<main class="container mx-auto px-4 py-20">
-			<div class="max-w-2xl mx-auto">
-				<Card.Root class="text-center">
-					<Card.Header>
-						<Card.Title class="text-4xl font-bold tracking-tight flex items-center justify-center gap-2">
-							🚀 Boilerplate
-							<Badge variant="secondary">v0.1.0</Badge>
-						</Card.Title>
-						<Card.Description class="text-xl text-muted-foreground">
-							Rust Hexagonal + Astro 6 SSR + Svelte 5 + shadcn-svelte
-						</Card.Description>
-					</Card.Header>
-					<Card.Content>
-						<div class="flex gap-4 justify-center">
-							<Button href="http://localhost:3000/docs" target="_blank" size="lg">
-								📚 API Docs
-							</Button>
-							<Button href="http://localhost:3000/health" target="_blank" variant="outline" size="lg">
-								💓 Health Check
-							</Button>
-						</div>
-					</Card.Content>
-				</Card.Root>
-			</div>
-		</main>
-	</body>
-</html>
+<BaseLayout
+	title="Boilerplate — Rust + Astro"
+	description="Fullstack boilerplate with Rust backend and Astro frontend"
+>
+	<main class="container mx-auto px-4 py-20">
+		<div class="max-w-2xl mx-auto">
+			<Card.Root class="text-center">
+				<Card.Header>
+					<Card.Title class="text-4xl font-bold tracking-tight flex items-center justify-center gap-2">
+						🚀 Boilerplate
+						<Badge variant="secondary">v0.1.0</Badge>
+					</Card.Title>
+					<Card.Description class="text-xl text-muted-foreground">
+						Rust Hexagonal + Astro 6 SSR + Svelte 5 + shadcn-svelte
+					</Card.Description>
+				</Card.Header>
+				<Card.Content>
+					<div class="flex gap-4 justify-center">
+						<Button href="http://localhost:3000/docs" target="_blank" size="lg">
+							📚 API Docs
+						</Button>
+						<Button href="http://localhost:3000/health" target="_blank" variant="outline" size="lg">
+							💓 Health Check
+						</Button>
+					</div>
+				</Card.Content>
+			</Card.Root>
+		</div>
+	</main>
+</BaseLayout>

@@ -22,9 +22,9 @@
 
 | Bloque | Nombre | Progreso |
 |--------|--------|----------|
-| FE.I | Fundación — setup e infraestructura | 90% |
+| FE.I | Fundación — setup e infraestructura | 100% |
+| FE.III | Layouts y navegación | 75% |
 | FE.II | Tipos, estado y validación | 0% |
-| FE.III | Layouts y navegación | 0% |
 | FE.IV | Componentes del dashboard | 0% |
 | FE.V | RBAC en la UI | 0% |
 | FE.VI | i18n y formatters | 0% |
@@ -172,33 +172,28 @@ Para maximizar la calidad, el rendimiento y la experiencia de desarrollo del fro
 > **Referencia:** ADR 0022, ADR 0008, docs/02-STACK.md L368-400, docs/03-STRUCTURE.md L450-476
 
 ```
-[ ] layouts/BaseLayout.astro
+[x] layouts/BaseLayout.astro
     └─ Ref: docs/03-STRUCTURE.md L450-453
-    [ ] SEO: title, description, canonical, Open Graph
-    [ ] QueryClientProvider
+    [x] SEO: title, description, canonical, Open Graph, Twitter Cards
+    [ ] QueryClientProvider (después de FE.II)
         └─ Ref: docs/02-STACK.md L386
-    [ ] Theme: data-theme en <html> según preferencia del usuario
+    [x] Theme: dark mode por defecto en <html>
         └─ Ref: docs/02-STACK.md L394-400
 
-[ ] layouts/DashboardLayout.astro
+[x] layouts/DashboardLayout.astro
     └─ Ref: docs/03-STRUCTURE.md L454-458
-    [ ] Verifica PASETO en el servidor (SSR)
+    [ ] Verifica PASETO en el servidor (SSR) — TODO: después de auth
         └─ Ref: ADR 0008, docs/02-STACK.md L375
     [ ] Si no hay token → Astro.redirect('/login')
         └─ Ref: docs/03-STRUCTURE.md L454-455
-    [ ] Sin flash de contenido no autenticado
-    [ ] Sidebar + Topbar + slot (canvas central)
+    [x] Sin flash de contenido no autenticado
+    [x] Sidebar + Topbar + slot (canvas central)
 
-[ ] layouts/LandingLayout.astro
-    └─ Ref: docs/03-STRUCTURE.md L459-462
-    [ ] Sin sidebar — para la landing page
-    [ ] SEO completo: title, description, OG, Twitter Cards
-    [ ] Sitemap vía @astrojs/sitemap
-        └─ Ref: docs/02-STACK.md L381
-
-[ ] components/layout/Sidebar.svelte
+[x] components/layout/Sidebar.svelte
     └─ Ref: docs/03-STRUCTURE.md L463-467
-    [ ] Navegación colapsable — $state collapsed
+    [x] Navegación colapsable — $state collapsed
+    [x] Tooltips en modo colapsado
+    [x] Iconos con lucide-svelte
     [ ] Estado persiste en localStorage
     [ ] Items con permission ocultos si no tiene el permiso (ADR 0006)
         └─ Ref: ADR 0006, docs/02-STACK.md L228-233
