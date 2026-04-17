@@ -12,8 +12,10 @@ use axum::{
 };
 use domain::ports::UserRepository;
 use serde::Serialize;
+use utoipa::ToSchema;
 
-#[derive(Debug, Serialize)]
+/// Response del health check
+#[derive(Debug, Serialize, ToSchema)]
 pub struct HealthResponse {
     pub status: &'static str,
     pub database: &'static str,
@@ -21,7 +23,16 @@ pub struct HealthResponse {
 }
 
 /// GET /health — verifica que todo esté funcionando.
-pub async fn handler(State(state): State<AppState>) -> ApiResult<Json<HealthResponse>> {
+#[utoipa::path(
+    get,
+    path = "/health",
+    tag = "Health",
+    responses(
+        (status = 200, description = "Servidor funcionando correctamente", body = HealthResponse),
+        (status = 500, description = "Error de conexión a la base de datos", body = crate::error::ErrorResponse),
+    )
+)]
+pub async fn health(State(state): State<AppState>) -> ApiResult<Json<HealthResponse>> {
     // Verificar conexión a DB con una query simple
     let _ = state.user_repo.find_by_id(&domain::value_objects::UserId::new()).await;
     // Si falla, retorna error 500

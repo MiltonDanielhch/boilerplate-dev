@@ -13,8 +13,26 @@ use axum::{
 };
 use domain::value_objects::UserId;
 use serde::{Deserialize, Serialize};
+use utoipa::ToSchema;
 
 /// GET /api/v1/users/:id
+#[utoipa::path(
+    get,
+    path = "/api/v1/users/{id}",
+    tag = "Users",
+    params(
+        ("id" = String, Path, description = "ID del usuario")
+    ),
+    security(
+        ("paseto" = [])
+    ),
+    responses(
+        (status = 200, description = "Usuario encontrado", body = UserResponse),
+        (status = 401, description = "No autenticado", body = crate::error::ErrorResponse),
+        (status = 403, description = "Sin permiso", body = crate::error::ErrorResponse),
+        (status = 404, description = "Usuario no encontrado", body = crate::error::ErrorResponse),
+    )
+)]
 pub async fn get(
     State(state): State<AppState>,
     Path(id): Path<String>,
@@ -28,6 +46,23 @@ pub async fn get(
 }
 
 /// GET /api/v1/users
+#[utoipa::path(
+    get,
+    path = "/api/v1/users",
+    tag = "Users",
+    params(
+        ("limit" = Option<i64>, Query, description = "Cantidad máxima de usuarios"),
+        ("offset" = Option<i64>, Query, description = "Offset para paginación"),
+    ),
+    security(
+        ("paseto" = [])
+    ),
+    responses(
+        (status = 200, description = "Lista de usuarios", body = ListUsersResponse),
+        (status = 401, description = "No autenticado", body = crate::error::ErrorResponse),
+        (status = 403, description = "Sin permiso", body = crate::error::ErrorResponse),
+    )
+)]
 pub async fn list(
     State(state): State<AppState>,
     Query(params): Query<ListUsersQuery>,
@@ -47,6 +82,22 @@ pub async fn list(
 }
 
 /// POST /api/v1/users
+#[utoipa::path(
+    post,
+    path = "/api/v1/users",
+    tag = "Users",
+    request_body = CreateUserRequest,
+    security(
+        ("paseto" = [])
+    ),
+    responses(
+        (status = 201, description = "Usuario creado", body = UserResponse),
+        (status = 400, description = "Datos inválidos", body = crate::error::ErrorResponse),
+        (status = 401, description = "No autenticado", body = crate::error::ErrorResponse),
+        (status = 403, description = "Sin permiso", body = crate::error::ErrorResponse),
+        (status = 409, description = "Email ya existe", body = crate::error::ErrorResponse),
+    )
+)]
 pub async fn create(
     State(_state): State<AppState>,
     Json(_body): Json<CreateUserRequest>,
@@ -56,6 +107,25 @@ pub async fn create(
 }
 
 /// PUT /api/v1/users/:id
+#[utoipa::path(
+    put,
+    path = "/api/v1/users/{id}",
+    tag = "Users",
+    params(
+        ("id" = String, Path, description = "ID del usuario")
+    ),
+    request_body = UpdateUserRequest,
+    security(
+        ("paseto" = [])
+    ),
+    responses(
+        (status = 200, description = "Usuario actualizado", body = UserResponse),
+        (status = 400, description = "Datos inválidos", body = crate::error::ErrorResponse),
+        (status = 401, description = "No autenticado", body = crate::error::ErrorResponse),
+        (status = 403, description = "Sin permiso", body = crate::error::ErrorResponse),
+        (status = 404, description = "Usuario no encontrado", body = crate::error::ErrorResponse),
+    )
+)]
 pub async fn update(
     State(state): State<AppState>,
     Path(id): Path<String>,
@@ -71,6 +141,23 @@ pub async fn update(
 }
 
 /// DELETE /api/v1/users/:id — Soft delete (ADR 0006)
+#[utoipa::path(
+    delete,
+    path = "/api/v1/users/{id}",
+    tag = "Users",
+    params(
+        ("id" = String, Path, description = "ID del usuario")
+    ),
+    security(
+        ("paseto" = [])
+    ),
+    responses(
+        (status = 200, description = "Usuario eliminado (soft delete)"),
+        (status = 401, description = "No autenticado", body = crate::error::ErrorResponse),
+        (status = 403, description = "Sin permiso", body = crate::error::ErrorResponse),
+        (status = 404, description = "Usuario no encontrado", body = crate::error::ErrorResponse),
+    )
+)]
 pub async fn soft_delete(
     State(state): State<AppState>,
     Path(id): Path<String>,
@@ -85,32 +172,37 @@ pub async fn soft_delete(
 
 // Request/Response types
 
-#[derive(Debug, Deserialize)]
+/// Query params para listar usuarios
+#[derive(Debug, Deserialize, ToSchema)]
 pub struct ListUsersQuery {
     pub limit: Option<i64>,
     pub offset: Option<i64>,
 }
 
-#[derive(Debug, Deserialize)]
+/// Request para crear usuario (admin)
+#[derive(Debug, Deserialize, ToSchema)]
 pub struct CreateUserRequest {
     pub email: String,
     pub password: String,
     pub name: Option<String>,
 }
 
-#[derive(Debug, Deserialize)]
+/// Request para actualizar usuario
+#[derive(Debug, Deserialize, ToSchema)]
 pub struct UpdateUserRequest {
     pub name: Option<String>,
 }
 
-#[derive(Debug, Serialize)]
+/// Response con lista de usuarios
+#[derive(Debug, Serialize, ToSchema)]
 pub struct ListUsersResponse {
     pub users: Vec<UserResponse>,
     pub limit: i64,
     pub offset: i64,
 }
 
-#[derive(Debug, Serialize)]
+/// Response de usuario
+#[derive(Debug, Serialize, ToSchema)]
 pub struct UserResponse {
     pub id: String,
     pub email: String,

@@ -18,9 +18,10 @@ use domain::{
 };
 use serde::{Deserialize, Serialize};
 use tracing::info;
+use utoipa::ToSchema;
 
 /// Request para registro de usuario
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, ToSchema)]
 pub struct RegisterRequest {
     pub email: String,
     pub password: String,
@@ -28,7 +29,7 @@ pub struct RegisterRequest {
 }
 
 /// Response de registro exitoso
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, ToSchema)]
 pub struct RegisterResponse {
     pub user_id: String,
     pub email: String,
@@ -36,6 +37,18 @@ pub struct RegisterResponse {
 }
 
 /// POST /auth/register — Registro de nuevo usuario
+#[utoipa::path(
+    post,
+    path = "/auth/register",
+    tag = "Auth",
+    request_body = RegisterRequest,
+    responses(
+        (status = 201, description = "Usuario registrado exitosamente", body = RegisterResponse),
+        (status = 400, description = "Datos inválidos", body = crate::error::ErrorResponse),
+        (status = 409, description = "Email ya registrado", body = crate::error::ErrorResponse),
+        (status = 500, description = "Error interno", body = crate::error::ErrorResponse),
+    )
+)]
 pub async fn register(
     State(state): State<AppState>,
     Json(body): Json<RegisterRequest>,
@@ -80,14 +93,14 @@ pub async fn register(
 }
 
 /// Request para login
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, ToSchema)]
 pub struct LoginRequest {
     pub email: String,
     pub password: String,
 }
 
 /// Response de login exitoso
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, ToSchema)]
 pub struct LoginResponse {
     pub access_token: String,
     pub refresh_token: String,
@@ -96,6 +109,17 @@ pub struct LoginResponse {
 }
 
 /// POST /auth/login — Autenticación de usuario
+#[utoipa::path(
+    post,
+    path = "/auth/login",
+    tag = "Auth",
+    request_body = LoginRequest,
+    responses(
+        (status = 200, description = "Login exitoso", body = LoginResponse),
+        (status = 401, description = "Credenciales inválidas", body = crate::error::ErrorResponse),
+        (status = 500, description = "Error interno", body = crate::error::ErrorResponse),
+    )
+)]
 pub async fn login(
     State(state): State<AppState>,
     Json(body): Json<LoginRequest>,
@@ -140,13 +164,13 @@ pub async fn login(
 }
 
 /// Request para refresh token
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, ToSchema)]
 pub struct RefreshRequest {
     pub refresh_token: String,
 }
 
 /// Response de refresh exitoso
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, ToSchema)]
 pub struct RefreshResponse {
     pub access_token: String,
     pub refresh_token: String,
@@ -155,6 +179,17 @@ pub struct RefreshResponse {
 }
 
 /// POST /auth/refresh — Rotación de tokens
+#[utoipa::path(
+    post,
+    path = "/auth/refresh",
+    tag = "Auth",
+    request_body = RefreshRequest,
+    responses(
+        (status = 200, description = "Tokens rotados exitosamente", body = RefreshResponse),
+        (status = 401, description = "Refresh token inválido", body = crate::error::ErrorResponse),
+        (status = 500, description = "Error interno", body = crate::error::ErrorResponse),
+    )
+)]
 pub async fn refresh(
     State(state): State<AppState>,
     Json(body): Json<RefreshRequest>,
@@ -173,6 +208,18 @@ pub async fn refresh(
 }
 
 /// POST /auth/logout — Cierre de sesión
+#[utoipa::path(
+    post,
+    path = "/auth/logout",
+    tag = "Auth",
+    security(
+        ("paseto" = [])
+    ),
+    responses(
+        (status = 200, description = "Logout exitoso"),
+        (status = 401, description = "No autenticado", body = crate::error::ErrorResponse),
+    )
+)]
 pub async fn logout(
     State(state): State<AppState>,
 ) -> ApiResult<Json<serde_json::Value>> {

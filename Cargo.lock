@@ -287,6 +287,8 @@ dependencies = [
  "tower-http",
  "tracing",
  "tracing-subscriber",
+ "utoipa",
+ "utoipa-scalar",
  "uuid",
 ]
 

@@ -2,8 +2,9 @@
 //
 // Descripción: Router modular con middleware.
 //
-// ADRs relacionados: ADR 0003 (Axum), ADR 0009 (Rate Limit)
+// ADRs relacionados: ADR 0003 (Axum), ADR 0009 (Rate Limit), ADR 0021 (OpenAPI)
 
+use crate::docs::ApiDoc;
 use crate::handlers::{auth, health, leads, users};
 use crate::middleware::audit::audit_middleware;
 use crate::middleware::auth::auth_middleware;
@@ -18,16 +19,21 @@ use axum::{
 };
 use std::time::Duration;
 use tower_http::{compression::CompressionLayer, cors::CorsLayer, timeout::TimeoutLayer};
+use utoipa::OpenApi;
+use utoipa_scalar::{Scalar, Servable};
 
 /// Crea el router con todos los endpoints y middleware.
 pub fn create_router(state: AppState) -> Router {
     // Router público (sin autenticación)
     let public_routes = Router::new()
-        .route("/health", get(health::handler))
+        .route("/health", get(health::health))
         .route("/auth/register", post(auth::register))
         .route("/auth/login", post(auth::login))
         .route("/auth/refresh", post(auth::refresh))
-        .route("/auth/logout", post(auth::logout));
+        .route("/auth/logout", post(auth::logout))
+        // Documentación API - disponible en todos los entornos
+        .merge(Scalar::with_url("/docs", ApiDoc::openapi()))
+        .route("/openapi.json", get(|| async { axum::Json(ApiDoc::openapi()) }));
 
     // Router de usuarios con auth + RBAC
     // users:read para GET, users:write para POST/PUT/DELETE

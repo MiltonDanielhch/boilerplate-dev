@@ -13,14 +13,16 @@ use axum::{
 use domain::errors::DomainError;
 use serde::Serialize;
 use tracing::error;
+use utoipa::ToSchema;
 
 /// Respuesta de error estandarizada.
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, ToSchema)]
 pub struct ErrorResponse {
     pub error: ErrorDetail,
 }
 
-#[derive(Debug, Serialize)]
+/// Detalle del error.
+#[derive(Debug, Serialize, ToSchema)]
 pub struct ErrorDetail {
     pub code: String,
     pub message: String,

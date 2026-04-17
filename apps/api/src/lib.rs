@@ -4,6 +4,7 @@
 //
 // ADRs relacionados: ADR 0003 (Axum), ADR 0010 (Testing)
 
+pub mod docs;
 pub mod error;
 pub mod handlers;
 pub mod middleware;

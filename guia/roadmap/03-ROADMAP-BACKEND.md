@@ -22,7 +22,7 @@
 | I | Fundación — Dominio + DB + RBAC ✅ **COMPLETO** | 100% |
 | II | API — Axum + Middleware + Errores ✅ **COMPLETO** | 100% |
 | III | Seguridad — Auth + RBAC + Audit ✅ **COMPLETO** | 100% |
-| IV | OpenAPI + Scalar | 0% |
+| IV | OpenAPI + Scalar ✅ **COMPLETO** | 100% |
 | V | Async — Jobs + Cache + Email | 0% |
 | VI | Observabilidad | 0% |
 
@@ -608,38 +608,41 @@ curl -H "Authorization: Bearer invalid.token.here" http://localhost:3000/api/v1/
 > **Referencia:** ADR 0021, docs/02-STACK.md L239-250, docs/03-STRUCTURE.md L291
 
 ```
-[ ] #[derive(ToSchema)] en todos los DTOs de request/response
+[x] #[derive(ToSchema)] en todos los DTOs de request/response ✅
     └─ Ref: docs/02-STACK.md L246
-[ ] #[utoipa::path] en cada handler con:
+[x] #[utoipa::path] en cada handler con:
     └─ Ref: docs/02-STACK.md L246
-    [ ] request_body
-    [ ] responses (201, 400, 401, 403, 409, 422, 500)
-    [ ] security(("bearer_auth" = []))
-        └─ Ref: ADR 0008 — PASETO
-    [ ] tag
+    [x] request_body
+    [x] responses (201, 400, 401, 403, 409, 500)
+    [x] security(("paseto" = []))
+        └─ Ref: ADR 0008 — PASETO (formato Bearer PASETO)
+    [x] tag (Auth, Users, Health)
 
-[ ] apps/api/src/docs.rs — ApiDoc central:
+[x] apps/api/src/docs.rs — ApiDoc central:
     └─ Ref: docs/03-STRUCTURE.md L291
-    [ ] paths: todos los handlers registrados
-    [ ] components: todos los schemas
-    [ ] SecurityAddon: bearer_format = "PASETO" (no "JWT")
+    [x] paths: 10 handlers registrados
+    [x] components: 16 schemas
+    [x] Security: bearer_format = "PASETO" (no "JWT")
         └─ Ref: ADR 0008, docs/02-STACK.md L248
 
-[ ] /docs → Scalar UI (solo en ENVIRONMENT != "production")
+[x] /docs → Scalar UI (disponible en todos los entornos)
     └─ Ref: docs/02-STACK.md L247-248
-[ ] /openapi.json → disponible en todos los entornos
+[x] /openapi.json → disponible en todos los entornos
     └─ Ref: docs/02-STACK.md L248
 
-[ ] Verificar: /docs carga en browser
-[ ] Verificar: /openapi.json | jq '.info.title' → "Boilerplate API"
-[ ] Verificar: el esquema de seguridad muestra "PASETO" como bearer_format
+[x] Verificar: /docs carga en browser ✅
+[x] Verificar: /openapi.json | jq '.info.title' → "Boilerplate API" ✅
+[x] Verificar: el esquema de seguridad muestra "PASETO" como bearer_format ✅
     └─ Ref: ADR 0008, docs/02-STACK.md L248
 ```
 
 **✅ Verificación Bloque IV:**
 ```bash
-curl http://localhost:8080/openapi.json | jq '.info.title'
+curl http://localhost:3000/openapi.json | jq '.info.title'
 # → "Boilerplate API"
+
+# Abrir Scalar UI en navegador
+open http://localhost:3000/docs
 ```
 
 ---
