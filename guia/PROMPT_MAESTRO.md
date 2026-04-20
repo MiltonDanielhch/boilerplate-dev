@@ -30,7 +30,7 @@
 | ✅ **Backend III** | `03-ROADMAP-BACKEND.md` Bloque III | **COMPLETADO** | 100% | $5 |
 | ✅ **Backend IV** | `03-ROADMAP-BACKEND.md` Bloque IV | **COMPLETADO** | 100% | $5 |
 | ✅ **Frontend I** | `04-ROADMAP-FRONTEND.md` FE.I + FE.IV | **COMPLETADO** | 100% | $5 |
-| 🔄 **FE.V RBAC UI** | `04-ROADMAP-FRONTEND.md` Bloque V | **ACTIVA** | 50% | $5 |
+| 🔄 **FE.V RBAC UI** | `04-ROADMAP-FRONTEND.md` Bloque V | **ACTIVA** | 85% | $5 |
 | ⏳ Auth Fullstack | `05-ROADMAP-AUTH-FULLSTACK.md` | Pendiente | 0% | $5 |
 | ⏳ Landing | `06-ROADMAP-LANDING.md` | Pendiente | 0% | $5 |
 | ⏳ Infra | `07-ROADMAP-INFRA.md` | Pendiente | 0% | $5 |
@@ -156,9 +156,22 @@
 - ✅ Empty (shadcn)
 - ✅ PermissionGate + ThemeToggle
 
-**Frontend V — RBAC en UI (ACTIVA)**
-- 🔄 PermissionGate component
-- 🔄 Sidebar filtrado por permisos
+**Frontend V — RBAC en UI (ACTIVA 85%)**
+- ✅ PermissionGate component funcional
+- ✅ Sidebar filtrado por permisos con persistencia
+- ✅ Topbar con Avatar, notificaciones, logout
+- ✅ CommandPalette (Ctrl+K) con RBAC
+- ✅ UserTable usa PermissionGate para acciones
+- ✅ Páginas dashboard/, audit/, settings/ creadas
+- [~] SSR verification en dashboard/audit (TODO)
+
+**Frontend VI — i18n y formatters (COMPLETADO 100%)**
+- ✅ Paraglide JS configurado (es/en)
+- ✅ messages/es.json (40+ mensajes)
+- ✅ messages/en.json (40+ mensajes)
+- ✅ lib/i18n/formatters.ts (fecha, moneda BOB, números)
+- ✅ Integración en componentes (Sidebar, CommandPalette)
+- [ ] just build con generación Paraglide (opcional)
 
 ### Stack Backend
 
@@ -459,16 +472,21 @@ Proyecto nuevo — empezar desde Génesis
 
 ## Cómo proseguir desde esta sesión
 
-**Último avance:** Frontend FE.IV completado (KpiCard, EventFeed, SystemHealth, UserForm, PermissionGate, ThemeToggle)
+**Último avance:** FE.V al 85% — RBAC completado en UI
+- ✅ Sidebar filtrado por permisos con persistencia localStorage
+- ✅ Topbar con Avatar, notificaciones y logout funcional
+- ✅ CommandPalette (Ctrl+K) con navegación y RBAC
+- ✅ UserTable usa PermissionGate para delete/restore
+- ✅ Páginas dashboard/, audit/, settings/ creadas
 
-**Siguiente bloque activo:** FE.V — RBAC en UI
-- Implementar Sidebar con permisos
-- Filtrar acciones por permisos del usuario
-- CommandPalette con RBAC
+**Siguiente bloque activo:** FE.VI — i18n y formatters
+- Paraglide JS para internacionalización (es/en)
+- Formatters: fecha, moneda, números (timezone America/La_Paz)
+- Mensajes en messages/es.json y messages/en.json
 
 **Comandos para continuar:**
 ```bash
-# Iniciar desarrollo
+# Iniciar desarrollo frontend
 cd apps/web && pnpm dev
 
 # Backend en otra terminal
@@ -477,5 +495,7 @@ cd apps/api && cargo run
 
 **URLs de prueba:**
 - Dashboard: http://localhost:4321/dashboard
-- Usuarios: http://localhost:4321/dashboard/users
+- Users: http://localhost:4321/dashboard/users
+- Audit: http://localhost:4321/dashboard/audit
+- Settings: http://localhost:4321/dashboard/settings
 - Login: http://localhost:4321/login

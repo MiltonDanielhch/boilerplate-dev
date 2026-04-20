@@ -21,10 +21,8 @@
 	import { Badge } from "$lib/components/ui/badge/index.js";
 	import { ChevronLeft, ChevronRight, Search, Trash2, RefreshCw } from "lucide-svelte";
 	import { listUsers, softDeleteUser, restoreUser } from "$lib/api/users";
+	import { PermissionGate } from "$lib/components/ui/permission-gate";
 	import type { User } from "$lib/types/user";
-
-	// Props
-	let { canDelete = false, canRestore = false } = $props<{ canDelete?: boolean; canRestore?: boolean }>();
 
 	// Estado
 	let users = $state<User[]>([]);
@@ -178,22 +176,26 @@
 								{new Date(user.createdAt).toLocaleDateString()}
 							</TableCell>
 							<TableCell class="text-right">
-								{#if user.deletedAt && canRestore}
-									<Button
-										variant="outline"
-										size="sm"
-										onclick={() => handleRestore(user.id)}
-									>
-										Restore
-									</Button>
-								{:else if !user.deletedAt && canDelete}
-									<Button
-										variant="destructive"
-										size="sm"
-										onclick={() => handleDelete(user.id)}
-									>
-										<Trash2 class="h-4 w-4" />
-									</Button>
+								{#if user.deletedAt}
+									<PermissionGate permission="users:write">
+										<Button
+											variant="outline"
+											size="sm"
+											onclick={() => handleRestore(user.id)}
+										>
+											Restore
+										</Button>
+									</PermissionGate>
+								{:else}
+									<PermissionGate permission="users:delete">
+										<Button
+											variant="destructive"
+											size="sm"
+											onclick={() => handleDelete(user.id)}
+										>
+											<Trash2 class="h-4 w-4" />
+										</Button>
+									</PermissionGate>
 								{/if}
 							</TableCell>
 						</TableRow>

@@ -27,6 +27,9 @@ pub trait UserRepository: Send + Sync {
     /// Verifica si un usuario tiene un permiso específico (vía roles).
     fn has_permission(&self, user_id: &UserId, permission: &str) -> impl Future<Output = Result<bool, DomainError>> + Send;
 
+    /// Obtiene todos los permisos de un usuario (vía roles).
+    fn get_permissions(&self, user_id: &UserId) -> impl Future<Output = Result<Vec<String>, DomainError>> + Send;
+
     /// Lista usuarios con paginación.
     fn list(&self, limit: i64, offset: i64) -> impl Future<Output = Result<Vec<User>, DomainError>> + Send;
 }

@@ -28,6 +28,7 @@
     "@fontsource-variable/inter": "^5.2.8",
     "@inlang/cli": "^3.0.0",
     "@inlang/paraglide-js": "^2.16.0",
+    "@inlang/paraglide-js-adapter-astro": "^0.1.30",
     "@internationalized/date": "^3.12.1",
     "@lucide/svelte": "^1.8.0",
     "@tailwindcss/vite": "latest",

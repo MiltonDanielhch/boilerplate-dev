@@ -1,0 +1,145 @@
+---
+// Ubicación: `apps/web/src/pages/dashboard/settings.astro`
+//
+// Descripción: Página de configuración de cuenta y preferencias del usuario.
+//              Permite actualizar perfil, cambiar contraseña y preferencias.
+//
+// ADRs relacionados: 0022 (Frontend), 0006 (RBAC), 0023 (i18n)
+
+import DashboardLayout from "../../layouts/DashboardLayout.astro";
+import * as Card from "$lib/components/ui/card/index.js";
+import * as Tabs from "$lib/components/ui/tabs/index.js";
+import { Button } from "$lib/components/ui/button/index.js";
+import { Input } from "$lib/components/ui/input/index.js";
+import { Label } from "$lib/components/ui/label/index.js";
+import { User, Key, Bell, Globe } from "lucide-svelte";
+---
+
+<DashboardLayout title="Settings">
+	<div class="space-y-6">
+		<!-- Header -->
+		<div>
+			<h1 class="text-3xl font-bold tracking-tight">Settings</h1>
+			<p class="text-muted-foreground mt-2">
+				Manage your account settings and preferences
+			</p>
+		</div>
+
+		<!-- Settings Tabs -->
+		<Tabs.Root value="profile" class="w-full" client:load>
+			<Tabs.List class="grid w-full max-w-md grid-cols-4" client:load>
+				<Tabs.Trigger value="profile" client:load>
+					<User class="h-4 w-4 mr-2" />
+					<span class="hidden sm:inline">Profile</span>
+				</Tabs.Trigger>
+				<Tabs.Trigger value="security" client:load>
+					<Key class="h-4 w-4 mr-2" />
+					<span class="hidden sm:inline">Security</span>
+				</Tabs.Trigger>
+				<Tabs.Trigger value="notifications" client:load>
+					<Bell class="h-4 w-4 mr-2" />
+					<span class="hidden sm:inline">Notifications</span>
+				</Tabs.Trigger>
+				<Tabs.Trigger value="preferences" client:load>
+					<Globe class="h-4 w-4 mr-2" />
+					<span class="hidden sm:inline">Preferences</span>
+				</Tabs.Trigger>
+			</Tabs.List>
+
+			<!-- Profile Tab -->
+			<Tabs.Content value="profile" class="mt-6" client:load>
+				<Card.Root>
+					<Card.Header>
+						<Card.Title>Profile Information</Card.Title>
+						<Card.Description>
+							Update your personal information and profile details
+						</Card.Description>
+					</Card.Header>
+					<Card.Content class="space-y-4">
+						<div class="grid gap-4 sm:grid-cols-2">
+							<div class="space-y-2">
+								<Label for="name">Full Name</Label>
+								<Input id="name" placeholder="Enter your name" client:load />
+							</div>
+							<div class="space-y-2">
+								<Label for="email">Email</Label>
+								<Input id="email" type="email" placeholder="Enter your email" client:load />
+							</div>
+						</div>
+						<div class="space-y-2">
+							<Label for="bio">Bio</Label>
+							<Input id="bio" placeholder="Tell us about yourself" client:load />
+						</div>
+						<div class="flex justify-end">
+							<Button client:load>Save Changes</Button>
+						</div>
+					</Card.Content>
+				</Card.Root>
+			</Tabs.Content>
+
+			<!-- Security Tab -->
+			<Tabs.Content value="security" class="mt-6" client:load>
+				<Card.Root>
+					<Card.Header>
+						<Card.Title>Security Settings</Card.Title>
+						<Card.Description>
+							Update your password and security preferences
+						</Card.Description>
+					</Card.Header>
+					<Card.Content class="space-y-4">
+						<div class="space-y-2">
+							<Label for="current-password">Current Password</Label>
+							<Input id="current-password" type="password" placeholder="Enter current password" client:load />
+						</div>
+						<div class="space-y-2">
+							<Label for="new-password">New Password</Label>
+							<Input id="new-password" type="password" placeholder="Enter new password" client:load />
+						</div>
+						<div class="space-y-2">
+							<Label for="confirm-password">Confirm New Password</Label>
+							<Input id="confirm-password" type="password" placeholder="Confirm new password" client:load />
+						</div>
+						<div class="flex justify-end">
+							<Button client:load>Update Password</Button>
+						</div>
+					</Card.Content>
+				</Card.Root>
+			</Tabs.Content>
+
+			<!-- Notifications Tab -->
+			<Tabs.Content value="notifications" class="mt-6" client:load>
+				<Card.Root>
+					<Card.Header>
+						<Card.Title>Notification Preferences</Card.Title>
+						<Card.Description>
+							Choose how you want to be notified
+						</Card.Description>
+					</Card.Header>
+					<Card.Content>
+						<p class="text-muted-foreground">
+							Notification settings will be implemented in the next phase.
+						</p>
+					</Card.Content>
+				</Card.Root>
+			</Tabs.Content>
+
+			<!-- Preferences Tab -->
+			<Tabs.Content value="preferences" class="mt-6" client:load>
+				<Card.Root>
+					<Card.Header>
+						<Card.Title>System Preferences</Card.Title>
+						<Card.Description>
+							Manage your language and display preferences
+						</Card.Description>
+					</Card.Header>
+					<Card.Content>
+						<p class="text-muted-foreground">
+							Preferences including language (i18n) and theme will be fully
+							implemented in the next phase.
+						</p>
+					</Card.Content>
+				</Card.Root>
+			</Tabs.Content>
+		</Tabs.Root>
+	</div>
+</DashboardLayout>

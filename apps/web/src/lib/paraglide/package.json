@@ -1,0 +1,21 @@
+{
+  "name": "paraglide",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "./index.js",
+  "types": "./index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./index.js",
+      "types": "./index.d.ts"
+    },
+    "./messages": {
+      "import": "./messages.js",
+      "types": "./messages.d.ts"
+    },
+    "./runtime": {
+      "import": "./runtime.js",
+      "types": "./runtime.d.ts"
+    }
+  }
+}

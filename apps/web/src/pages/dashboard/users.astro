@@ -22,10 +22,6 @@ import UserTable from "../../components/users/UserTable.svelte";
 			</p>
 		</div>
 
-		<UserTable
-			client:load
-			canDelete={true}
-			canRestore={true}
-		/>
+		<UserTable client:load />
 	</div>
 </DashboardLayout>

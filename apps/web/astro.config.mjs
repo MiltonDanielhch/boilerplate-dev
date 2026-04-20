@@ -14,5 +14,12 @@ export default defineConfig({
   integrations: [svelte()],
   vite: {
     plugins: [tailwindcss()]
+  },
+  i18n: {
+    defaultLocale: 'es',
+    locales: ['es', 'en'],
+    routing: {
+      prefixDefaultLocale: false
+    }
   }
 });

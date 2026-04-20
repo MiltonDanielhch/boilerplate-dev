@@ -190,6 +190,30 @@ impl UserRepository for SqliteUserRepository {
         Ok(count > 0)
     }
 
+    async fn get_permissions(&self, user_id: &UserId) -> Result<Vec<String>, DomainError> {
+        // JOIN 4 tablas: users → user_roles → roles → role_permissions → permissions
+        // Retorna lista de permisos en formato "resource:action"
+        let permissions: Vec<String> = sqlx::query_scalar(
+            r#"
+            SELECT DISTINCT p.resource || ':' || p.action as permission
+            FROM users u
+            JOIN user_roles ur ON ur.user_id = u.id
+            JOIN roles r ON r.id = ur.role_id AND r.deleted_at IS NULL
+            JOIN role_permissions rp ON rp.role_id = r.id
+            JOIN permissions p ON p.id = rp.permission_id
+            WHERE u.id = ?
+              AND u.deleted_at IS NULL
+            ORDER BY p.resource, p.action
+            "#
+        )
+        .bind(user_id.to_string())
+        .fetch_all(&self.pool)
+        .await
+        .map_err(|e| DomainError::Database(e.to_string()))?;
+
+        Ok(permissions)
+    }
+
     async fn list(&self, limit: i64, offset: i64) -> Result<Vec<User>, DomainError> {
         let rows = sqlx::query_as::<_, UserRow>(
             r#"

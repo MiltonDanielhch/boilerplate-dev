@@ -174,6 +174,10 @@ pub async fn login(
         "user"
     };
 
+    // Obtener permisos del usuario desde la base de datos
+    let permissions = state.user_repo.get_permissions(&user.id).await
+        .map_err(|e| ApiError::Internal(format!("Failed to get permissions: {}", e)))?;
+
     Ok(Json(LoginResponse {
         access_token,
         refresh_token: raw_refresh,
@@ -186,7 +190,7 @@ pub async fn login(
             role: role.to_string(),
             is_active: user.is_active,
             email_verified_at: user.email_verified_at.map(|dt| dt.to_string()),
-            permissions: vec![],
+            permissions,
             created_at: user.created_at.to_string(),
         },
     }))
