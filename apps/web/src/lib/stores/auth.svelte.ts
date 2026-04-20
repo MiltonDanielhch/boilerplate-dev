@@ -1,47 +1,64 @@
 // Ubicación: `apps/web/src/lib/stores/auth.svelte.ts`
 //
-// Descripción: Store global de autenticación usando Svelte 5 Runes.
+// Descripción: Store global de autenticación usando Svelte stores (writable).
 //              Maneja estado del usuario, token PASETO y estado de login.
-//              Persiste en localStorage (opcional) y sincroniza entre tabs.
+//              Persiste en localStorage y sincroniza entre tabs.
 //
 // ADRs relacionados: 0022 (Frontend), 0008 (PASETO), ADR 0006 (RBAC)
 
+import { writable, get, derived, type Readable } from "svelte/store";
 import type { User } from "$lib/types/user";
 
-// Estado reactivo con Svelte 5 Runes
-let user = $state<User | null>(null);
-let accessToken = $state<string | null>(null);
-let isLoading = $state(false);
+// Stores individuales para reactivity
+export const userStore: Writable<User | null> = writable(null);
+export const accessTokenStore: Writable<string | null> = writable(null);
+export const isLoadingStore = writable(false);
 
-// Exportar estado readonly
+// Store derivado para isLoggedIn
+export const isLoggedInStore: Readable<boolean> = derived(
+	[userStore, accessTokenStore],
+	([$user, $token]) => $user !== null && $token !== null
+);
+
+// Store derivado para isAdmin
+export const isAdminStore: Readable<boolean> = derived(
+	userStore,
+	($user) => $user?.role === "admin"
+);
+
+// Objeto authStore con API completa para backward compatibility
 export const authStore = {
+	userStore,
+	accessTokenStore,
+	isLoadingStore,
+	isLoggedInStore,
+	isAdminStore,
+
 	get user() {
-		return user;
+		return get(userStore);
 	},
 	get accessToken() {
-		return accessToken;
+		return get(accessTokenStore);
 	},
 	get isLoading() {
-		return isLoading;
+		return get(isLoadingStore);
 	},
 	get isLoggedIn() {
-		return user !== null && accessToken !== null;
+		return get(isLoggedInStore);
 	},
 	get isAdmin() {
-		return user?.role === "admin";
-	},
-	get hasPermission() {
-		return (permission: string) => {
-			if (!user) return false;
-			return user.permissions?.includes(permission) ?? false;
-		};
+		return get(isAdminStore);
 	},
 
-	// Actions
+	hasPermission(permission: string) {
+		const user = get(userStore);
+		if (!user) return false;
+		return user.permissions?.includes(permission) ?? false;
+	},
+
 	setAuth(newUser: User, token: string) {
-		user = newUser;
-		accessToken = token;
-		// Persistir en localStorage
+		userStore.set(newUser);
+		accessTokenStore.set(token);
 		if (typeof localStorage !== "undefined") {
 			localStorage.setItem("access_token", token);
 			localStorage.setItem("user", JSON.stringify(newUser));
@@ -49,8 +66,8 @@ export const authStore = {
 	},
 
 	clearAuth() {
-		user = null;
-		accessToken = null;
+		userStore.set(null);
+		accessTokenStore.set(null);
 		if (typeof localStorage !== "undefined") {
 			localStorage.removeItem("access_token");
 			localStorage.removeItem("user");
@@ -58,20 +75,20 @@ export const authStore = {
 	},
 
 	setLoading(loading: boolean) {
-		isLoading = loading;
+		isLoadingStore.set(loading);
 	},
 
-	// Inicializar desde localStorage (llamar en +layout.svelte o onMount)
 	initFromStorage() {
 		if (typeof localStorage === "undefined") return;
 		const token = localStorage.getItem("access_token");
 		const userStr = localStorage.getItem("user");
 		if (token && userStr) {
 			try {
-				accessToken = token;
-				user = JSON.parse(userStr);
+				const user = JSON.parse(userStr);
+				userStore.set(user);
+				accessTokenStore.set(token);
 			} catch {
-				this.clearAuth();
+				authStore.clearAuth();
 			}
 		}
 	}

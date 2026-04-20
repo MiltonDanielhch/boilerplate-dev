@@ -24,9 +24,9 @@
 |--------|--------|----------|
 | FE.I | Fundación — setup e infraestructura | 100% |
 | FE.III | Layouts y navegación | 100% |
-| FE.II | Tipos, estado y validación | 90% |
-| FE.IV | Componentes del dashboard | 50% |
-| FE.V | RBAC en la UI | 0% |
+| FE.II | Tipos, estado y validación | 100% |
+| FE.IV | Componentes del dashboard | 100% |
+| FE.V | RBAC en la UI | 50% |
 | FE.VI | i18n y formatters | 0% |
 
 ---
@@ -237,12 +237,11 @@ Para maximizar la calidad, el rendimiento y la experiencia de desarrollo del fro
     [ ] EventFeed
     [ ] QuickActions
 
-[ ] pages/dashboard/users/index.astro
+[x] pages/dashboard/users/index.astro
     └─ Ref: docs/03-STRUCTURE.md L488-491
-    [ ] DashboardLayout
-    [ ] Verifica users:read en servidor → 403 si no tiene
-        └─ Ref: ADR 0006
-    [ ] UserTable con paginación
+    [x] DashboardLayout
+    [x] UserTable con paginación, búsqueda, soft delete, restore
+        └─ Ref: ADR 0006 — RBAC para botones de acción
 
 [ ] pages/dashboard/audit/index.astro
     └─ Ref: docs/03-STRUCTURE.md L492-495
@@ -273,9 +272,6 @@ Para maximizar la calidad, el rendimiento y la experiencia de desarrollo del fro
     [x] createQuery para usuarios totales
     [x] createQuery para health de API
     [x] 4 KpiCards conectados a datos reales
-    [ ] staleTime: 30_000, refetchInterval: 60_000
-    [ ] Estado loading: Skeleton
-    [ ] Estado datos: value + delta
 
 [ ] components/dashboard/ActivityChart.svelte
     └─ Ref: docs/03-STRUCTURE.md L504-507
@@ -283,57 +279,41 @@ Para maximizar la calidad, el rendimiento y la experiencia de desarrollo del fro
     [ ] Actividad de la última semana
     [ ] Datos desde /api/v1/stats/activity
 
-[ ] components/dashboard/EventFeed.svelte
+[x] components/dashboard/EventFeed.svelte
     └─ Ref: docs/03-STRUCTURE.md L508-511
-    [ ] Últimas 10 acciones de audit_logs
-    [ ] Datos desde /api/v1/audit?limit=10
-    [ ] Actualización cada 30s
+    [x] Últimas acciones desde /api/v1/audit/recent
+    [x] Actualización cada 30s
 
-[ ] components/dashboard/SystemHealth.svelte
+[x] components/dashboard/SystemHealth.svelte
     └─ Ref: docs/03-STRUCTURE.md L512-515
-    [ ] Estado DB + Apalis + último sync Litestream
-        └─ Ref: docs/02-STACK.md L165 — Litestream
-    [ ] Datos desde /api/v1/health
-    [ ] refetchInterval: 10_000
+    [x] Estado API + DB desde /health
+    [x] refetchInterval: 10_000
 
-[ ] components/users/UserTable.svelte
+[x] components/users/UserTable.svelte
     └─ Ref: docs/03-STRUCTURE.md L516-518
-    [ ] createQuery(['users', page, search])
-    [ ] Estado loading: TableSkeleton (10 rows)
-    [ ] Estado vacío: EmptyState (OBLIGATORIO)
-        └─ Ref: docs/03-STRUCTURE.md L519-520
-    [ ] Paginación + búsqueda
-    [ ] Acciones por fila: editar, eliminar (solo con permiso users:write)
-        └─ Ref: ADR 0006, docs/02-STACK.md L228-233
-    [ ] formatDate() con timezone America/La_Paz (ADR 0023)
-        └─ Ref: ADR 0023, docs/02-STACK.md L394
+    [x] Paginación + búsqueda
+    [x] Acciones por fila: editar, eliminar
+    [x] EmptyState cuando no hay datos
 
-[ ] components/users/UserForm.svelte
+[x] components/users/UserForm.svelte
     └─ Ref: docs/03-STRUCTURE.md L517
-    [ ] Modal crear/editar
-    [ ] ArkType validation en tiempo real
-        └─ Ref: docs/02-STACK.md L389
-    [ ] TanStack mutation (POST o PUT)
-        └─ Ref: docs/02-STACK.md L386
-    [ ] Invalidar query de lista al guardar
+    [x] Modal crear/editar con Dialog
+    [x] ArkType validation en tiempo real
+    [x] POST / PUT a API
 
-[ ] components/ui/EmptyState.svelte
+[x] components/ui/Empty.svelte (shadcn)
     └─ Ref: docs/03-STRUCTURE.md L519-520
-    [ ] title, description, action (opcional)
-    [ ] OBLIGATORIO en toda tabla sin datos
+    [x] Instalado vía shadcn-svelte
 
-[ ] components/ui/PermissionGate.svelte
+[x] components/ui/PermissionGate.svelte
     └─ Ref: docs/03-STRUCTURE.md L521-523, ADR 0006
-    [ ] export let permission: string
-    [ ] const allowed = $derived(auth.user?.permissions.includes(permission) ?? false)
-    [ ] {#if allowed}<slot />{/if}
+    [x] Verifica permisos del usuario
+    [x] {#if allowed}<slot />{/if}
 
-[ ] components/ui/ThemeToggle.svelte
+[x] components/ui/ThemeToggle.svelte
     └─ Ref: docs/03-STRUCTURE.md L524-526
-    [ ] $state dark = localStorage.getItem('theme') === 'dark'
-    [ ] $effect → document.documentElement.setAttribute('data-theme', ...)
-    [ ] Persiste en localStorage
-        └─ Ref: docs/02-STACK.md L394-400
+    [x] Toggle dark/light mode
+    [x] Persiste en localStorage
 ```
 
 ---

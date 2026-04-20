@@ -6,11 +6,18 @@
 //
 // ADRs relacionados: 0022 (Frontend), 0008 (PASETO), 0007 (Error Handling)
 
-import { authStore } from "$lib/stores/auth.svelte";
+import { get } from "svelte/store";
+import { accessTokenStore } from "$lib/stores/auth.svelte";
 
 const API_BASE_URL = import.meta.env.PUBLIC_API_URL || "http://localhost:3000";
+const API_PREFIX = "/api/v1";
 
-// Error de API tipado
+const NO_PREFIX_ROUTES = ["/auth/", "/health", "/docs", "/openapi"];
+
+function needsPrefix(endpoint: string): boolean {
+	return !NO_PREFIX_ROUTES.some((route) => endpoint.startsWith(route));
+}
+
 export class ApiError extends Error {
 	constructor(
 		public status: number,
@@ -22,15 +29,13 @@ export class ApiError extends Error {
 	}
 }
 
-// Headers base para requests
 function getHeaders(): Record<string, string> {
 	const headers: Record<string, string> = {
 		"Content-Type": "application/json",
 		"Accept": "application/json"
 	};
 
-	// Agregar token PASETO si existe
-	const token = authStore.accessToken;
+	const token = get(accessTokenStore);
 	if (token) {
 		headers["Authorization"] = `Bearer ${token}`;
 	}
@@ -38,20 +43,18 @@ function getHeaders(): Record<string, string> {
 	return headers;
 }
 
-// Fetch wrapper con manejo de errores
 export async function fetchApi<T>(
 	endpoint: string,
 	options: RequestInit = {}
 ): Promise<T> {
-	// Detectar si estamos en Tauri
 	const isTauri = typeof window !== "undefined" && "__TAURI__" in window;
 
 	if (isTauri) {
-		// TODO: Implementar invoke() para Tauri
 		console.warn("Tauri detected - using HTTP for now");
 	}
 
-	const url = `${API_BASE_URL}${endpoint}`;
+	const prefix = needsPrefix(endpoint) ? API_PREFIX : "";
+	const url = `${API_BASE_URL}${prefix}${endpoint}`;
 
 	const response = await fetch(url, {
 		...options,
@@ -61,7 +64,6 @@ export async function fetchApi<T>(
 		}
 	});
 
-	// Manejar errores HTTP
 	if (!response.ok) {
 		const errorData = await response.json().catch(() => ({}));
 		throw new ApiError(
@@ -71,7 +73,6 @@ export async function fetchApi<T>(
 		);
 	}
 
-	// Parsear respuesta JSON
 	if (response.status === 204) {
 		return undefined as T;
 	}
@@ -79,7 +80,6 @@ export async function fetchApi<T>(
 	return response.json();
 }
 
-// Métodos HTTP convenientes
 export const api = {
 	get: <T>(endpoint: string) => fetchApi<T>(endpoint, { method: "GET" }),
 	post: <T>(endpoint: string, body: unknown) =>

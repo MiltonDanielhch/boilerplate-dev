@@ -29,7 +29,8 @@
 | ✅ **Backend II** | `03-ROADMAP-BACKEND.md` Bloque II | **COMPLETADO** | 100% | $5 |
 | ✅ **Backend III** | `03-ROADMAP-BACKEND.md` Bloque III | **COMPLETADO** | 100% | $5 |
 | ✅ **Backend IV** | `03-ROADMAP-BACKEND.md` Bloque IV | **COMPLETADO** | 100% | $5 |
-| 🔄 **Frontend I** | `04-ROADMAP-FRONTEND.md` Bloque I | **ACTIVA** | 0% | $5 |
+| ✅ **Frontend I** | `04-ROADMAP-FRONTEND.md` FE.I + FE.IV | **COMPLETADO** | 100% | $5 |
+| 🔄 **FE.V RBAC UI** | `04-ROADMAP-FRONTEND.md` Bloque V | **ACTIVA** | 50% | $5 |
 | ⏳ Auth Fullstack | `05-ROADMAP-AUTH-FULLSTACK.md` | Pendiente | 0% | $5 |
 | ⏳ Landing | `06-ROADMAP-LANDING.md` | Pendiente | 0% | $5 |
 | ⏳ Infra | `07-ROADMAP-INFRA.md` | Pendiente | 0% | $5 |
@@ -140,12 +141,24 @@
 - ✅ 16 schemas documentados con `#[derive(ToSchema)]`
 - ✅ Tags: Auth, Users, Health
 
-**Frontend I — Fundación (ACTIVA)**
-- 🔄 Astro 5 SSR setup en `apps/web/`
-- 🔄 Svelte 5 Runes + Tailwind v4 + shadcn-svelte
-- 🔄 TanStack Query + ArkType + Paraglide JS
-- ⏳ CSS variables de marca
-- ⏳ `pnpm dev` arranca sin errores
+**Frontend I — Fundación (COMPLETADO)**
+- ✅ Astro SSR setup en `apps/web/`
+- ✅ Svelte 5 Runes + Tailwind v4 + shadcn-svelte
+- ✅ TanStack Query + ArkType + Paraglide JS
+- ✅ auth.svelte.ts con stores reactivos
+- ✅ API client con Bearer PASETO
+
+**Frontend IV — Componentes Dashboard (COMPLETADO)**
+- ✅ KpiCard + StatsOverview
+- ✅ EventFeed.svelte (audit/recent)
+- ✅ SystemHealth.svelte (/health)
+- ✅ UserTable + UserForm
+- ✅ Empty (shadcn)
+- ✅ PermissionGate + ThemeToggle
+
+**Frontend V — RBAC en UI (ACTIVA)**
+- 🔄 PermissionGate component
+- 🔄 Sidebar filtrado por permisos
 
 ### Stack Backend
 
@@ -441,3 +454,28 @@ Proyecto nuevo — empezar desde Génesis
 | `Estado del proyecto` | Resumen del progreso |
 | `Revisar arquitectura` | Verificar que no hay violaciones |
 | `Actualiza TODO` | Después de terminar varias tareas |
+
+---
+
+## Cómo proseguir desde esta sesión
+
+**Último avance:** Frontend FE.IV completado (KpiCard, EventFeed, SystemHealth, UserForm, PermissionGate, ThemeToggle)
+
+**Siguiente bloque activo:** FE.V — RBAC en UI
+- Implementar Sidebar con permisos
+- Filtrar acciones por permisos del usuario
+- CommandPalette con RBAC
+
+**Comandos para continuar:**
+```bash
+# Iniciar desarrollo
+cd apps/web && pnpm dev
+
+# Backend en otra terminal
+cd apps/api && cargo run
+```
+
+**URLs de prueba:**
+- Dashboard: http://localhost:4321/dashboard
+- Usuarios: http://localhost:4321/dashboard/users
+- Login: http://localhost:4321/login

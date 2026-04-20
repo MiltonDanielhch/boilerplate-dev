@@ -15,6 +15,7 @@ export interface User {
 	permissions?: string[];
 	createdAt: string;
 	updatedAt: string;
+	deletedAt?: string | null; // Soft delete (ADR 0006)
 }
 
 export interface UserCreateInput {

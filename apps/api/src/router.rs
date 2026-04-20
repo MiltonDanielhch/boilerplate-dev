@@ -5,10 +5,10 @@
 // ADRs relacionados: ADR 0003 (Axum), ADR 0009 (Rate Limit), ADR 0021 (OpenAPI)
 
 use crate::docs::ApiDoc;
-use crate::handlers::{auth, health, leads, users};
+use crate::handlers::{audit, auth, health, leads, users};
 use crate::middleware::audit::audit_middleware;
 use crate::middleware::auth::auth_middleware;
-use crate::middleware::rbac::{require_users_read, require_users_write};
+use crate::middleware::rbac::{require_audit_read, require_users_read, require_users_write};
 use crate::middleware::request_id::request_id_middleware;
 use crate::middleware::trace::trace_middleware;
 use crate::state::AppState;
@@ -55,12 +55,20 @@ pub fn create_router(state: AppState) -> Router {
         .route("/api/v1/leads", post(leads::capture))
         .layer(middleware::from_fn_with_state(state.clone(), auth_middleware));
 
+    // Router de auditoría (auth + permission)
+    let audit_routes = Router::new()
+        .route("/api/v1/audit", get(audit::list_audit))
+        .route("/api/v1/audit/recent", get(audit::recent_audit))
+        .layer(middleware::from_fn_with_state(state.clone(), require_audit_read))
+        .layer(middleware::from_fn_with_state(state.clone(), auth_middleware));
+
     // Combinar routers
     Router::new()
         .merge(public_routes)
         .merge(users_read_routes)
         .merge(users_write_routes)
         .merge(protected_routes)
+        .merge(audit_routes)
         // State compartido
         .with_state(state.clone())
         // Middleware tower (orden: outer → inner)

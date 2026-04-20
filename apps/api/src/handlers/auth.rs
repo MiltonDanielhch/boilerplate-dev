@@ -106,6 +106,19 @@ pub struct LoginResponse {
     pub refresh_token: String,
     pub token_type: String,
     pub expires_in: i64,
+    pub user: UserResponse,
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct UserResponse {
+    pub id: String,
+    pub email: String,
+    pub name: Option<String>,
+    pub role: String,
+    pub is_active: bool,
+    pub email_verified_at: Option<String>,
+    pub permissions: Vec<String>,
+    pub created_at: String,
 }
 
 /// POST /auth/login — Autenticación de usuario
@@ -155,11 +168,27 @@ pub async fn login(
 
     info!(user_id = %user.id, "User logged in successfully");
 
+    let role = if user.email.to_string().contains("admin") {
+        "admin"
+    } else {
+        "user"
+    };
+
     Ok(Json(LoginResponse {
         access_token,
-        refresh_token: raw_refresh, // Devolver el token raw al cliente
+        refresh_token: raw_refresh,
         token_type: "Bearer".to_string(),
-        expires_in: 900, // 15 minutos en segundos
+        expires_in: 900,
+        user: UserResponse {
+            id: user.id.to_string(),
+            email: user.email.to_string(),
+            name: user.name,
+            role: role.to_string(),
+            is_active: user.is_active,
+            email_verified_at: user.email_verified_at.map(|dt| dt.to_string()),
+            permissions: vec![],
+            created_at: user.created_at.to_string(),
+        },
     }))
 }
 

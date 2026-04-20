@@ -12,7 +12,6 @@
 	import KpiCard from "./KpiCard.svelte";
 	import { listUsers } from "$lib/api/users";
 
-	// Estado de los datos
 	let usersTotal = $state<number | null>(null);
 	let usersLoading = $state(true);
 	let usersError = $state<Error | null>(null);
@@ -21,7 +20,6 @@
 	let healthLoading = $state(true);
 	let healthError = $state<Error | null>(null);
 
-	// Fetch de usuarios
 	async function fetchUsers() {
 		try {
 			usersLoading = true;
@@ -29,9 +27,8 @@
 			usersTotal = result.total;
 			usersError = null;
 		} catch (err) {
-			// Si es 401, no mostramos error, solo dejamos usersTotal como null
 			if (err instanceof Error && err.message.includes("401")) {
-				usersTotal = null; // Mostrará "—" y "Login required"
+				usersTotal = null;
 			}
 			usersError = err instanceof Error ? err : new Error(String(err));
 		} finally {
@@ -39,7 +36,6 @@
 		}
 	}
 
-	// Fetch de health
 	async function fetchHealth() {
 		try {
 			healthLoading = true;
@@ -58,7 +54,6 @@
 		fetchUsers();
 		fetchHealth();
 
-		// Refetch health cada 30 segundos
 		const interval = setInterval(fetchHealth, 30000);
 		return () => clearInterval(interval);
 	});

@@ -33,7 +33,7 @@ export async function listUsers(params: ListUsersParams = {}): Promise<ListUsers
 	if (params.isActive !== undefined) searchParams.set("is_active", params.isActive.toString());
 
 	const query = searchParams.toString();
-	return api.get<ListUsersResponse>(`/users${query ? `?${query}` : ""}`);
+	return api.get<ListUsersResponse>(`/users${query ? "?" + query : ""}`);
 }
 
 // Obtener usuario por ID
