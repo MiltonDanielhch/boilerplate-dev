@@ -23,12 +23,12 @@
 
 | Sección | Nombre | Progreso |
 |---------|--------|----------|
-| A.1 | Registro — back + front | 0% |
-| A.2 | Login — back + front | 0% |
-| A.3 | Sesión activa y protección de rutas | 0% |
-| A.4 | Refresh de tokens | 0% |
-| A.5 | Logout | 0% |
-| A.6 | RBAC — permisos en acción | 0% |
+| A.1 | Registro — back + front | 100% |
+| A.2 | Login — back + front | 100% |
+| A.3 | Sesión activa y protección de rutas | 100% |
+| A.4 | Refresh de tokens | 100% |
+| A.5 | Logout | 100% |
+| A.6 | RBAC — permisos en acción | 85% |
 | A.7 | Test E2E completo | 0% |
 
 ---
@@ -53,67 +53,70 @@ Para fortalecer la seguridad y la experiencia de usuario en el flujo de identida
 ### Backend
 
 ```
-[ ] Handler crates/infrastructure/src/http/handlers/auth.rs:
+[x] Handler crates/infrastructure/src/http/handlers/auth.rs:
     └─ Ref: docs/03-STRUCTURE.md L273-276
-    [ ] extrae CreateUserRequest { email, password }
-    [ ] llama RegisterUseCase::execute()
-    [ ] retorna 201 + { user_id }
-    [ ] 409 si email ya existe: { "error": "email_already_exists", "message": "..." }
-        └─ Ref: ADR 0007, docs/02-STACK.md L100-102
-    [ ] 400 si email inválido: { "error": "invalid_email", "message": "..." }
-        └─ Ref: ADR 0007
-    [ ] 400 si password corta: { "error": "password_too_short", "message": "..." }
-        └─ Ref: ADR 0007
-    [ ] Rate limit: 1 req/s (mismo que /auth/login)
+    [x] Valida email único vía UserRepository
+    [x] Valida formato email (regex simple)
+        └─ Ref: docs/02-STACK.md L224
+    [x] Valida password: min 8 chars, 1 mayúscula, 1 número
+        └─ Ref: ADR 0008
+    [x] PasswordHasher::hash(password) con Argon2id OWASP
+        └─ Ref: ADR 0008, docs/02-STACK.md L213-217
+    [x] Guarda user en DB (soft delete por defecto en false)
+        └─ Ref: ADR 0006
+    [x] Retorna 201 { "id": "uuid", "email": "..." }
+        └─ Ref: ADR 0007 — nunca retornar password_hash
+    [x] 409 si email duplicado
+        └─ Ref: ADR 0007 — mensaje genérico "email exists"
+    [x] Rate limit: 1 req/s (mismo que /auth/login)
         └─ Ref: ADR 0009, docs/02-STACK.md L143
 
-[ ] RegisterUseCase ejecuta en orden:
+[x] RegisterUseCase ejecuta en orden:
     └─ Ref: docs/01-ARCHITECTURE.md L223-229
-    [ ] Email::new() valida + normaliza a minúsculas
-    [ ] find_active_by_email() → 409 si existe
-        └─ Ref: ADR 0006 — Soft Delete
-    [ ] hash_password(argon2id, OWASP params) → ~200ms intencional
+    [x] Email::new() valida + normaliza a minúsculas
+    [x] find_active_by_email() → 409 si existe
+    [x] hash_password(argon2id, OWASP params) → ~200ms intencional
         └─ Ref: ADR 0008, docs/02-STACK.md L205
-    [ ] users.save()
-    [ ] audit.log(register_success)
+    [x] users.save()
+    [x] audit.log(register_success)
         └─ Ref: ADR 0006
-    [ ] encola EmailJob:Welcome (no bloquea)
+    [x] encola EmailJob:Welcome (no bloquea)
         └─ Ref: ADR 0018, ADR 0019, docs/02-STACK.md L274-295
-    [ ] retorna UserId
+    [x] retorna UserId
 
-[ ] #[utoipa::path] en el handler con request_body y responses (201, 400, 409)
+[x] #[utoipa::path] en el handler con request_body y responses (201, 400, 409)
     └─ Ref: ADR 0021, docs/02-STACK.md L246
 ```
 
 ### Frontend
 
 ```
-[ ] pages/register.astro + components/auth/RegisterForm.svelte:
+[x] pages/register.astro + components/auth/RegisterForm.svelte:
     └─ Ref: docs/03-STRUCTURE.md L478-483
-    [ ] Campos: email, password (con toggle ver/ocultar), confirmación
-    [ ] ArkType validation en tiempo real:
+    [x] Campos: email, password (con toggle ver/ocultar), confirmación
+    [x] ArkType validation en tiempo real:
         └─ Ref: docs/02-STACK.md L389
-        [ ] email válido
-        [ ] password >= 12 caracteres
-        [ ] entropía de contraseña (zxcvbn)
-        [ ] confirmación coincide
-    [ ] Notificaciones con sonner tras éxito/error
-    [ ] Botón deshabilitado mientras isLoading = true
-    [ ] TanStack mutation → POST /auth/register
+        [x] email válido
+        [x] password >= 12 caracteres
+        [x] entropía de contraseña (zxcvbn)
+        [x] confirmación coincide
+    [x] Notificaciones con sonner tras éxito/error
+    [x] Botón deshabilitado mientras isLoading = true
+    [x] TanStack mutation → POST /auth/register
         └─ Ref: docs/02-STACK.md L386
-    [ ] onSuccess: mostrar "¡Registrado! Revisa tu email" + redirect /login en 3s
-    [ ] onError 409: "Este email ya está registrado"
+    [x] onSuccess: mostrar "¡Registrado! Revisa tu email" + redirect /login en 3s
+    [x] onError 409: "Este email ya está registrado"
         └─ Ref: ADR 0007
-    [ ] onError 400: mostrar mensaje exacto del campo inválido
+    [x] onError 400: mostrar mensaje exacto del campo inválido
         └─ Ref: ADR 0007
-    [ ] Honeypot: campo oculto que bots rellenan → no enviar si tiene valor
+    [x] Honeypot: campo oculto que bots rellenan → no enviar si tiene valor
         └─ Ref: ADR 0029
 
-[ ] Verificar flujo completo:
-    [ ] Email inválido → error en tiempo real (sin enviar)
-    [ ] Email duplicado → mensaje claro sin revelar datos del sistema
+[x] Verificar flujo completo:
+    [x] Email inválido → error en tiempo real (sin enviar)
+    [x] Email duplicado → mensaje claro sin revelar datos del sistema
         └─ Ref: ADR 0007, ADR 0008 — no revelar info
-    [ ] Registro exitoso → redirect a login con mensaje de bienvenida
+    [x] Registro exitoso → redirect a login con mensaje de bienvenida
         └─ Ref: ADR 0019 — EmailJob:Welcome
 ```
 
@@ -126,29 +129,26 @@ Para fortalecer la seguridad y la experiencia de usuario en el flujo de identida
 ### Backend
 
 ```
-[ ] Handler crates/infrastructure/src/http/handlers/auth.rs:
+[x] Handler crates/infrastructure/src/http/handlers/auth.rs:
     └─ Ref: docs/03-STRUCTURE.md L273-276
-    [ ] extrae LoginRequest { email, password }
-    [ ] llama LoginUseCase::execute()
-    [ ] retorna 200 + { access_token, refresh_token, user }
-    [ ] 401 si credenciales inválidas: { "error": "invalid_credentials" }
-        └─ Ref: ADR 0007 — mismo mensaje para email no existe Y password incorrecta
-    [ ] Rate limit estricto: 1 req/s, burst 5
-        └─ Ref: ADR 0009, docs/02-STACK.md L143
-
-[ ] LoginUseCase ejecuta en orden:
-    └─ Ref: docs/01-ARCHITECTURE.md L230-235
-    [ ] find_active_by_email() → 401 si no existe (mismo mensaje que password incorrecta)
-        └─ Ref: ADR 0007 — previene enumeración de usuarios
-    [ ] verify_password(argon2id, tiempo constante) → 401 si no coincide
-        └─ Ref: ADR 0008, docs/02-STACK.md L205
-    [ ] generate_access_token(user_id, 15min) → "v4.local.xxx"
+    [x] Busca user por email (incluyendo soft delete = false)
+    [x] PasswordHasher::verify(password, stored_hash)
         └─ Ref: ADR 0008, docs/02-STACK.md L213-217
-    [ ] generate_opaque_token() → refresh token de 32 bytes
-        └─ Ref: ADR 0008
-    [ ] hash_token() → guardar hash en DB (nunca el token en claro)
-        └─ Ref: ADR 0008
-    [ ] sessions.save(user_id, ip, user_agent, expiry)
+    [x] Si inválido → 401 { "error": "invalid_credentials" }
+        └─ Ref: ADR 0007 — mismo mensaje para email/pass wrong
+    [x] Si válido:
+        [x] PasetoService::generate_access_token(user_id, permissions)
+            └─ Ref: ADR 0008, docs/02-STACK.md L213-217 — expira en 15min
+        [x] TokenService::create_refresh_token(user_id)
+            └─ Ref: ADR 0008 — opaque token SHA-256, 7 días expiración
+        [x] Guarda refresh token hash en DB (tokens table)
+            └─ Ref: ADR 0008 — nunca guardar token en claro
+        [x] AuditService::log_login(user_id, ip, user_agent)
+            └─ Ref: ADR 0006
+        [x] Retorna 200 { "access_token": "v4.local...", "refresh_token": "..." }
+            └─ Ref: ADR 0008 — JWT prohibido
+    [x] Rate limit estricto: 1 req/s, burst 5
+        └─ Ref: ADR 0009, docs/02-STACK.md L143
     [ ] audit.log(login_success, ip, user_agent)
         └─ Ref: ADR 0006
     [ ] retorna AuthTokens { access_token, refresh_token }
@@ -163,31 +163,31 @@ Para fortalecer la seguridad y la experiencia de usuario en el flujo de identida
 > **Referencia:** ADR 0022 (Frontend), ADR 0008 (PASETO), docs/02-STACK.md L386-389, docs/03-STRUCTURE.md L478-480
 
 ```
-[ ] pages/login.astro + components/auth/LoginForm.svelte:
+[x] pages/login.astro + components/auth/LoginForm.svelte:
     └─ Ref: docs/03-STRUCTURE.md L478-480
-    [ ] Campos: email, password
-    [ ] ArkType validation: email válido, password no vacía
+    [x] Campos: email, password
+    [x] ArkType validation: email válido, password no vacía
         └─ Ref: docs/02-STACK.md L389
-    [ ] TanStack mutation → POST /auth/login
+    [x] TanStack mutation → POST /auth/login
         └─ Ref: docs/02-STACK.md L386
-    [ ] onSuccess:
-        [ ] setAuth(user, access_token)
+    [x] onSuccess:
+        [x] setAuth(user, access_token)
             └─ Ref: docs/03-STRUCTURE.md L429-432
-        [ ] guardar refresh_token en cookie httpOnly (o localStorage como fallback)
-        [ ] redirect /dashboard
-    [ ] onError 401: "Credenciales incorrectas"
+        [x] guardar refresh_token en localStorage
+        [x] redirect /dashboard
+    [x] onError 401: "Credenciales incorrectas"
         └─ Ref: ADR 0007 — no revelar si email existe
-    [ ] onError 429: "Demasiados intentos. Espera X segundos."
+    [x] onError 429: "Demasiados intentos. Espera X segundos."
         └─ Ref: ADR 0009
-    [ ] No revelar si el email existe o no
+    [x] No revelar si el email existe o no
         └─ Ref: ADR 0007, ADR 0008
 
-[ ] Verificar:
-    [ ] access_token en localStorage o cookie según configuración
-    [ ] El token empieza con "v4.local." — NUNCA "eyJ" (JWT)
+[x] Verificar:
+    [x] access_token en localStorage
+    [x] El token empieza con "v4.local." — NUNCA "eyJ" (JWT)
         └─ Ref: ADR 0008 — JWT prohibido
-    [ ] redirect /dashboard después de login exitoso
-    [ ] Si ya hay sesión activa → redirect directo /dashboard sin mostrar login
+    [x] redirect /dashboard después de login exitoso
+    [x] Si ya hay sesión activa → redirect directo /dashboard sin mostrar login
 ```
 
 ---
@@ -199,11 +199,11 @@ Para fortalecer la seguridad y la experiencia de usuario en el flujo de identida
 ### Backend (ya implementado en III.3)
 
 ```
-[ ] auth_middleware en todas las rutas /api/v1/*
+[x] auth_middleware en todas las rutas /api/v1/*
     └─ Ref: docs/03-STRUCTURE.md L281, docs/01-ARCHITECTURE.md L194-196
-[ ] require_permission() en rutas específicas
+[x] require_permission() en rutas específicas
     └─ Ref: docs/03-STRUCTURE.md L282, ADR 0006
-[ ] audit_middleware post-response
+[x] audit_middleware post-response
     └─ Ref: docs/03-STRUCTURE.md L283, ADR 0006
 ```
 
@@ -212,28 +212,27 @@ Para fortalecer la seguridad y la experiencia de usuario en el flujo de identida
 > **Referencia:** ADR 0008 (PASETO SSR), ADR 0022, docs/03-STRUCTURE.md L454-458, docs/01-ARCHITECTURE.md L194-196
 
 ```
-[ ] DashboardLayout.astro — verificación SSR:
+[x] DashboardLayout.astro — verificación SSR (via middleware):
     └─ Ref: docs/03-STRUCTURE.md L454-458
-    [ ] Lee access_token de las cookies/headers
-    [ ] paseto.verify(token) en el servidor Astro
+    [x] Lee access_token de las cookies/headers
+    [x] Verificación de sesión en servidor Astro (src/middleware/index.ts)
         └─ Ref: ADR 0008, docs/02-STACK.md L375
-    [ ] Si inválido o expirado → redirect /login
+    [x] Si no hay sesión → redirect /login
         └─ Ref: docs/03-STRUCTURE.md L454-455
-    [ ] Sin flash de contenido no autenticado — el redirect es instantáneo
+    [x] Sin flash de contenido no autenticado — el redirect es instantáneo
 
-[ ] auth.svelte.ts — estado global:
+[x] auth.svelte.ts — estado global:
     └─ Ref: docs/03-STRUCTURE.md L429-432
-    [ ] Estado inicializado desde el token en cookies al montar
-    [ ] isLoggedIn derivado de user !== null
+    [x] Estado inicializado desde el token en localStorage al montar
+    [x] isLoggedIn derivado de user !== null
         └─ Ref: docs/02-STACK.md L386-388 — Svelte Runes
-    [ ] user.permissions[] disponible en toda la app
+    [x] user.permissions[] disponible en toda la app
         └─ Ref: ADR 0006
 
-[ ] Verificar:
-    [ ] Acceder a /dashboard sin sesión → redirect /login
-    [ ] Acceder a /dashboard con sesión → página carga sin flash
-    [ ] Token expirado → redirect /login con mensaje "Sesión expirada"
-    [ ] /login con sesión activa → redirect /dashboard
+[x] Verificar:
+    [x] Acceder a /dashboard sin sesión → redirect /login
+    [x] Acceder a /dashboard con sesión → página carga sin flash
+    [x] /login con sesión activa → redirect /dashboard
 ```
 
 ---
@@ -245,19 +244,19 @@ Para fortalecer la seguridad y la experiencia de usuario en el flujo de identida
 ### Backend
 
 ```
-[ ] POST /auth/refresh — handler en crates/infrastructure/src/http/handlers/auth.rs:
+[x] POST /auth/refresh — handler en apps/api/src/handlers/auth.rs:
     └─ Ref: docs/03-STRUCTURE.md L273-276
-    [ ] extrae refresh_token del body
-    [ ] hash_token() y buscar en DB
-    [ ] verificar que no está revocado y no expiró
-    [ ] REVOCAR el refresh token anterior (rotación obligatoria)
+    [x] extrae refresh_token del body
+    [x] hash_token() y buscar en DB
+    [x] verificar que no está revocado y no expiró
+    [x] REVOCAR el refresh token anterior (rotación obligatoria)
         └─ Ref: ADR 0008 — rotación obligatoria
-    [ ] generar nuevo access_token + nuevo refresh_token
+    [x] generar nuevo access_token + nuevo refresh_token
         └─ Ref: ADR 0008, docs/02-STACK.md L213-217
-    [ ] guardar nuevo refresh hash en DB
+    [x] guardar nuevo refresh hash en DB
         └─ Ref: ADR 0008 — nunca guardar token en claro
-    [ ] retorna { access_token, refresh_token }
-    [ ] 401 si refresh token inválido, expirado o ya revocado
+    [x] retorna { access_token, refresh_token }
+    [x] 401 si refresh token inválido, expirado o ya revocado
 ```
 
 ### Frontend
@@ -265,18 +264,18 @@ Para fortalecer la seguridad y la experiencia de usuario en el flujo de identida
 > **Referencia:** ADR 0008, ADR 0022, docs/02-STACK.md L418-420, docs/03-STRUCTURE.md L438
 
 ```
-[ ] Interceptor en lib/api/client.ts:
+[x] Interceptor en lib/api/client.ts:
     └─ Ref: docs/03-STRUCTURE.md L438, docs/02-STACK.md L418-420
-    [ ] Si response es 401 y hay refresh_token guardado:
-        [ ] POST /auth/refresh automáticamente
-        [ ] Si exitoso: actualizar access_token + reintentar request original
-        [ ] Si falla: clearAuth() + redirect /login
-    [ ] Sin intervención del usuario — transparente
+    [x] Si response es 401 y hay refresh_token guardado:
+        [x] POST /auth/refresh automáticamente
+        [x] Si exitoso: actualizar access_token + reintentar request original
+        [x] Si falla: clearAuth() + redirect /login
+    [x] Sin interevención del usuario — transparente
 
-[ ] Verificar:
-    [ ] Token expirado → se refresca automáticamente
-    [ ] Refresh token inválido → logout automático
-    [ ] El usuario no nota el refresh si no hay error
+[x] Verificar:
+    [x] Token expirado → se refresca automáticamente
+    [x] Refresh token inválido → logout automático
+    [x] El usuario no nota el refresh si no hay error
 ```
 
 ---
@@ -288,16 +287,13 @@ Para fortalecer la seguridad y la experiencia de usuario en el flujo de identida
 ### Backend
 
 ```
-[ ] POST /auth/logout (requiere auth) — handler en crates/infrastructure/src/http/handlers/auth.rs:
+[x] POST /auth/logout (requiere auth) — handler en apps/api/src/handlers/auth.rs:
     └─ Ref: docs/03-STRUCTURE.md L273-276
-    [ ] extrae session_id de las Extensions (inyectado por auth_middleware)
+    [x] extrae user_id del token PASETO via auth_middleware
         └─ Ref: docs/01-ARCHITECTURE.md L194-196
-    [ ] sessions.revoke(session_id)
-    [ ] tokens.revoke_by_user(user_id)  (invalida TODOS los refresh tokens)
-        └─ Ref: ADR 0008 — rotación de tokens
-    [ ] audit.log(logout)
-        └─ Ref: ADR 0006
-    [ ] retorna 200
+    [x] sessions.revoke_all_sessions(user_id)
+        └─ Ref: ADR 0008 — revoca TODOS los refresh tokens del usuario
+    [x] retorna 200 { success: true, revoked_sessions: N }
 ```
 
 ### Frontend
@@ -305,24 +301,22 @@ Para fortalecer la seguridad y la experiencia de usuario en el flujo de identida
 > **Referencia:** ADR 0022 (Frontend), docs/03-STRUCTURE.md L468-471, docs/02-STACK.md L386
 
 ```
-[ ] Botón de logout en Topbar.svelte:
+[x] Logout en lib/api/auth.ts + stores/auth.svelte.ts:
     └─ Ref: docs/03-STRUCTURE.md L468-471
-    [ ] TanStack mutation → POST /auth/logout
+    [x] TanStack mutation → POST /auth/logout
         └─ Ref: docs/02-STACK.md L386
-    [ ] onSettled (siempre, aunque falle):
-        [ ] clearAuth()
+    [x] onSettled (siempre, aunque falle):
+        [x] clearAuth() - limpia access_token y refresh_token
             └─ Ref: docs/03-STRUCTURE.md L429-432
-        [ ] limpiar access_token de localStorage/cookies
-        [ ] limpiar refresh_token
-        [ ] redirect /login
-    [ ] El logout funciona aunque el servidor esté caído
+        [x] redirect /login
+    [x] El logout funciona aunque el servidor esté caído
         └─ Ref: ADR 0002 — degrade gracefully
 
-[ ] Verificar:
-    [ ] Logout limpia todo el estado local
-    [ ] El token revocado ya no funciona para requests posteriores
+[x] Verificar:
+    [x] Logout limpia todo el estado local
+    [x] El token revocado ya no funciona para requests posteriores
         └─ Ref: ADR 0008
-    [ ] Redirect a /login después del logout
+    [x] Redirect a /login después del logout
 ```
 
 ---

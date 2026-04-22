@@ -57,10 +57,15 @@ export async function logout(): Promise<void> {
 }
 
 // Refresh token
-export async function refreshToken(): Promise<boolean> {
+export async function refreshAccessToken(): Promise<boolean> {
+	const refreshToken = authStore.refreshToken;
+	if (!refreshToken) {
+		authStore.clearAuth();
+		return false;
+	}
 	try {
-		const response = await api.post<LoginResponse>("/auth/refresh", {});
-		authStore.setAuth(response.user, response.access_token);
+		const response = await api.post<LoginResponse>("/auth/refresh", { refresh_token: refreshToken });
+		authStore.setAuth(response.user, response.access_token, response.refresh_token);
 		return true;
 	} catch {
 		authStore.clearAuth();

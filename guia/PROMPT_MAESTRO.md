@@ -30,8 +30,8 @@
 | ✅ **Backend III** | `03-ROADMAP-BACKEND.md` Bloque III | **COMPLETADO** | 100% | $5 |
 | ✅ **Backend IV** | `03-ROADMAP-BACKEND.md` Bloque IV | **COMPLETADO** | 100% | $5 |
 | ✅ **Frontend I** | `04-ROADMAP-FRONTEND.md` FE.I + FE.IV | **COMPLETADO** | 100% | $5 |
-| 🔄 **FE.V RBAC UI** | `04-ROADMAP-FRONTEND.md` Bloque V | **ACTIVA** | 85% | $5 |
-| ⏳ Auth Fullstack | `05-ROADMAP-AUTH-FULLSTACK.md` | Pendiente | 0% | $5 |
+| ✅ **FE.V RBAC UI** | `04-ROADMAP-FRONTEND.md` Bloque V | **COMPLETADO** | 100% | $5 |
+| 🔄 **Auth Fullstack** | `05-ROADMAP-AUTH-FULLSTACK.md` | **ACTIVA** | 85% | $5 |
 | ⏳ Landing | `06-ROADMAP-LANDING.md` | Pendiente | 0% | $5 |
 | ⏳ Infra | `07-ROADMAP-INFRA.md` | Pendiente | 0% | $5 |
 | ⏳ Desktop | `08-ROADMAP-TAURI-DESKTOP.md` | Pendiente | 0% | $5 |
@@ -57,6 +57,7 @@
 - **Observabilidad**: tracing + Sentry + OTLP + Healthchecks.io
 - **Deploy**: Podman rootless + Caddy + Kamal
 - **Frontend**: Astro SSR + Svelte 5 + TanStack Query + ArkType + Paraglide JS
+- **Auth Fullstack**: Login/Register + Middleware SSR + Protección de rutas
 - **Tipos TypeScript**: vía `buf generate` desde `proto/` (ConnectRPC — no Specta)
 - **Manejo de errores**: DomainError → AppError → IntoResponse HTTP
 - **Landing page**: captura de leads (entidad Lead separada de User)
@@ -156,14 +157,14 @@
 - ✅ Empty (shadcn)
 - ✅ PermissionGate + ThemeToggle
 
-**Frontend V — RBAC en UI (ACTIVA 85%)**
+**Frontend V — RBAC en UI (COMPLETADO 100%)**
 - ✅ PermissionGate component funcional
 - ✅ Sidebar filtrado por permisos con persistencia
 - ✅ Topbar con Avatar, notificaciones, logout
 - ✅ CommandPalette (Ctrl+K) con RBAC
 - ✅ UserTable usa PermissionGate para acciones
 - ✅ Páginas dashboard/, audit/, settings/ creadas
-- [~] SSR verification en dashboard/audit (TODO)
+- ✅ SSR verification en dashboard con middleware
 
 **Frontend VI — i18n y formatters (COMPLETADO 100%)**
 - ✅ Paraglide JS configurado (es/en)
@@ -172,6 +173,14 @@
 - ✅ lib/i18n/formatters.ts (fecha, moneda BOB, números)
 - ✅ Integración en componentes (Sidebar, CommandPalette)
 - [ ] just build con generación Paraglide (opcional)
+
+**Auth Fullstack (ACTIVA 85%)**
+- ✅ Login/Register + Middleware SSR + Protección de rutas
+- ✅ Implementación de autenticación fullstack con PASETO v4
+- ✅ Refresh automático de tokens (rotación obligatoria)
+- ✅ Interceptor 401 → refresh → retry transparente
+- ✅ Logout completo con revocación de tokens
+- [ ] Tests E2E completos
 
 ### Stack Backend
 

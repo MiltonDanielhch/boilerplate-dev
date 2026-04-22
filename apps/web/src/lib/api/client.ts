@@ -3,11 +3,12 @@
 // Descripción: Cliente HTTP base para comunicación con API backend.
 //              Incluye headers de autorización PASETO, manejo de errores,
 //              y detección de entorno Tauri para usar invoke() cuando esté disponible.
+//              Ahora con refresh automático de tokens (A.4).
 //
 // ADRs relacionados: 0022 (Frontend), 0008 (PASETO), 0007 (Error Handling)
 
 import { get } from "svelte/store";
-import { accessTokenStore } from "$lib/stores/auth.svelte";
+import { accessTokenStore, clearAuth } from "$lib/stores/auth.svelte";
 
 const API_BASE_URL = import.meta.env.PUBLIC_API_URL || "http://localhost:3000";
 const API_PREFIX = "/api/v1";
@@ -43,6 +44,53 @@ function getHeaders(): Record<string, string> {
 	return headers;
 }
 
+/**
+ * Intenta hacer refresh del token si hay un refresh_token guardado
+ * Retorna true si el refresh fue exitoso, false en caso contrario
+ */
+async function attemptTokenRefresh(): Promise<boolean> {
+	if (typeof window === "undefined") return false;
+
+	const refreshToken = localStorage.getItem("refresh_token");
+	if (!refreshToken) return false;
+
+	try {
+		const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+				"Accept": "application/json"
+			},
+			body: JSON.stringify({ refresh_token: refreshToken })
+		});
+
+		if (!response.ok) {
+			// Refresh falló - limpiar auth
+			console.warn("[Auth] Token refresh failed, clearing auth");
+			clearAuth();
+			return false;
+		}
+
+		const data = await response.json();
+
+		// Actualizar tokens
+		localStorage.setItem("access_token", data.access_token);
+		localStorage.setItem("refresh_token", data.refresh_token);
+		accessTokenStore.set(data.access_token);
+
+		console.log("[Auth] Token refresh successful");
+		return true;
+	} catch (error) {
+		console.error("[Auth] Error during token refresh:", error);
+		clearAuth();
+		return false;
+	}
+}
+
+/**
+ * Realiza una petición a la API con manejo automático de refresh de tokens
+ * Si recibe 401, intenta hacer refresh y reintenta la petición
+ */
 export async function fetchApi<T>(
 	endpoint: string,
 	options: RequestInit = {}
@@ -56,13 +104,37 @@ export async function fetchApi<T>(
 	const prefix = needsPrefix(endpoint) ? API_PREFIX : "";
 	const url = `${API_BASE_URL}${prefix}${endpoint}`;
 
-	const response = await fetch(url, {
+	// Realizar la petición inicial
+	let response = await fetch(url, {
 		...options,
 		headers: {
 			...getHeaders(),
 			...options.headers
 		}
 	});
+
+	// Si recibimos 401 y no estamos en el endpoint de refresh, intentar refresh
+	if (response.status === 401 && endpoint !== "/auth/refresh") {
+		console.log("[Auth] Received 401, attempting token refresh...");
+
+		const refreshSuccess = await attemptTokenRefresh();
+
+		if (refreshSuccess) {
+			// Reintentar la petición original con el nuevo token
+			response = await fetch(url, {
+				...options,
+				headers: {
+					...getHeaders(),
+					...options.headers
+				}
+			});
+		} else {
+			// Refresh falló, redirigir a login
+			if (typeof window !== "undefined") {
+				window.location.href = "/login";
+			}
+		}
+	}
 
 	if (!response.ok) {
 		const errorData = await response.json().catch(() => ({}));

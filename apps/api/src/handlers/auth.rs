@@ -6,10 +6,11 @@
 
 use crate::error::{ApiError, ApiResult};
 use crate::state::AppState;
-use auth::{hash_password, verify_password};
+use auth::{hash_password, verify_password, generate_opaque_token, hash_token};
 use axum::{
     extract::State,
     response::Json,
+    Extension,
 };
 use domain::{
     entities::User,
@@ -159,14 +160,26 @@ pub async fn login(
         .map_err(|e| ApiError::Internal(format!("Token generation failed: {}", e)))?;
 
     // Generar refresh token opaco (32 bytes)
-    let raw_refresh = auth::generate_opaque_token();
-    let refresh_token = auth::hash_token(&raw_refresh);
+    let raw_refresh = generate_opaque_token();
+    let refresh_token_hash = hash_token(&raw_refresh);
 
-    // TODO: Guardar refresh token en DB (token_repo)
-    // TODO: Crear sesión (session_repo)
-    // TODO: Registrar audit log
+    // Crear sesión en DB
+    use domain::ports::SessionRepository;
+    use time::{Duration, OffsetDateTime};
+    let session = domain::Session::new(
+        user.id.to_string(),
+        refresh_token_hash,
+        None, // ip_address - se puede extraer de headers
+        None, // user_agent - se puede extraer de headers
+        OffsetDateTime::now_utc() + Duration::days(7), // 7 días de expiración
+    );
 
-    info!(user_id = %user.id, "User logged in successfully");
+    state.session_repo
+        .create(&session)
+        .await
+        .map_err(|e| ApiError::Internal(format!("Failed to create session: {}", e)))?;
+
+    info!(user_id = %user.id, session_id = %session.id, "User logged in successfully");
 
     let role = if user.email.to_string().contains("admin") {
         "admin"
@@ -227,17 +240,91 @@ pub async fn refresh(
     State(state): State<AppState>,
     Json(body): Json<RefreshRequest>,
 ) -> ApiResult<Json<RefreshResponse>> {
+    use tracing::warn;
+    use domain::ports::SessionRepository;
+
     info!("Refresh token request received");
 
-    // TODO: Verificar refresh token hash en DB
-    // TODO: Revocar refresh token anterior (rotación obligatoria)
-    // TODO: Generar nuevos access_token + refresh_token
-    // TODO: Guardar nuevo refresh token
+    // Hashear el refresh token recibido para buscarlo en DB
+    let refresh_hash = hash_token(&body.refresh_token);
 
-    // Placeholder implementation
-    Err(ApiError::Internal(
-        "Refresh token not yet implemented".to_string()
-    ))
+    // Buscar sesión por refresh token hash
+    let session = state.session_repo
+        .find_by_token(&refresh_hash)
+        .await
+        .map_err(|e| ApiError::Internal(format!("Session lookup failed: {}", e)))?
+        .ok_or_else(|| {
+            warn!("Refresh token not found in database");
+            ApiError::Unauthorized("Invalid refresh token".to_string())
+        })?;
+
+    // Verificar que la sesión no esté revocada
+    if session.is_revoked {
+        warn!(session_id = %session.id, "Attempt to use revoked refresh token");
+        return Err(ApiError::Unauthorized("Refresh token has been revoked".to_string()));
+    }
+
+    // Verificar que el refresh token no haya expirado
+    if session.is_expired() {
+        warn!(session_id = %session.id, "Attempt to use expired refresh token");
+        return Err(ApiError::Unauthorized("Refresh token has expired".to_string()));
+    }
+
+    // Obtener el usuario para generar nuevos tokens
+    let user_id = domain::value_objects::UserId::parse(&session.user_id)
+        .map_err(|e| ApiError::Internal(format!("Invalid user ID in session: {}", e)))?;
+    let user = state
+        .user_repo
+        .find_by_id(&user_id)
+        .await
+        .map_err(|e| ApiError::Internal(format!("User lookup failed: {}", e)))?
+        .ok_or_else(|| ApiError::Unauthorized("User not found".to_string()))?;
+
+    // Revocar el refresh token anterior (rotación obligatoria)
+    state.session_repo
+        .revoke(&session.id)
+        .await
+        .map_err(|e| ApiError::Internal(format!("Failed to revoke old session: {}", e)))?;
+
+    info!(session_id = %session.id, "Old session revoked due to token rotation");
+
+    // Generar nuevo access token PASETO v4
+    let new_access_token = state.paseto
+        .generate_access_token(&user.id.uuid())
+        .map_err(|e| ApiError::Internal(format!("Token generation failed: {}", e)))?;
+
+    // Generar nuevo refresh token opaco (rotación)
+    let new_raw_refresh = generate_opaque_token();
+    let new_refresh_hash = hash_token(&new_raw_refresh);
+
+    // Crear nueva sesión con el nuevo refresh token
+    use time::{Duration, OffsetDateTime};
+    let new_session = domain::Session::new(
+        session.user_id.clone(),
+        new_refresh_hash,
+        session.ip_address.clone(),
+        session.user_agent.clone(),
+        OffsetDateTime::now_utc() + Duration::days(7), // 7 días
+    );
+
+    state.session_repo
+        .create(&new_session)
+        .await
+        .map_err(|e| ApiError::Internal(format!("Failed to create new session: {}", e)))?;
+
+    info!(
+        user_id = %user.id,
+        old_session = %session.id,
+        new_session = %new_session.id,
+        "Token rotation completed successfully"
+    );
+
+    Ok(Json(RefreshResponse {
+        access_token: new_access_token,
+        refresh_token: new_raw_refresh,
+        token_type: "Bearer".to_string(),
+        expires_in: 900, // 15 minutos
+    }))
 }
 
 /// POST /auth/logout — Cierre de sesión
@@ -255,15 +342,31 @@ pub async fn refresh(
 )]
 pub async fn logout(
     State(state): State<AppState>,
+    Extension(claims): Extension<crate::middleware::auth::AuthClaims>,
 ) -> ApiResult<Json<serde_json::Value>> {
-    info!("Logout request received");
+    use domain::ports::SessionRepository;
+    use tracing::warn;
 
-    // TODO: Extraer token del header Authorization
-    // TODO: Revocar sesión
-    // TODO: Revocar refresh token
-    // TODO: Registrar audit log
+    let user_id_str = claims.user_id.to_string();
+
+    info!(user_id = %user_id_str, "Logout request received");
+
+    // Revocar TODAS las sesiones del usuario (logout global)
+    state.session_repo
+        .revoke_all_for_user(&user_id_str)
+        .await
+        .map_err(|e| {
+            warn!(user_id = %user_id_str, error = %e, "Failed to revoke sessions during logout");
+            ApiError::Internal(format!("Failed to revoke sessions: {}", e))
+        })?;
+
+    info!(
+        user_id = %user_id_str,
+        "All user sessions revoked successfully"
+    );
 
     Ok(Json(serde_json::json!({
+        "success": true,
         "message": "Logged out successfully"
     })))
 }

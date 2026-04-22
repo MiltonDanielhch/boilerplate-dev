@@ -40,6 +40,9 @@ export const authStore = {
 	get accessToken() {
 		return get(accessTokenStore);
 	},
+	get refreshToken() {
+		return get(refreshTokenStore);
+	},
 	get isLoading() {
 		return get(isLoadingStore);
 	},
@@ -56,11 +59,13 @@ export const authStore = {
 		return user.permissions?.includes(permission) ?? false;
 	},
 
-	setAuth(newUser: User, token: string) {
+	setAuth(newUser: User, token: string, refreshToken: string) {
 		userStore.set(newUser);
 		accessTokenStore.set(token);
+		refreshTokenStore.set(refreshToken);
 		if (typeof localStorage !== "undefined") {
 			localStorage.setItem("access_token", token);
+			localStorage.setItem("refresh_token", refreshToken);
 			localStorage.setItem("user", JSON.stringify(newUser));
 		}
 	},
@@ -68,8 +73,10 @@ export const authStore = {
 	clearAuth() {
 		userStore.set(null);
 		accessTokenStore.set(null);
+		refreshTokenStore.set(null);
 		if (typeof localStorage !== "undefined") {
 			localStorage.removeItem("access_token");
+			localStorage.removeItem("refresh_token");
 			localStorage.removeItem("user");
 		}
 	},
@@ -78,17 +85,20 @@ export const authStore = {
 		isLoadingStore.set(loading);
 	},
 
-	initFromStorage() {
-		if (typeof localStorage === "undefined") return;
-		const token = localStorage.getItem("access_token");
-		const userStr = localStorage.getItem("user");
-		if (token && userStr) {
-			try {
-				const user = JSON.parse(userStr);
-				userStore.set(user);
-				accessTokenStore.set(token);
-			} catch {
-				authStore.clearAuth();
+	init() {
+		if (typeof localStorage !== "undefined") {
+			const storedToken = localStorage.getItem("access_token");
+			const storedRefreshToken = localStorage.getItem("refresh_token");
+			const storedUser = localStorage.getItem("user");
+			if (storedToken) accessTokenStore.set(storedToken);
+			if (storedRefreshToken) refreshTokenStore.set(storedRefreshToken);
+			if (storedUser) {
+				try {
+					const user = JSON.parse(storedUser);
+					userStore.set(user);
+				} catch {
+					userStore.set(null);
+				}
 			}
 		}
 	}
