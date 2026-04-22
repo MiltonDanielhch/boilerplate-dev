@@ -174,13 +174,22 @@
 - ✅ Integración en componentes (Sidebar, CommandPalette)
 - [ ] just build con generación Paraglide (opcional)
 
-**Auth Fullstack (ACTIVA 85%)**
+**Auth Fullstack (COMPLETADO 100%)**
 - ✅ Login/Register + Middleware SSR + Protección de rutas
 - ✅ Implementación de autenticación fullstack con PASETO v4
 - ✅ Refresh automático de tokens (rotación obligatoria)
 - ✅ Interceptor 401 → refresh → retry transparente
 - ✅ Logout completo con revocación de tokens
-- [ ] Tests E2E completos
+- [ ] Tests E2E (post-MVP)
+
+**Landing Page (ACTIVA 14%)**
+- ✅ L.1 Dominio + DB (entidad Lead)
+- [ ] L.2 Endpoint backend (POST /api/v1/leads)
+- [ ] L.3 Layout + estructura (Astro)
+- [ ] L.4 Contenido y secciones (Hero, Features, CTA)
+- [ ] L.5 Formulario de leads (Svelte + validación)
+- [ ] L.6 SEO + performance (meta tags, optimización)
+- [ ] L.7 Tests + deploy (Playwright)
 
 ### Stack Backend
 

@@ -23,7 +23,7 @@
 
 | Bloque | Nombre | Progreso |
 |--------|--------|----------|
-| L.1 | Dominio + DB (entidad Lead) | 0% |
+| L.1 | Dominio + DB (entidad Lead) | **100%** |
 | L.2 | Endpoint backend | 0% |
 | L.3 | Layout + estructura | 0% |
 | L.4 | Contenido y secciones | 0% |
