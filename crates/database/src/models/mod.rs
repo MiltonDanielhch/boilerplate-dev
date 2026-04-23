@@ -5,4 +5,5 @@
 //
 // ADRs relacionados: ADR 0004, ADR 0017
 
+pub mod audit_row;
 pub mod user_row;

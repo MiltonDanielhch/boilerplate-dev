@@ -1,21 +1,46 @@
+// Ubicación: `apps/api/src/handlers/audit.rs`
+//
+// Descripción: Handlers para endpoints de auditoría.
+//
+// ADRs relacionados: ADR 0003 (Axum), ADR 0006 (Audit)
+
 use crate::error::ApiResult;
 use crate::state::AppState;
 use axum::{
     extract::State,
     response::Json,
 };
+use domain::ports::AuditRepository;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 
 #[derive(Debug, Serialize, ToSchema)]
 pub struct AuditEntry {
+    pub id: String,
     pub timestamp: String,
-    #[schema(value_type = String)]
-    pub method: String,
-    pub uri: String,
-    pub status: i32,
     pub user_id: Option<String>,
-    pub ip: Option<String>,
+    pub action: String,
+    pub resource: String,
+    pub resource_id: Option<String>,
+    pub details: Option<String>,
+    pub ip_address: Option<String>,
+    pub user_agent: Option<String>,
+}
+
+impl From<domain::entities::AuditLog> for AuditEntry {
+    fn from(log: domain::entities::AuditLog) -> Self {
+        Self {
+            id: log.id,
+            timestamp: log.created_at.to_string(),
+            user_id: log.user_id,
+            action: log.action,
+            resource: log.resource,
+            resource_id: log.resource_id,
+            details: log.details,
+            ip_address: log.ip_address,
+            user_agent: log.user_agent,
+        }
+    }
 }
 
 #[derive(Debug, Deserialize)]
@@ -23,6 +48,7 @@ pub struct ListAuditQuery {
     pub limit: Option<i64>,
     pub user_id: Option<String>,
     pub resource: Option<String>,
+    pub resource_id: Option<String>,
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -36,21 +62,38 @@ pub struct ListAuditResponse {
     path = "/api/v1/audit",
     tag = "Audit",
     responses(
-        (status = 200, description = "Lista de entradas de auditoría"),
+        (status = 200, description = "Lista de entradas de auditoría", body = ListAuditResponse),
         (status = 401, description = "No autenticado"),
         (status = 403, description = "Sin permiso audit:read"),
     )
 )]
 pub async fn list_audit(
-    State(_state): State<AppState>,
+    State(state): State<AppState>,
     axum::extract::Query(query): axum::extract::Query<ListAuditQuery>,
 ) -> ApiResult<Json<ListAuditResponse>> {
-    let _limit = query.limit.unwrap_or(50).min(100);
+    let limit = query.limit.unwrap_or(50).min(100);
     
-    Ok(Json(ListAuditResponse {
-        entries: vec![],
-        total: 0,
-    }))
+    let entries = if let Some(user_id) = query.user_id {
+        state.audit_repo
+            .find_by_user(&user_id, limit)
+            .await
+            .map_err(|e| crate::error::ApiError::Internal(e.to_string()))?
+    } else if let Some(resource) = query.resource {
+        state.audit_repo
+            .find_by_resource(&resource, query.resource_id.as_deref(), limit)
+            .await
+            .map_err(|e| crate::error::ApiError::Internal(e.to_string()))?
+    } else {
+        state.audit_repo
+            .find_by_resource("api", None, limit)
+            .await
+            .map_err(|e| crate::error::ApiError::Internal(e.to_string()))?
+    };
+
+    let total = entries.len() as i64;
+    let entries: Vec<AuditEntry> = entries.into_iter().map(AuditEntry::from).collect();
+
+    Ok(Json(ListAuditResponse { entries, total }))
 }
 
 #[utoipa::path(
@@ -63,7 +106,14 @@ pub async fn list_audit(
     )
 )]
 pub async fn recent_audit(
-    State(_state): State<AppState>,
+    State(state): State<AppState>,
 ) -> ApiResult<Json<Vec<AuditEntry>>> {
-    Ok(Json(vec![]))
+    let entries = state.audit_repo
+        .find_by_resource("api", None, 20)
+        .await
+        .map_err(|e| crate::error::ApiError::Internal(e.to_string()))?;
+
+    let entries: Vec<AuditEntry> = entries.into_iter().map(AuditEntry::from).collect();
+
+    Ok(Json(entries))
 }

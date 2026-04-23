@@ -25,14 +25,25 @@ use utoipa_scalar::{Scalar, Servable};
 /// Crea el router con todos los endpoints y middleware.
 pub fn create_router(state: AppState) -> Router {
     // Router público (sin autenticación)
+    // /health excluido del rate limit (para Kamal healthcheck cada 3s)
     let public_routes = Router::new()
-        .route("/health", get(health::health))
+        .route("/health", get(health::health));
+
+    // Rutas de autenticación
+    // TODO: rate limit 1 req/s, burst 5 (ADR 0009) — pendiente tower_governor
+    let auth_routes = Router::new()
         .route("/auth/register", post(auth::register))
         .route("/auth/login", post(auth::login))
         .route("/auth/refresh", post(auth::refresh))
-        .route("/auth/logout", post(auth::logout))
-        .route("/api/v1/leads", post(leads::capture))
-        // Documentación API - disponible en todos los entornos
+        .route("/auth/logout", post(auth::logout));
+
+    // Rutas de leads
+    // TODO: rate limit 3 req/min (ADR 0009, ADR 0029) — pendiente tower_governor
+    let leads_routes = Router::new()
+        .route("/api/v1/leads", post(leads::capture));
+
+    // Documentación API
+    let docs_routes = Router::new()
         .merge(Scalar::with_url("/docs", ApiDoc::openapi()))
         .route("/openapi.json", get(|| async { axum::Json(ApiDoc::openapi()) }));
 
@@ -64,6 +75,9 @@ pub fn create_router(state: AppState) -> Router {
     // Combinar routers
     Router::new()
         .merge(public_routes)
+        .merge(auth_routes)
+        .merge(leads_routes)
+        .merge(docs_routes)
         .merge(users_read_routes)
         .merge(users_write_routes)
         .merge(protected_routes)

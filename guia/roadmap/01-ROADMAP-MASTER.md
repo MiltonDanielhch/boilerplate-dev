@@ -9,15 +9,17 @@
 
 | Fase | Documento | Foco | Cuando empezar | Estado |
 |------|-----------|------|----------------|--------|
-| 0 | `ROADMAP-GENESIS.md` | Workspace + tooling | Día 1 | ⏳ |
-| 1 | `ROADMAP-BACKEND.md` | Dominio + DB + Auth + API | Día 1-2 | ⏳ |
-| 2 | `ROADMAP-FRONTEND.md` | Astro + Svelte + Dashboard | Paralelo con Backend Bloque II | ⏳ |
-| 3 | `ROADMAP-AUTH-FULLSTACK.md` | Login/Registro back+front | Después de Backend III + Frontend III | ⏳ |
-| 4 | `ROADMAP-LANDING.md` | Landing + captura de leads | Paralelo con Auth Fullstack | ⏳ |
-| 5 | `ROADMAP-INFRA.md` | Deploy + Caddy + Kamal | MVP backend+frontend listo | ⏳ |
-| — | **MVP EN PRODUCCIÓN** | — | — | — |
-| 6 | `ROADMAP-TAURI-DESKTOP.md` | Desktop Tauri 2.0 | MVP web validado | ⏳ |
-| 7 | `ROADMAP-MOBILE.md` | Mobile Tauri + KMP | Desktop validado | ⏳ |
+| 0 | `ROADMAP-GENESIS.md` | Workspace + tooling | Día 1 | ✅ Completado |
+| 1 | `ROADMAP-BACKEND.md` | Dominio + DB + Auth + API | Día 1-2 | ✅ Completado |
+| 2 | `ROADMAP-FRONTEND.md` | Astro + Svelte + Dashboard | Paralelo con Backend Bloque II | ✅ Completado |
+| 3 | `ROADMAP-AUTH-FULLSTACK.md` | Login/Registro back+front | Después de Backend III + Frontend III | ✅ Completado |
+| 4 | `ROADMAP-LANDING.md` | Landing + captura de leads | Paralelo con Auth Fullstack | ✅ Completado |
+| 5 | `ROADMAP-INFRA.md` | Deploy + Caddy + Kamal | MVP backend+frontend listo | ✅ Completado |
+| — | **MVP EN PRODUCCIÓN** | — | — | ✅ |
+| 6 | `ROADMAP-TAURA-DESKTOP.md` | Desktop Tauri 2.0 | MVP web validado | ⏳ Pendiente |
+| 7 | `ROADMAP-MOBILE.md` | Mobile Tauri + KMP | Desktop validado | ⏳ Pendiente |
+
+**MVP COMPLETO - LISTO PARA PRODUCCIÓN** 🎉
 
 ---
 

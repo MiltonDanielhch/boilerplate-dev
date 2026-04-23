@@ -55,6 +55,17 @@ sqlx = { workspace = true }
 utoipa        = { workspace = true }
 utoipa-scalar = { workspace = true }
 
+# ── Rate Limiting ────────────────────────────────────────────────────────────
+tower_governor = { version = "0.4", features = ["axum"] }
+
+# ── Observabilidad ────────────────────────────────────────────────────────────
+sentry = { workspace = true }
+
+# ── Jobs ──────────────────────────────────────────────────────────────────────
+apalis = { workspace = true }
+apalis-sql = { workspace = true }
+async-trait = { workspace = true }
+
 [dev-dependencies]
 tokio-test = "0.4"
 reqwest = { version = "0.13", features = ["json"] }

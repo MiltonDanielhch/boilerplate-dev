@@ -21,3 +21,12 @@ resend-rs = { workspace = true }
 tokio = { workspace = true }
 serde = { workspace = true }
 
+# ── HTTP Client ──────────────────────────────────────────────────────────────
+reqwest = { workspace = true }
+
+# ── Observabilidad ───────────────────────────────────────────────────────────
+tracing = { workspace = true }
+
+# ── Serialization ───────────────────────────────────────────────────────────
+serde_json = { workspace = true }
+

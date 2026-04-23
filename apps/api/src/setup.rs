@@ -3,29 +3,30 @@
 // Descripción: Composition Root — construye el grafo de dependencias.
 //              Fail-fast: si algo falla, el proceso no arranca (ADR 0002).
 //
-// ADRs relacionados: ADR 0001, ADR 0002 (Fail-Fast), ADR 0017 (Caché)
+// ADRs relacionados: ADR 0001, ADR 0002 (Fail-Fast), ADR 0017 (Caché), ADR 0016 (Observabilidad)
 
 use crate::state::{AppConfig, AppState};
-use database::repositories::{SqliteLeadRepository, SqliteSessionRepository, SqliteUserRepository};
+use database::repositories::{
+    CachedUserRepository, SqliteAuditRepository, SqliteLeadRepository, SqliteSessionRepository,
+    SqliteUserRepository,
+};
 use sqlx::SqlitePool;
 use std::sync::Arc;
-use tracing::info;
+use tracing::{error, info};
 
-/// Carga configuración desde variables de entorno (fail-fast).
 pub fn load_config() -> anyhow::Result<AppConfig> {
-    // Cargar .env si existe (silently ignore error)
     let _ = dotenvy::dotenv();
 
     let database_url = std::env::var("DATABASE_URL").unwrap_or_else(|_| {
         let mut path = std::env::current_exe().unwrap_or_default();
-        path.pop(); // bin/debug o bin/release
+        path.pop();
         path.pop();
         path.push("data");
         path.push("boilerplate.db");
         format!("sqlite:{}", path.display())
     });
 
-    let paseto_secret = std::env::var("PASETO_SECRET").expect("PASETO_SECRET must be set"); // Fail-fast
+    let paseto_secret = std::env::var("PASETO_SECRET").expect("PASETO_SECRET must be set");
 
     let environment =
         std::env::var("APP_ENVIRONMENT").unwrap_or_else(|_| "development".to_string());
@@ -37,16 +38,39 @@ pub fn load_config() -> anyhow::Result<AppConfig> {
     })
 }
 
-/// Inicializa telemetry (tracing).
 pub fn init_telemetry(config: &AppConfig) {
-    tracing_subscriber::fmt()
-        .with_env_filter(
-            tracing_subscriber::EnvFilter::try_from_default_env()
-                .unwrap_or_else(|_| tracing_subscriber::EnvFilter::new("info")),
-        )
+    let env_filter = tracing_subscriber::EnvFilter::try_from_default_env().unwrap_or_else(|_| {
+        if config.environment == "production" {
+            tracing_subscriber::EnvFilter::new("info")
+        } else {
+            tracing_subscriber::EnvFilter::new("debug")
+        }
+    });
+
+    let subscriber = tracing_subscriber::fmt()
+        .with_env_filter(env_filter)
         .with_target(true)
-        .with_thread_ids(true)
-        .init();
+        .with_thread_ids(true);
+
+    if config.environment == "production" {
+        subscriber.json().init();
+    } else {
+        subscriber.init();
+    }
+
+    if let Ok(sentry_dsn) = std::env::var("SENTRY_DSN") {
+        let _sentry = sentry::init((
+            sentry_dsn,
+            sentry::ClientOptions {
+                release: sentry::release_name!(),
+                environment: Some(config.environment.clone().into()),
+                ..Default::default()
+            },
+        ));
+        info!("Sentry initialized for error tracking");
+    } else if config.environment == "production" {
+        error!("SENTRY_DSN not set in production - error tracking disabled");
+    }
 
     info!(
         environment = %config.environment,
@@ -54,23 +78,25 @@ pub fn init_telemetry(config: &AppConfig) {
     );
 }
 
-/// Construye el estado de la aplicación (composition root).
 pub fn build_state(pool: SqlitePool, config: AppConfig) -> AppState {
     use auth::PasetoService;
 
-    // Repositorios (sin caché por ahora — se agrega en Bloque III)
     let user_repo = SqliteUserRepository::new(pool.clone());
+    let cached_user_repo = CachedUserRepository::new(user_repo);
     let session_repo = SqliteSessionRepository::new(Arc::new(pool.clone()));
+    let audit_repo = SqliteAuditRepository::new(pool.clone());
     let lead_repo = SqliteLeadRepository::new(Arc::new(pool));
 
-    // TODO: Agregar otros repositorios cuando se implementen
-    // let audit_repo = SqliteAuditRepository::new(pool.clone());
-    // let token_repo = SqliteTokenRepository::new(pool.clone());
-
-    // Servicio PASETO v4 para tokens de acceso (Arc para compartir entre threads)
     let paseto = Arc::new(PasetoService::new(&config.paseto_secret));
 
     info!("Application state built successfully");
 
-    AppState::new(config, user_repo, session_repo, lead_repo, paseto)
+    AppState::new(
+        config,
+        cached_user_repo,
+        session_repo,
+        audit_repo,
+        lead_repo,
+        paseto,
+    )
 }
