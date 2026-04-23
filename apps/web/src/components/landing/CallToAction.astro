@@ -1,0 +1,31 @@
+---
+// Ubicación: `apps/web/src/components/landing/CallToAction.astro`
+//
+// Descripción: Sección CTA final con formulario de leads.
+//
+// ADRs relacionados: 0022 (Frontend)
+
+import Button from "$lib/components/ui/button/button.svelte";
+---
+
+<section id="lead-form" class="py-20">
+	<div class="container mx-auto px-4">
+		<div class="flex flex-col items-center text-center max-w-2xl mx-auto">
+			<h2 class="text-3xl lg:text-4xl font-bold mb-4">
+				¿リストで始めますか？
+			</h2>
+			<p class="text-lg text-muted-foreground mb-8">
+				 Lancamiento通知を受け取りたいですか？お知らせします。
+			</p>
+			
+			<div class="flex flex-col sm:flex-row gap-4">
+				<Button href="/login" size="lg" class="w-full sm:w-auto">
+					Iniciar sesión
+				</Button>
+				<Button href="/dashboard" target="_blank" variant="outline" size="lg" class="w-full sm:w-auto">
+					Ver dashboard
+				</Button>
+			</div>
+		</div>
+	</div>
+</section>

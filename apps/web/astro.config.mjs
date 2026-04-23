@@ -4,6 +4,7 @@ import { defineConfig } from 'astro/config';
 import svelte from '@astrojs/svelte';
 import node from '@astrojs/node';
 import tailwindcss from '@tailwindcss/vite';
+import sitemap from '@astrojs/sitemap';
 
 // https://astro.build/config
 export default defineConfig({
@@ -11,7 +12,10 @@ export default defineConfig({
   adapter: node({
     mode: 'standalone'
   }),
-  integrations: [svelte()],
+  site: 'https://boilerplate.example.com',
+  integrations: [svelte(), sitemap({
+    filter: (page) => !page.includes('/dashboard') && !page.includes('/login')
+  })],
   vite: {
     plugins: [tailwindcss()]
   },

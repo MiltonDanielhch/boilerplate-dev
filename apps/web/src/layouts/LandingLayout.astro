@@ -1,0 +1,54 @@
+---
+// Ubicación: `apps/web/src/layouts/LandingLayout.astro`
+//
+// Descripción: Layout específico para la Landing Page público.
+//            Sin sidebar, sin auth, optimizado para conversión de leads.
+//            Incluye SEO completo: canonical, Open Graph, Twitter Cards, sitemap.
+//
+// ADRs relacionados: 0022 (Frontend), 0023 (i18n)
+
+import BaseLayout from "./BaseLayout.astro";
+import "../styles/global.css";
+
+interface Props {
+	title?: string;
+	description?: string;
+	canonical?: string;
+	ogImage?: string;
+	noIndex?: boolean;
+}
+
+const {
+	title = "Boilerplate — Fullstack Rust",
+	description = "Boilerplate fullstack con Rust, Axum, Astro y Svelte. Arquitectura hexagonal, RBAC completo, PASETO Auth y deploy desde $5/mes.",
+	canonical,
+	ogImage = "/og-image.png",
+	noIndex = false
+} = Astro.props;
+
+const siteUrl = "https://boilerplate.example.com";
+---
+
+<BaseLayout title={title} description={description} canonical={canonical || siteUrl} ogImage={ogImage}>
+	<!-- Robots noindex para desarrollo -->
+	{noIndex && <meta name="robots" content="noindex, nofollow" />}
+	
+	<!-- Additional SEO -->
+	<meta name="author" content="Boilerplate Team" />
+	<meta name="theme-color" content="#0f172a" />
+	
+	<!-- Open Graph extras -->
+	<meta property="og:url" content={canonical || siteUrl} />
+	<meta property="og:site_name" content="Boilerplate" />
+	<meta property="og:locale" content="es_ES" />
+	
+	<!-- Twitter Cards extras -->
+	<meta name="twitter:site" content="@boilerplate" />
+	<meta name="twitter:creator" content="@boilerplate" />
+	
+	<!-- Preconnect para performance -->
+	<link rel="preconnect" href="https://fonts.googleapis.com" />
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+	
+	<slot />
+</BaseLayout>

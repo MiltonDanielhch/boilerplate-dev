@@ -1,45 +1,40 @@
 ---
 // Ubicación: `apps/web/src/pages/index.astro`
 //
-// Descripción: Página de inicio (landing) con tarjeta de presentación
-//              y enlaces a la documentación de la API y health check.
-//              Usa BaseLayout y componentes shadcn-svelte.
+// Descripción: Landing Page pública con secciones Hero, Features, CTA y formulario.
+//            Usa LandingLayout sin sidebar ni auth.
 //
-// ADRs relacionados: 0022 (Frontend), 0021 (OpenAPI)
+// ADRs relacionados: 0022 (Frontend), 0029 (Landing + Leads), 0023 (i18n)
 
-import BaseLayout from "../layouts/BaseLayout.astro";
-import Button from "$lib/components/ui/button/button.svelte";
-import * as Card from "$lib/components/ui/card/index.js";
-import Badge from "$lib/components/ui/badge/badge.svelte";
+import LandingLayout from "../layouts/LandingLayout.astro";
+import Hero from "../components/landing/Hero.astro";
+import Features from "../components/landing/Features.astro";
+import CallToAction from "../components/landing/CallToAction.astro";
+import Footer from "../components/landing/Footer.astro";
+import LeadForm from "../components/landing/LeadForm.svelte";
 ---
 
-<BaseLayout
-	title="Boilerplate — Rust + Astro"
-	description="Fullstack boilerplate with Rust backend and Astro frontend"
+<LandingLayout
+	title="Boilerplate — Fullstack Rust | Arquitectura Hexagonal"
+	description="Boilerplate fullstack con Rust, Axum, Astro y Svelte. Arquitectura hexagonal, RBAC completo, PASETO Auth y deploy desde $5/mes."
 >
-	<main class="container mx-auto px-4 py-20">
-		<div class="max-w-2xl mx-auto">
-			<Card.Root class="text-center">
-				<Card.Header>
-					<Card.Title class="text-4xl font-bold tracking-tight flex items-center justify-center gap-2">
-						🚀 Boilerplate
-						<Badge variant="secondary">v0.1.0</Badge>
-					</Card.Title>
-					<Card.Description class="text-xl text-muted-foreground">
-						Rust Hexagonal + Astro 6 SSR + Svelte 5 + shadcn-svelte
-					</Card.Description>
-				</Card.Header>
-				<Card.Content>
-					<div class="flex gap-4 justify-center">
-						<Button href="http://localhost:3000/docs" target="_blank" size="lg">
-							📚 API Docs
-						</Button>
-						<Button href="http://localhost:3000/health" target="_blank" variant="outline" size="lg">
-							💓 Health Check
-						</Button>
-					</div>
-				</Card.Content>
-			</Card.Root>
-		</div>
+	<main>
+		<Hero />
+		<Features />
+		<section id="lead-form" class="py-20 bg-muted/30">
+			<div class="container mx-auto px-4">
+				<div class="flex flex-col items-center text-center max-w-2xl mx-auto mb-8">
+					<h2 class="text-3xl lg:text-4xl font-bold mb-4">
+						¿-listo para empezar?
+					</h2>
+					<p class="text-lg text-muted-foreground">
+						Regístrate y te avisamos cuando lancemos.
+					</p>
+				</div>
+				<LeadForm client:visible />
+			</div>
+		</section>
+		<CallToAction />
 	</main>
-</BaseLayout>
+	<Footer />
+</LandingLayout>

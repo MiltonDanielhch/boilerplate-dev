@@ -13,6 +13,7 @@
     "machine-translate": "inlang machine translate --project project.inlang"
   },
   "dependencies": {
+    "@astrojs/sitemap": "^3.7.2",
     "@astrojs/svelte": "^8.0.5",
     "@tanstack/svelte-query": "^6.1.16",
     "arktype": "^2.2.0",

@@ -1,0 +1,58 @@
+---
+// Ubicación: `apps/web/src/pages/dashboard/roles.astro`
+//
+// Descripción: Página de gestión de roles y permisos.
+//              Permite admin/gestión de roles.
+//
+// ADRs relacionados: 0022 (Frontend), 0006 (RBAC)
+
+import DashboardLayout from "../../layouts/DashboardLayout.astro";
+import * as Card from "$lib/components/ui/card/index.js";
+import { Button } from "$lib/components/ui/button/index.js";
+---
+
+<DashboardLayout title="Roles - Dashboard">
+	<div class="space-y-6">
+		<div>
+			<h1 class="text-3xl font-bold tracking-tight">Roles</h1>
+			<p class="text-muted-foreground mt-2">
+				Manage roles and permissions
+			</p>
+		</div>
+
+		<!-- Admin Role -->
+		<Card.Root>
+			<Card.Header>
+				<Card.Title>Admin</Card.Title>
+				<Card.Description>
+					Full access to all features and settings
+				</Card.Description>
+			</Card.Header>
+			<Card.Content>
+				<div class="space-y-2">
+					<p class="text-sm"><span class="font-medium">Permissions:</span> All</p>
+				</div>
+			</Card.Content>
+		</Card.Root>
+
+		<!-- Moderator Role -->
+		<Card.Root>
+			<Card.Header>
+				<Card.Title>Moderator</Card.Title>
+				<Card.Description>
+					Can manage users and content
+				</Card.Description>
+			</Card.Header>
+		</Card.Root>
+
+		<!-- User Role -->
+		<Card.Root>
+			<Card.Header>
+				<Card.Title>User</Card.Title>
+				<Card.Description>
+					Basic access to the application
+				</Card.Description>
+			</Card.Header>
+		</Card.Root>
+	</div>
+</DashboardLayout>

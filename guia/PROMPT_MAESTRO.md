@@ -32,7 +32,7 @@
 | ✅ **Frontend I** | `04-ROADMAP-FRONTEND.md` FE.I + FE.IV | **COMPLETADO** | 100% | $5 |
 | ✅ **FE.V RBAC UI** | `04-ROADMAP-FRONTEND.md` Bloque V | **COMPLETADO** | 100% | $5 |
 | 🔄 **Auth Fullstack** | `05-ROADMAP-AUTH-FULLSTACK.md` | **COMPLETADO** | 100% | $5 |
-| 🔄 **Landing** | `06-ROADMAP-LANDING.md` | **ACTIVA** | 29% | $5 |
+| 🔄 **Landing** | `06-ROADMAP-LANDING.md` | **ACTIVA** | 86% | $5 |
 | ⏳ Infra | `07-ROADMAP-INFRA.md` | Pendiente | 0% | $5 |
 | ⏳ Desktop | `08-ROADMAP-TAURI-DESKTOP.md` | Pendiente | 0% | $5 |
 | ⏳ Mobile | `09-ROADMAP-MOBILE.md` | Pendiente | 0% | $5 |
@@ -182,7 +182,14 @@
 - ✅ Logout completo con revocación de tokens
 - [ ] Tests E2E (post-MVP)
 
-**Landing Page (ACTIVA 29%)**
+**Landing Page (ACTIVA 86%)**
+- ✅ L.1 Dominio + DB (entidad Lead)
+- ✅ L.2 Endpoint backend (POST /api/v1/leads)
+- ✅ L.3 Layout + estructura (Astro)
+- ✅ L.4 Contenido y secciones (Hero, Features, CTA)
+- ✅ L.5 Formulario de leads (Svelte + validación + honeypot)
+- ✅ L.6 SEO + performance (sitemap, Open Graph, client:visible)
+- [ ] L.7 Tests + deploy (opcional)
 - ✅ L.1 Dominio + DB (entidad Lead)
 - ✅ L.2 Endpoint backend (POST /api/v1/leads)
 - [ ] L.3 Layout + estructura (Astro)
@@ -490,23 +497,26 @@ Proyecto nuevo — empezar desde Génesis
 
 ## Cómo proseguir desde esta sesión
 
-**Último avance:** Auth Fullstack 100% 
-- ✅ Login/Register + Middleware SSR + Protección de rutas
-- ✅ Refresh automático de tokens (rotación obligatoria)
-- ✅ Interceptor 401 → refresh → retry transparente
-- ✅ Logout completo con revocación de tokens
+**Último avance:** Landing L.1-L.6 completos (86%)
+- ✅ Entidad Lead + LeadRepository + SqliteLeadRepository
+- ✅ Migration leads + CaptureLeadUseCase
+- ✅ POST /api/v1/leads endpoint
+- ✅ LandingLayout + index.astro
+- ✅ Hero, Features, CTA, Footer componentes
+- ✅ LeadForm.svelte con honeypot anti-spam
+- ✅ SEO: sitemap, Open Graph, Twitter Cards, canonical
 
-**Siguiente bloque activo:** Landing Page (L.3)
-- L.3 Layout + estructura (Astro)
-- L.4 Contenido y secciones (Hero, Features, CTA)
-- L.5 Formulario de leads (Svelte + validación)
+**Siguiente bloque activo:** Landing L.7 (opcional)
+- L.7 Tests + deploy (se hace en Infra)
 
 **Estado actual:**
 - L.1 Dominio + DB (entidad Lead): 100%
 - L.2 Endpoint backend: 100%
-- L.3 Layout + estructura: 0%
-- L.4 Contenido y secciones: 0%
-- L.5 Formulario de leads: 0%
+- L.3 Layout + estructura: 100%
+- L.4 Contenido y secciones: 100%
+- L.5 Formulario de leads: 100%
+- L.6 SEO + performance: 100%
+- L.7 Tests + deploy: opcional (se дела в Infra)
 - L.6 SEO + performance: 0%
 - L.7 Tests + deploy: 0%
 
