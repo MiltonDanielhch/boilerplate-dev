@@ -1,0 +1,82 @@
+# Ubicación: `infra/docker/docker-compose.prod.yml`
+#
+# Descripción: Docker Compose para producción.
+#              Incluye API, Frontend y Caddy.
+#
+# ADRs relacionados: 0014 (Deploy)
+
+services:
+  # ============================================
+  # API (Rust/Axum)
+  # ============================================
+  api:
+    build:
+      context: ../..
+      dockerfile: infra/docker/Containerfile
+      target: runtime
+    container_name: boilerplate-api
+    restart: unless-stopped
+    environment:
+      - APP_ENV=production
+      - DATABASE_URL=sqlite:/data/boilerplate.db
+    volumes:
+      - ../data:/data
+    networks:
+      - boilerplate-net
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ============================================
+  # Frontend (Astro SSR)
+  # ============================================
+  web:
+    build:
+      context: ../..
+      dockerfile: apps/web/Dockerfile
+    container_name: boilerplate-web
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - HOST=0.0.0.0
+      - PORT=4321
+    networks:
+      - boilerplate-net
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:4321/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ============================================
+  # Caddy (Reverse Proxy + TLS)
+  # ============================================
+  caddy:
+    image: caddy:3-alpine
+    container_name: boilerplate-caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile
+      - caddy-data:/data
+      - caddy-config:/config
+    environment:
+      - CADDY_TLS_ONEOF=true
+    networks:
+      - boilerplate-net
+    depends_on:
+      - api
+      - web
+
+networks:
+  boilerplate-net:
+    driver: bridge
+
+volumes:
+  caddy-data:
+  caddy-config:

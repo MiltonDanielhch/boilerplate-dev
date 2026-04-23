@@ -1,0 +1,25 @@
+# Ubicación: `infra/monitoring/alerts/high-cpu.yml`
+#
+# Descripción: Alerta cuando CPU está alto.
+# ADRs relacionados: 0015 (Monitoreo)
+
+groups:
+  - name: high-cpu
+    rules:
+      - alert: HighCPU
+        expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage on {{ $labels.instance }}"
+          description: "CPU usage is above 80% for more than 5 minutes"
+
+      - alert: VeryHighCPU
+        expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) > 95
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Very high CPU usage on {{ $labels.instance }}"
+          description: "CPU usage is above 95% for more than 1 minute"

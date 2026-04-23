@@ -1,0 +1,63 @@
+# Ubicación: `infra/monitoring/prometheus.yml`
+#
+# Descripción: Configuración Prometheus para métricas.
+#              Incluye métricas de sistema y aplicación.
+#
+# ADRs relacionados: 0015 (Monitoreo)
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+# ============================================
+# Alert Managers
+# ============================================
+alertmanagers:
+  - static_configs:
+      - targets: []
+        # alerts: [email, slack, telegram]
+
+# ============================================
+# Rules
+# ============================================
+rule_files:
+  - "alerts/*.yml"
+
+# ============================================
+# Scrape targets
+# ============================================
+scrape_configs:
+  # ----------------------------------------
+  # Prometheus self-monitoring
+  # ----------------------------------------
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]
+
+  # ----------------------------------------
+  # API metrics (Rust/Axum)
+  # ----------------------------------------
+  - job_name: "api"
+    static_configs:
+      - targets: ["api:3000"]
+    metrics_path: "/metrics"
+
+  # ----------------------------------------
+  # Node Exporter (sistema)
+  # ----------------------------------------
+  - job_name: "node"
+    static_configs:
+      - targets: ["node-exporter:9100"]
+
+  # ----------------------------------------
+  # PostgreSQL Exporter (si se usa)
+  # ----------------------------------------
+  # - job_name: "postgres"
+  #   static_configs:
+  #     - targets: ["postgres-exporter:9187"]
+
+# ============================================
+#Alertas (definidas en alerts/)
+# alerts/high-cpu.yml
+# alerts/high-memory.yml
+# alerts/database-down.yml

@@ -1,0 +1,106 @@
+# Ubicación: `infra/kamal/.kamal`
+#
+# Descripción: Kamal configuration para deploy zero-downtime.
+#              Gestiona build, push, y deploy con Traefik.
+#
+# ADRs relacionados: 0014 (Deploy)
+
+# ============================================
+# Servers
+# ============================================
+server:
+  # IP del VPS o hostname
+  host: <%= ENV.fetch("KAMAL_HOST") { "tu-vps-ip" } %>
+  # Puerto donde corre el contenedor (default 80)
+  port: 80
+  # Usuario SSH
+  user: root
+
+# ============================================
+# Docker Registry
+# ============================================
+registry:
+  # Docker Hub o registry alternativo
+  server: docker.io
+  username: <%= ENV.fetch("DOCKER_USERNAME") %>
+  password: <%= ENV.fetch("DOCKER_PASSWORD") %>
+  
+  # Repositorio
+  repository: tu-usuario/boilerplate
+  
+  # Cachear credenciales (opcional)
+  # cache_token: true
+
+# ============================================
+# Builder (cómo construir la imagen)
+# ============================================
+builder:
+  # Construir localmente (o usarremote)
+  local:
+    arch: amd64
+    # o: docker
+
+# ============================================
+# Servidor de música (Traefik)
+# ============================================
+accessories:
+  # Traefik para TLS y routing
+  traefik:
+    image: traefik:v3
+    # Puertos
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    # SSL (Let's Encrypt automático)
+    ssl: true
+    options:
+      # Healthcheck
+      --healthcheckfreqinterval=30s
+      --healthchecktimeout=10s
+      --healthcheckstartperiod=5s
+    env:
+      # Traefik configuration
+      TRAEFIK_ACME_EMAIL: tu-email@dominio.com
+      TRAEFIK_PERSISTENCE_STORAGEPATH: /var/lib/traefik
+
+  # ----------------------------------------
+  # Database ( opcional - usar SQLite local)
+  # ----------------------------------------
+  # db:
+  #   image: postgres:16-alpine
+  #   env:
+  #     POSTGRES_PASSWORD: secret
+  #   volumes:
+  #     - db_data:/var/lib/postgresql/data
+
+# ============================================
+# Comandos del contenedor
+# ============================================
+# healthcheck:
+#   path: /health
+#   port: 3000
+#   interval: 30s
+#   timeout: 10s
+#   start_period: 5s
+#   retries: 3
+
+# ============================================
+# Variables de entorno en producción
+# ============================================
+env:
+  APP_ENV: production
+  DATABASE_URL: sqlite:data/boilerplate.db
+
+# ============================================
+# Roles (opcional)
+# ============================================
+# roles:
+#   web:
+#     hosts:
+#       - 192.168.1.100
+#       - 192.168.1.101
+#   workers:
+#     cmd: bundle exec rake resque:work
+#     hosts:
+#       - 192.168.1.200

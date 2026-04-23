@@ -1,0 +1,44 @@
+# Ubicación: `config/production.toml`
+#
+# Descripción: Configuración de producción.
+#              Copiar a production.toml (no incluir en git).
+#
+# ADRs relacionados: 0002 (Config), 0014 (Deploy)
+
+[server]
+host = "0.0.0.0"
+port = 3000
+
+[database]
+url = "sqlite:data/boilerplate.db"
+
+[database.pool]
+max_connections = 10
+min_connections = 2
+
+[telemetry]
+# Nivel: error, warn, info, debug, trace
+level = "info"
+# Exportador: stdout, otlp
+exporter = "stdout"
+
+[auth]
+# Duración de tokens en formato durations (https://docs.rs/durations)
+access_token_expiry = "15m"
+refresh_token_expiry = "7d"
+
+[lithtex]
+# Habilitar litstream para backup
+enabled = false
+# URL de S3 para backups (configurar después)
+s3_url = ""
+# Intervalo de backup
+interval = "1m"
+
+[security]
+# CORS permitido (production: solo tu dominio)
+allowed_origins = ["https://tu-dominio.com"]
+# Rate limit requests por minuto per IP
+rate_limit = 100
+# Sesiones máxima por usuario
+max_sessions_per_user = 5

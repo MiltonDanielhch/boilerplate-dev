@@ -1,0 +1,67 @@
+# Ubicación: `infra/docker/Containerfile`
+#
+# Descripción: Container multi-stage para producción con distroless.
+#              Stage 1: Builder (compila el binario)
+#              Stage 2: Runtime (imagen final ligera)
+#
+# ADRs relacionados: 0013 (Build), 0014 (Deploy), 0004 (Litestream)
+
+# ============================================
+# Stage 1: Builder
+# ============================================
+FROM rust:1.85-slim AS builder
+
+# Instalar dependencias del sistema
+RUN apt-get update && apt-get install -y \
+    musl-tools \
+    pkg-config \
+    libssl-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Configurar targetmusl para binario estático
+RUN rustup target add x86_64-unknown-linux-musl
+
+# Copiar archivos de configuración primero (cache de Docker)
+COPY Cargo.toml Cargo.lock ./
+COPY rust-toolchain.toml ./
+
+# Copiar crates
+COPY crates/ ./crates/
+COPY apps/ ./apps/
+
+# Build del binario
+RUN cargo build --release --bin api --locked
+
+# ============================================
+# Stage 2: Runtime (distroless)
+# ============================================
+# Usar gcr.io/distroless/cc-debian12 para seguridad máxima
+FROM gcr.io/distroless/cc-debian12:nonroot AS runtime
+
+# Crear usuario no-root para seguridad
+RUN groupadd --gid 1000 appgroup && \
+    useradd --uid 1000 --gid appgroup appuser
+
+# Copiar binario del builder
+COPY --from=builder /app/target/release/api /api
+
+# Directorios para datos
+RUN mkdir -p /data /var/lib/boilerplate && \
+    chown -R appuser:appgroup /data /var/lib/boilerplate
+
+# Copiar certificados y configuración
+COPY --chown=appuser:appgroup data/ /data/
+COPY --chown=appuser:appgroup config/production.example.toml /config/config.toml
+
+# Usuario no-root
+USER appuser
+
+# Puertos expuestos
+EXPOSE 3000
+
+# Healthcheck
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD ["wget", "-q", "--spider", "http://localhost:3000/health"]
+
+# Punto de entrada
+ENTRYPOINT ["/api"]

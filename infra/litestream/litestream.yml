@@ -1,0 +1,41 @@
+# Ubicación: `infra/litestream/litestream.yml`
+#
+# Descripción: Configuración de Litestream para backup a S3.
+#              Replica SQLite automáticamente a almacenamiento cloud.
+#
+# ADRs relacionados: 0004 (Litestream), 0020 (Tigris/S3)
+
+# ============================================
+# Targets de replicación
+# ============================================
+targets:
+  # ----------------------------------------
+  # Primary: Local (para desarrollo)
+  # ----------------------------------------
+  local:
+    path: /data/boilerplate.db
+    # retention: 24h
+
+  # ----------------------------------------
+  # S3: Tigris/AWS S3 (producción)
+  # ----------------------------------------
+  s3:
+    path: /data/boilerplate.db
+    type: s3
+    bucket: boilerplate-backups
+    # region: auto (para Tigris)
+    # endpoint: https://storage.tigris.dev (para Tigris)
+    # key: boilerplate/boilerplate.db
+    # secret: (desde env LITESTREAM_SECRET_KEY)
+    retention: 168h  # 7 días
+    interval: 1m      #チェックeach minute
+
+  # ----------------------------------------
+  # GCS: Google Cloud Storage (alternativo)
+  # ----------------------------------------
+  # gcs:
+  #   path: /data/boilerplate.db
+  #   type: gcs
+  #   bucket: boilerplate-backups
+  #   key: boilerplate/boilerplate.db
+  #   credentials: (desde GOOGLE_APPLICATION_CREDENTIALS)

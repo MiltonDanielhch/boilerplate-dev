@@ -1,0 +1,117 @@
+# Ubicación: `infra/caddy/Caddyfile`
+#
+# Descripción: Configuración de Caddy para producción.
+#              TLS automático, security headers, proxy a API.
+#
+# ADRs relacionados: 0014 (Deploy)
+
+# ============================================
+# Configuración global
+# ============================================
+{
+    # TLS automático con Let's Encrypt (o tu provider)
+    auto_https off
+    
+    # Puerto de administración (no expuesto)
+    admin off
+    
+    # Logging
+    log {
+        output file /var/log/caddy/access.log
+        format console {
+            time_format "2006/01/02 15:04:05"
+        }
+    }
+}
+
+# ============================================
+# Servidor principal
+# ============================================
+tu-dominio.com {
+    # Redirigir HTTP a HTTPS
+    encode gzip zstd
+    
+    # Security headers
+    header {
+        # Prevenir clickjacking
+        X-Frame-Options "DENY"
+        # XSS protection
+        X-Content-Type-Options "nosniff"
+        # Referrer policy
+        Referrer-Policy "strict-origin-when-cross-origin"
+        # Content Security Policy
+        Content-Security-Policy "default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https:;"
+        # Permissions Policy
+        Permissions-Policy "geolocation=(), microphone=(), camera=()"
+        # HSTS (solo después de probar)
+        # Strict-Transport-Security "max-age=31536000; includeSubDomains"
+    }
+    
+    # ============================================
+    # API (Rust/Axum)
+    # ============================================
+    @api {
+        path /api/*
+        path /auth/*
+        path /health
+    }
+    
+    reverse_proxy @api localhost:3000 {
+        # Timeouts para operaciones largas
+        dial_timeout 30s
+        read_timeout 60s
+        write_timeout 60s
+    }
+    
+    # ============================================
+    # Frontend (Astro SSR)
+    # ============================================
+    @web {
+        path /*
+    }
+    
+    reverse_proxy @web localhost:4321 {
+        dial_timeout 30s
+        read_timeout 30s
+    }
+    
+    # ============================================
+    # Archivos estáticos (cache)
+    # ============================================
+    @static {
+        path /assets/*
+        path /favicon.svg
+        path /images/*
+    }
+    
+    handle @static {
+        root * /var/www/public
+        try_files {path} {path}/index.html
+        file_server
+        cache {
+            # Cache 1 año para assets
+            max_age 31536000
+            # Immutable (solo después de hash)
+            # immutable
+        }
+    }
+    
+    # ============================================
+    # Root - sirve la landing
+    # ============================================
+    handle {
+        reverse_proxy localhost:4321
+    }
+    
+    # TLS (configurar después de probar)
+    # tls tu-email@dominio.com
+}
+
+# ============================================
+# Desarrollo local (sin TLS)
+# ============================================
+localhost:8080 {
+    reverse_proxy /api/* localhost:3000
+    reverse_proxy /auth/* localhost:3000
+    reverse_proxy localhost:4321
+}

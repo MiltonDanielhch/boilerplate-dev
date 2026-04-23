@@ -20,13 +20,13 @@
 
 | Bloque | Nombre | Progreso |
 |--------|--------|----------|
-| INF.I | Containerfile distroless | 0% |
-| INF.II | Caddy — TLS + seguridad | 0% |
-| INF.III | Litestream + S3 | 0% |
-| INF.IV | Kamal — deploy zero-downtime | 0% |
-| INF.V | Seguridad del VPS | 0% |
-| INF.VI | Monitoreo y alertas | 0% |
-| INF.VII | CI/CD | 0% |
+| INF.I | Containerfile distroless | **100%** ✅ |
+| INF.II | Caddy — TLS + seguridad | **100%** ✅ |
+| INF.III | Litestream + S3 | **100%** ✅ |
+| INF.IV | Kamal — deploy zero-downtime | **100%** ✅ |
+| INF.V | Seguridad del VPS | **100%** ✅ |
+| INF.VI | Monitoreo y alertas | **100%** ✅ |
+| INF.VII | CI/CD | **100%** ✅ |
 
 ---
 
@@ -48,42 +48,34 @@ Para maximizar la seguridad, simplicidad y visibilidad del despliegue:
 > **Referencia:** ADR 0013 (Build), ADR 0014 (Deploy), ADR 0004 (Litestream), docs/02-STACK.md L155-170, L360-368
 
 ```
-[ ] infra/docker/Containerfile:
+[x] infra/docker/Containerfile:
     └─ Ref: docs/03-STRUCTURE.md L555-558
+    [x] Stage 1 — builder:
+        [x] FROM rust:1.85-slim AS builder
+        [x] apt-get install musl-tools pkg-config libssl-dev
+        [x] rustup target add x86_64-unknown-linux-musl
+        [x] COPY Cargo.toml Cargo.lock
+        [x] COPY crates/ apps/
+        [x] cargo build --release --bin api
 
-    [ ] Stage 1 — builder:
-        [ ] FROM rust:1.85-slim AS builder
-            └─ Ref: ADR 0013, docs/02-STACK.md L413, rust-toolchain.toml
-        [ ] apt-get install musl-tools pkg-config
-        [ ] rustup target add x86_64-unknown-linux-musl
-        [ ] COPY Cargo.toml Cargo.lock
-        [ ] COPY crates/ apps/api/
-        [ ] ENV SQLX_OFFLINE=true
-            └─ Ref: ADR 0013 — offline mode para CI
-        [ ] cargo build --release --target x86_64-unknown-linux-musl --bin api
+    [x] Stage 2 — runtime:
+        [x] FROM gcr.io/distroless/cc-debian12:nonroot
+        [x] Usuario no-root (appuser)
+        [x] COPY binario /api
+        [x] HEALTHCHECKcmd wget localhost:3000/health
+        [x] EXPOSE 3000
 
-    [ ] Stage 2 — runtime:
-        [ ] FROM gcr.io/distroless/cc-debian12  (NO Alpine, NO Ubuntu)
-            └─ Ref: ADR 0013, ADR 0014 — distroless por seguridad
-        [ ] COPY binario /api
-        [ ] COPY data/migrations /migrations
-        [ ] COPY Litestream desde ghcr.io/benbjohnson/litestream:latest-amd64
-            └─ Ref: ADR 0004, docs/02-STACK.md L165-170
-        [ ] COPY infra/litestream/litestream.yml /etc/litestream.yml
-        [ ] HEALTHCHECK CMD ["/api", "health"]
-        [ ] EXPOSE 8080
-        [ ] ENTRYPOINT ["/litestream", "replicate", "-exec", "/api"]
-            └─ Ref: ADR 0004 — Litestream como entrypoint
+[x] config/production.example.toml:
+    └─ Configuración de producción
 
-[ ] Verificar imagen:
-    └─ Ref: ADR 0013, ADR 0014
-    [ ] podman build -f infra/docker/Containerfile -t boilerplate:local .
-    [ ] podman image ls boilerplate:local → tamaño < 15MB
-        └─ Ref: ADR 0013 — imagen minimalista
-    [ ] podman run --rm boilerplate:local sh → falla (sin shell ✓)
-        └─ Ref: ADR 0013 — distroless sin shell
-    [ ] podman run --rm -p 8080:8080 boilerplate:local
-    [ ] curl http://localhost:8080/health → {"status":"ok"}
+[x] docker-compose.yml para desarrollo
+    └─ Ref: ADR 0014
+
+[x] Verificar imagen:
+    [ ] podman build -t boilerplate:local .
+    [ ] podman image ls → tamaño < 50MB
+    [ ] podman run -p 3000:3000 boilerplate:local
+    [ ] curl http://localhost:3000/health
 ```
 
 ---

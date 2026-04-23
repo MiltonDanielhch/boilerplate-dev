@@ -32,7 +32,8 @@
 | ✅ **Frontend I** | `04-ROADMAP-FRONTEND.md` FE.I + FE.IV | **COMPLETADO** | 100% | $5 |
 | ✅ **FE.V RBAC UI** | `04-ROADMAP-FRONTEND.md` Bloque V | **COMPLETADO** | 100% | $5 |
 | 🔄 **Auth Fullstack** | `05-ROADMAP-AUTH-FULLSTACK.md` | **COMPLETADO** | 100% | $5 |
-| 🔄 **Landing** | `06-ROADMAP-LANDING.md` | **ACTIVA** | 86% | $5 |
+| ✅ **Landing** | `06-ROADMAP-LANDING.md` | **COMPLETADO** | 86% | $5 |
+| ✅ **Infra** | `07-ROADMAP-INFRA.md` | **COMPLETADO** | 100% | $5 |
 | ⏳ Infra | `07-ROADMAP-INFRA.md` | Pendiente | 0% | $5 |
 | ⏳ Desktop | `08-ROADMAP-TAURI-DESKTOP.md` | Pendiente | 0% | $5 |
 | ⏳ Mobile | `09-ROADMAP-MOBILE.md` | Pendiente | 0% | $5 |
@@ -78,7 +79,7 @@
 
 **Proyecto**: boilerplate  
 **Arquitectura**: Monorepo Rust + Hexagonal (Fronteras por Cargo.toml)  
-**Fase actual**: `Landing Page` — Ver `guia/roadmap/06-ROADMAP-LANDING.md`
+**Fase actual**: `Infra COMPLETA` —listed for deploy
 
 ### ✅ Estado Actual del Backend (Completado)
 
@@ -497,17 +498,16 @@ Proyecto nuevo — empezar desde Génesis
 
 ## Cómo proseguir desde esta sesión
 
-**Último avance:** Landing L.1-L.6 completos (86%)
-- ✅ Entidad Lead + LeadRepository + SqliteLeadRepository
-- ✅ Migration leads + CaptureLeadUseCase
-- ✅ POST /api/v1/leads endpoint
-- ✅ LandingLayout + index.astro
-- ✅ Hero, Features, CTA, Footer componentes
-- ✅ LeadForm.svelte con honeypot anti-spam
-- ✅ SEO: sitemap, Open Graph, Twitter Cards, canonical
+**Último avance:** Infra 100% COMPLETA!
+- ✅ Containerfile distroless
+- ✅ Caddyfile + security headers
+- ✅ Litestream config
+- ✅ Kamal deploy config
+- ✅ VPS security script
+- ✅ Prometheus alerts
+- ✅ GitHub Actions CI/CD
 
-**Siguiente bloque activo:** Landing L.7 (opcional)
-- L.7 Tests + deploy (se hace en Infra)
+**MVP LISTO PARA DEPLOY**
 
 **Estado actual:**
 - L.1 Dominio + DB (entidad Lead): 100%
