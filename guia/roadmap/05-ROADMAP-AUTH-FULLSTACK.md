@@ -23,13 +23,14 @@
 
 | Sección | Nombre | Progreso |
 |---------|--------|----------|
-| A.1 | Registro — back + front | 100% |
-| A.2 | Login — back + front | 100% |
-| A.3 | Sesión activa y protección de rutas | 100% |
-| A.4 | Refresh de tokens | 100% |
-| A.5 | Logout | 100% |
-| A.6 | RBAC — permisos en acción | 85% |
+| A.1 | Registro — back + front | **100%** ✅ |
+| A.2 | Login — back + front | **100%** ✅ |
+| A.3 | Sesión activa y protección de rutas | **100%** ✅ |
+| A.4 | Refresh de tokens | **100%** ✅ |
+| A.5 | Logout | **100%** ✅ |
+| A.6 | RBAC — permisos en acción | **100%** ✅ |
 | A.7 | Test E2E completo | 0% |
+| **Total Auth** | | **86%** |
 
 ---
 

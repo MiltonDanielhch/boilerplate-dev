@@ -22,12 +22,12 @@
 
 | Bloque | Nombre | Progreso |
 |--------|--------|----------|
-| FE.I | Fundación — setup e infraestructura | 100% |
-| FE.III | Layouts y navegación | 100% |
-| FE.II | Tipos, estado y validación | 100% |
-| FE.IV | Componentes del dashboard | 100% |
-| FE.V | RBAC en la UI | 85% |
-| FE.VI | i18n y formatters | 100% |
+| FE.I | Fundación — setup e infraestructura | **100%** ✅ |
+| FE.III | Layouts y navegación | **100%** ✅ |
+| FE.II | Tipos, estado y validación | **100%** ✅ |
+| FE.IV | Componentes del dashboard | **100%** ✅ |
+| FE.V | RBAC en la UI | **100%** ✅ |
+| FE.VI | i18n y formatters | **100%** ✅ |
 
 ---
 
