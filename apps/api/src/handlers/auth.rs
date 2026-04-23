@@ -61,7 +61,7 @@ pub async fn register(
         .map_err(|e| ApiError::Validation(format!("Invalid email: {}", e)))?;
 
     // Verificar si el usuario ya existe
-    if let Some(existing) = state.user_repo.find_active_by_email(&email).await? {
+    if let Some(_existing) = state.user_repo.find_active_by_email(&email).await? {
         return Err(ApiError::Conflict(format!(
             "Email '{}' already registered",
             body.email

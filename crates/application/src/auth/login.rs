@@ -33,9 +33,9 @@ where
     S: SessionRepository,
     A: AuditRepository,
 {
-    user_repo: R,
-    session_repo: S,
-    audit_repo: A,
+    _user_repo: R,
+    _session_repo: S,
+    _audit_repo: A,
 }
 
 impl<R, S, A> LoginUseCase<R, S, A>
@@ -46,9 +46,9 @@ where
 {
     pub fn new(user_repo: R, session_repo: S, audit_repo: A) -> Self {
         Self {
-            user_repo,
-            session_repo,
-            audit_repo,
+            _user_repo: user_repo,
+            _session_repo: session_repo,
+            _audit_repo: audit_repo,
         }
     }
 

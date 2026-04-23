@@ -26,7 +26,7 @@ export async function login(credentials: LoginInput): Promise<void> {
 	authStore.setLoading(true);
 	try {
 		const response = await api.post<LoginResponse>("/auth/login", credentials);
-		authStore.setAuth(response.user, response.access_token);
+		authStore.setAuth(response.user, response.access_token, response.refresh_token);
 	} finally {
 		authStore.setLoading(false);
 	}
@@ -65,7 +65,9 @@ export async function refreshAccessToken(): Promise<boolean> {
 	}
 	try {
 		const response = await api.post<LoginResponse>("/auth/refresh", { refresh_token: refreshToken });
-		authStore.setAuth(response.user, response.access_token, response.refresh_token);
+		// Keep existing refresh token if response doesn't include a new one
+		const newRefreshToken = response.refresh_token || refreshToken;
+		authStore.setAuth(response.user, response.access_token, newRefreshToken);
 		return true;
 	} catch {
 		authStore.clearAuth();

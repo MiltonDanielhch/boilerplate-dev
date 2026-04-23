@@ -17,12 +17,12 @@ pub struct RefreshOutput {
 
 /// Caso de uso: Refresh de tokens.
 pub struct RefreshUseCase<S: SessionRepository> {
-    session_repo: S,
+    _session_repo: S,
 }
 
 impl<S: SessionRepository> RefreshUseCase<S> {
     pub fn new(session_repo: S) -> Self {
-        Self { session_repo }
+        Self { _session_repo: session_repo }
     }
 
     /// Ejecuta el refresh.

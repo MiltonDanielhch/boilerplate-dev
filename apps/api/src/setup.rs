@@ -6,7 +6,7 @@
 // ADRs relacionados: ADR 0001, ADR 0002 (Fail-Fast), ADR 0017 (Caché)
 
 use crate::state::{AppConfig, AppState};
-use database::repositories::{SqliteSessionRepository, SqliteUserRepository};
+use database::repositories::{SqliteLeadRepository, SqliteSessionRepository, SqliteUserRepository};
 use sqlx::SqlitePool;
 use std::sync::Arc;
 use tracing::info;
@@ -60,17 +60,17 @@ pub fn build_state(pool: SqlitePool, config: AppConfig) -> AppState {
 
     // Repositorios (sin caché por ahora — se agrega en Bloque III)
     let user_repo = SqliteUserRepository::new(pool.clone());
-    let session_repo = SqliteSessionRepository::new(Arc::new(pool));
+    let session_repo = SqliteSessionRepository::new(Arc::new(pool.clone()));
+    let lead_repo = SqliteLeadRepository::new(Arc::new(pool));
 
     // TODO: Agregar otros repositorios cuando se implementen
     // let audit_repo = SqliteAuditRepository::new(pool.clone());
     // let token_repo = SqliteTokenRepository::new(pool.clone());
-    // let lead_repo = SqliteLeadRepository::new(pool.clone());
 
     // Servicio PASETO v4 para tokens de acceso (Arc para compartir entre threads)
     let paseto = Arc::new(PasetoService::new(&config.paseto_secret));
 
     info!("Application state built successfully");
 
-    AppState::new(config, user_repo, session_repo, paseto)
+    AppState::new(config, user_repo, session_repo, lead_repo, paseto)
 }

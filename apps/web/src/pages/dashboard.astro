@@ -1,29 +1,8 @@
 ---
-// Ubicación: `apps/web/src/pages/dashboard.astro`
-//
-// Descripción: Página del dashboard con métricas en tiempo real usando
-//              TanStack Query para obtener datos del backend API.
-//              Muestra usuarios totales, health de API y sesiones activas.
-//              Protegida por middleware de autenticación (A.3).
-//
-// ADRs relacionados: 0022 (Frontend), 0021 (OpenAPI), ADR 0008 (PASETO SSR)
-
 import DashboardLayout from "../layouts/DashboardLayout.astro";
 import StatsOverview from "../components/dashboard/StatsOverview.svelte";
-import * as Card from "$lib/components/ui/card/index.js";
-import * as m from "../lib/paraglide/messages.js";
+---
 
-<DashboardLayout title={m.dashboard_title()}>
+<DashboardLayout title="Dashboard">
 	<StatsOverview client:only="svelte" />
-
-	<div class="mt-6">
-		<Card.Root>
-			<Card.Header>
-				<Card.Title>{m.app_name()}</Card.Title>
-				<Card.Description>
-					{m.dashboard_description()}
-				</Card.Description>
-			</Card.Header>
-		</Card.Root>
-	</div>
 </DashboardLayout>

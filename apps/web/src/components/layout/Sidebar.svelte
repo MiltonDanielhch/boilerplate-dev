@@ -121,14 +121,13 @@
 						<item.icon class="h-5 w-5" />
 					</a>
 				{:else}
-					<Button
-						variant="ghost"
-						class="w-full justify-start gap-3"
+					<a
 						href={item.href}
+						class="flex h-9 w-full items-center gap-3 rounded-md px-3 py-2 text-sm hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors"
 					>
 						<item.icon class="h-5 w-5" />
 						{item.label}
-					</Button>
+					</a>
 				{/if}
 			{/each}
 		</nav>

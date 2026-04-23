@@ -24,12 +24,13 @@
 | Bloque | Nombre | Progreso |
 |--------|--------|----------|
 | L.1 | Dominio + DB (entidad Lead) | **100%** |
-| L.2 | Endpoint backend | 0% |
+| L.2 | Endpoint backend | **100%** |
 | L.3 | Layout + estructura | 0% |
 | L.4 | Contenido y secciones | 0% |
 | L.5 | Formulario de leads | 0% |
 | L.6 | SEO + performance | 0% |
 | L.7 | Tests + deploy | 0% |
+| **Total Landing Page** | | **29%** |
 
 ---
 

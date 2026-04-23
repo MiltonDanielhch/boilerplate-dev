@@ -59,7 +59,7 @@ pub async fn audit_middleware(
     uri: Uri,
     ConnectInfo(addr): ConnectInfo<SocketAddr>,
     headers: axum::http::HeaderMap,
-    mut request: axum::extract::Request,
+    request: axum::extract::Request,
     next: Next,
 ) -> Response {
     let start = Instant::now();
@@ -120,7 +120,7 @@ pub async fn audit_success_only_middleware(
     uri: Uri,
     ConnectInfo(addr): ConnectInfo<SocketAddr>,
     headers: axum::http::HeaderMap,
-    mut request: axum::extract::Request,
+    request: axum::extract::Request,
     next: Next,
 ) -> Response {
     let start = Instant::now();

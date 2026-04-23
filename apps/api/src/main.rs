@@ -9,7 +9,6 @@ use api::{
     router::create_router,
     setup::{build_state, load_config, init_telemetry},
 };
-use axum::extract::connect_info::ConnectInfo;
 use std::net::SocketAddr;
 use tracing::{info, warn};
 

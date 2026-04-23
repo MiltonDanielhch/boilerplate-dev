@@ -8,7 +8,7 @@
 // ADRs relacionados: 0022 (Frontend), 0008 (PASETO), 0007 (Error Handling)
 
 import { get } from "svelte/store";
-import { accessTokenStore, clearAuth } from "$lib/stores/auth.svelte";
+import { accessTokenStore, authStore } from "$lib/stores/auth.svelte";
 
 const API_BASE_URL = import.meta.env.PUBLIC_API_URL || "http://localhost:3000";
 const API_PREFIX = "/api/v1";
@@ -67,7 +67,7 @@ async function attemptTokenRefresh(): Promise<boolean> {
 		if (!response.ok) {
 			// Refresh falló - limpiar auth
 			console.warn("[Auth] Token refresh failed, clearing auth");
-			clearAuth();
+			authStore.clearAuth();
 			return false;
 		}
 
@@ -82,7 +82,7 @@ async function attemptTokenRefresh(): Promise<boolean> {
 		return true;
 	} catch (error) {
 		console.error("[Auth] Error during token refresh:", error);
-		clearAuth();
+		authStore.clearAuth();
 		return false;
 	}
 }

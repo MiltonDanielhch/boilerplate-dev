@@ -31,8 +31,8 @@
 | ✅ **Backend IV** | `03-ROADMAP-BACKEND.md` Bloque IV | **COMPLETADO** | 100% | $5 |
 | ✅ **Frontend I** | `04-ROADMAP-FRONTEND.md` FE.I + FE.IV | **COMPLETADO** | 100% | $5 |
 | ✅ **FE.V RBAC UI** | `04-ROADMAP-FRONTEND.md` Bloque V | **COMPLETADO** | 100% | $5 |
-| 🔄 **Auth Fullstack** | `05-ROADMAP-AUTH-FULLSTACK.md` | **ACTIVA** | 85% | $5 |
-| ⏳ Landing | `06-ROADMAP-LANDING.md` | Pendiente | 0% | $5 |
+| 🔄 **Auth Fullstack** | `05-ROADMAP-AUTH-FULLSTACK.md` | **COMPLETADO** | 100% | $5 |
+| 🔄 **Landing** | `06-ROADMAP-LANDING.md` | **ACTIVA** | 29% | $5 |
 | ⏳ Infra | `07-ROADMAP-INFRA.md` | Pendiente | 0% | $5 |
 | ⏳ Desktop | `08-ROADMAP-TAURI-DESKTOP.md` | Pendiente | 0% | $5 |
 | ⏳ Mobile | `09-ROADMAP-MOBILE.md` | Pendiente | 0% | $5 |
@@ -78,7 +78,7 @@
 
 **Proyecto**: boilerplate  
 **Arquitectura**: Monorepo Rust + Hexagonal (Fronteras por Cargo.toml)  
-**Fase actual**: `Frontend I — Fundación` — Ver `guia/roadmap/04-ROADMAP-FRONTEND.md` Bloque I
+**Fase actual**: `Landing Page` — Ver `guia/roadmap/06-ROADMAP-LANDING.md`
 
 ### ✅ Estado Actual del Backend (Completado)
 
@@ -182,9 +182,9 @@
 - ✅ Logout completo con revocación de tokens
 - [ ] Tests E2E (post-MVP)
 
-**Landing Page (ACTIVA 14%)**
+**Landing Page (ACTIVA 29%)**
 - ✅ L.1 Dominio + DB (entidad Lead)
-- [ ] L.2 Endpoint backend (POST /api/v1/leads)
+- ✅ L.2 Endpoint backend (POST /api/v1/leads)
 - [ ] L.3 Layout + estructura (Astro)
 - [ ] L.4 Contenido y secciones (Hero, Features, CTA)
 - [ ] L.5 Formulario de leads (Svelte + validación)
@@ -490,17 +490,25 @@ Proyecto nuevo — empezar desde Génesis
 
 ## Cómo proseguir desde esta sesión
 
-**Último avance:** FE.V al 85% — RBAC completado en UI
-- ✅ Sidebar filtrado por permisos con persistencia localStorage
-- ✅ Topbar con Avatar, notificaciones y logout funcional
-- ✅ CommandPalette (Ctrl+K) con navegación y RBAC
-- ✅ UserTable usa PermissionGate para delete/restore
-- ✅ Páginas dashboard/, audit/, settings/ creadas
+**Último avance:** Auth Fullstack 100% 
+- ✅ Login/Register + Middleware SSR + Protección de rutas
+- ✅ Refresh automático de tokens (rotación obligatoria)
+- ✅ Interceptor 401 → refresh → retry transparente
+- ✅ Logout completo con revocación de tokens
 
-**Siguiente bloque activo:** FE.VI — i18n y formatters
-- Paraglide JS para internacionalización (es/en)
-- Formatters: fecha, moneda, números (timezone America/La_Paz)
-- Mensajes en messages/es.json y messages/en.json
+**Siguiente bloque activo:** Landing Page (L.3)
+- L.3 Layout + estructura (Astro)
+- L.4 Contenido y secciones (Hero, Features, CTA)
+- L.5 Formulario de leads (Svelte + validación)
+
+**Estado actual:**
+- L.1 Dominio + DB (entidad Lead): 100%
+- L.2 Endpoint backend: 100%
+- L.3 Layout + estructura: 0%
+- L.4 Contenido y secciones: 0%
+- L.5 Formulario de leads: 0%
+- L.6 SEO + performance: 0%
+- L.7 Tests + deploy: 0%
 
 **Comandos para continuar:**
 ```bash
@@ -512,8 +520,6 @@ cd apps/api && cargo run
 ```
 
 **URLs de prueba:**
+- Landing: http://localhost:4321/
 - Dashboard: http://localhost:4321/dashboard
-- Users: http://localhost:4321/dashboard/users
-- Audit: http://localhost:4321/dashboard/audit
-- Settings: http://localhost:4321/dashboard/settings
 - Login: http://localhost:4321/login

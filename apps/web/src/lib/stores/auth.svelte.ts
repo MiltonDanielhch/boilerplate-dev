@@ -12,6 +12,7 @@ import type { User } from "$lib/types/user";
 // Stores individuales para reactivity
 export const userStore: Writable<User | null> = writable(null);
 export const accessTokenStore: Writable<string | null> = writable(null);
+export const refreshTokenStore: Writable<string | null> = writable(null);
 export const isLoadingStore = writable(false);
 
 // Store derivado para isLoggedIn
@@ -67,6 +68,10 @@ export const authStore = {
 			localStorage.setItem("access_token", token);
 			localStorage.setItem("refresh_token", refreshToken);
 			localStorage.setItem("user", JSON.stringify(newUser));
+			// Also set cookies for SSR middleware
+			document.cookie = `access_token=${encodeURIComponent(token)}; path=/; max-age=604800; SameSite=Lax`;
+			document.cookie = `refresh_token=${encodeURIComponent(refreshToken)}; path=/; max-age=2592000; SameSite=Lax`;
+			document.cookie = `user=${encodeURIComponent(JSON.stringify(newUser))}; path=/; max-age=604800; SameSite=Lax`;
 		}
 	},
 
@@ -78,6 +83,10 @@ export const authStore = {
 			localStorage.removeItem("access_token");
 			localStorage.removeItem("refresh_token");
 			localStorage.removeItem("user");
+			// Clear cookies
+			document.cookie = "access_token=; path=/; max-age=0";
+			document.cookie = "refresh_token=; path=/; max-age=0";
+			document.cookie = "user=; path=/; max-age=0";
 		}
 	},
 
@@ -101,5 +110,9 @@ export const authStore = {
 				}
 			}
 		}
+	},
+
+	initFromStorage() {
+		return this.init();
 	}
 };

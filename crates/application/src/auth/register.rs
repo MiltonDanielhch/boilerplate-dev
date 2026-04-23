@@ -24,8 +24,8 @@ where
     R: UserRepository,
     M: Mailer,
 {
-    user_repo: R,
-    mailer: M,
+    _user_repo: R,
+    _mailer: M,
 }
 
 impl<R, M> RegisterUseCase<R, M>
@@ -34,7 +34,7 @@ where
     M: Mailer,
 {
     pub fn new(user_repo: R, mailer: M) -> Self {
-        Self { user_repo, mailer }
+        Self { _user_repo: user_repo, _mailer: mailer }
     }
 
     /// Ejecuta el registro.
@@ -46,7 +46,7 @@ where
         let email = Email::new(&input.email)?;
 
         // Verificar si email ya existe
-        if let Some(_existing) = self.user_repo.find_active_by_email(&email).await? {
+        if let Some(_existing) = self._user_repo.find_active_by_email(&email).await? {
             return Err(DomainError::EmailAlreadyExists {
                 email: input.email,
             });
@@ -60,7 +60,7 @@ where
         let user = User::new(email, password_hash, input.name)?;
 
         // Guardar en repositorio
-        self.user_repo.save(&user).await?;
+        self._user_repo.save(&user).await?;
 
         // TODO: Encolar EmailVerificationJob (no bloquear HTTP)
         // self.job_queue.enqueue(EmailVerificationJob { user_id: user.id }).await?;

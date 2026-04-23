@@ -47,10 +47,15 @@ impl<R: LeadRepository> CaptureLeadUseCase<R> {
         let lead = Lead::new(
             email,
             input.name,
+            None,       // phone
+            None,       // company
+            None,       // message
             input.source,
             input.utm_campaign,
             input.utm_source,
             input.utm_medium,
+            None,       // ip_address
+            None,       // user_agent
         )?;
 
         // Guardar

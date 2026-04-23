@@ -66,14 +66,17 @@
 		<div class="flex items-center gap-4">
 			<!-- Notifications -->
 			<DropdownMenu.Root>
-				<DropdownMenu.Trigger>
-					<Button variant="ghost" size="icon" class="relative">
+				<DropdownMenu.Trigger asButton={false}>
+					<button
+						variant="ghost"
+						size="icon"
+						class="relative inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-8 w-8"
+					>
 						<Bell class="h-5 w-5" />
-						<!-- Badge de notificaciones -->
 						<span class="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-medium text-primary-foreground">
 							3
 						</span>
-					</Button>
+					</button>
 				</DropdownMenu.Trigger>
 				<DropdownMenu.Content align="end" class="w-80">
 					<DropdownMenu.Label>Notifications</DropdownMenu.Label>
@@ -101,13 +104,16 @@
 
 			<!-- User Menu -->
 			<DropdownMenu.Root>
-				<DropdownMenu.Trigger>
-					<Button variant="ghost" class="relative h-8 w-8 rounded-full">
+				<DropdownMenu.Trigger asButton={false}>
+					<button
+						variant="ghost"
+						class="relative inline-flex h-8 w-8 items-center justify-center rounded-full shrink-0 overflow-hidden border transition-colors hover:opacity-80 focus:outline-none"
+					>
 						<Avatar class="h-8 w-8">
 							<AvatarImage src="" alt={user?.name ?? 'User'} />
 							<AvatarFallback>{getInitials(user?.name)}</AvatarFallback>
 						</Avatar>
-					</Button>
+					</button>
 				</DropdownMenu.Trigger>
 				<DropdownMenu.Content align="end" class="w-56">
 					<DropdownMenu.Label class="font-normal">

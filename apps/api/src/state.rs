@@ -5,7 +5,7 @@
 // ADRs relacionados: ADR 0001 (Hexagonal), ADR 0003 (Axum)
 
 use auth::PasetoService;
-use database::repositories::{SqliteSessionRepository, SqliteUserRepository};
+use database::repositories::{SqliteLeadRepository, SqliteSessionRepository, SqliteUserRepository};
 use std::sync::Arc;
 
 /// Configuración de la aplicación.
@@ -22,6 +22,7 @@ pub struct AppState {
     pub config: AppConfig,
     pub user_repo: SqliteUserRepository,
     pub session_repo: SqliteSessionRepository,
+    pub lead_repo: SqliteLeadRepository,
     pub paseto: Arc<PasetoService>,
 }
 
@@ -30,12 +31,14 @@ impl AppState {
         config: AppConfig,
         user_repo: SqliteUserRepository,
         session_repo: SqliteSessionRepository,
+        lead_repo: SqliteLeadRepository,
         paseto: Arc<PasetoService>,
     ) -> Self {
         Self {
             config,
             user_repo,
             session_repo,
+            lead_repo,
             paseto,
         }
     }
@@ -47,6 +50,7 @@ impl std::fmt::Debug for AppState {
             .field("config", &self.config)
             .field("user_repo", &self.user_repo)
             .field("session_repo", &"<SqliteSessionRepository>")
+            .field("lead_repo", &"<SqliteLeadRepository>")
             .field("paseto", &"<PasetoService>")
             .finish()
     }

@@ -8,6 +8,7 @@
 use domain::entities::Lead;
 use domain::errors::DomainError;
 use domain::ports::LeadRepository;
+use domain::value_objects::Email;
 use sqlx::SqlitePool;
 use std::sync::Arc;
 
@@ -38,7 +39,7 @@ impl LeadRepository for SqliteLeadRepository {
         )
         .bind(&lead.id)
         .bind(&lead.name)
-        .bind(&lead.email)
+        .bind(&lead.email.to_string())
         .bind(&lead.phone)
         .bind(&lead.company)
         .bind(&lead.message)
@@ -75,7 +76,10 @@ impl LeadRepository for SqliteLeadRepository {
         .await
         .map_err(|e| DomainError::Database(e.to_string()))?;
 
-        Ok(row.map(|r| r.into()))
+        match row {
+            Some(r) => Ok(Some(r.into_lead()?)),
+            None => Ok(None),
+        }
     }
 
     /// Buscar lead por ID
@@ -94,7 +98,10 @@ impl LeadRepository for SqliteLeadRepository {
         .await
         .map_err(|e| DomainError::Database(e.to_string()))?;
 
-        Ok(row.map(|r| r.into()))
+        match row {
+            Some(r) => Ok(Some(r.into_lead()?)),
+            None => Ok(None),
+        }
     }
 
     /// Listar leads con paginación
@@ -116,7 +123,7 @@ impl LeadRepository for SqliteLeadRepository {
         .await
         .map_err(|e| DomainError::Database(e.to_string()))?;
 
-        Ok(rows.into_iter().map(|r| r.into()).collect())
+        Ok(rows.into_iter().map(|r| r.into_lead()).collect::<Result<Vec<_>, _>>()?)
     }
 
     /// Marcar lead como contactado
@@ -140,9 +147,9 @@ impl LeadRepository for SqliteLeadRepository {
 
 /// Estructura intermedia para SQLx
 #[derive(sqlx::FromRow)]
-struct LeadRow {
-    id: String,
-    name: String,
+pub struct LeadRow {
+    pub id: String,
+    pub name: Option<String>,
     email: String,
     phone: Option<String>,
     company: Option<String>,
@@ -159,25 +166,28 @@ struct LeadRow {
     created_at: time::OffsetDateTime,
 }
 
-impl From<LeadRow> for Lead {
-    fn from(row: LeadRow) -> Self {
-        Lead {
-            id: row.id,
-            name: row.name,
-            email: row.email,
-            phone: row.phone,
-            company: row.company,
-            message: row.message,
-            source: row.source,
-            utm_source: row.utm_source,
-            utm_medium: row.utm_medium,
-            utm_campaign: row.utm_campaign,
-            ip_address: row.ip_address,
-            user_agent: row.user_agent,
-            is_contacted: row.is_contacted,
-            contact_notes: row.contact_notes,
-            contacted_at: row.contacted_at,
-            created_at: row.created_at,
-        }
+impl LeadRow {
+    fn into_lead(self) -> Result<Lead, DomainError> {
+        let email = Email::new(&self.email)
+            .map_err(|e| DomainError::Validation(format!("Invalid email in database: {e}")))?;
+        
+        Ok(Lead {
+            id: self.id,
+            name: self.name,
+            email,
+            phone: self.phone,
+            company: self.company,
+            message: self.message,
+            source: self.source,
+            utm_source: self.utm_source,
+            utm_medium: self.utm_medium,
+            utm_campaign: self.utm_campaign,
+            ip_address: self.ip_address,
+            user_agent: self.user_agent,
+            is_contacted: self.is_contacted,
+            contact_notes: self.contact_notes,
+            contacted_at: self.contacted_at,
+            created_at: self.created_at,
+        })
     }
 }

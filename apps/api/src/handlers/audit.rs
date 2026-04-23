@@ -3,8 +3,6 @@ use crate::state::AppState;
 use axum::{
     extract::State,
     response::Json,
-    routing::get,
-    Router,
 };
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
@@ -31,13 +29,6 @@ pub struct ListAuditQuery {
 pub struct ListAuditResponse {
     pub entries: Vec<AuditEntry>,
     pub total: i64,
-}
-
-fn create_audit_router(state: AppState) -> Router {
-    Router::new()
-        .route("/api/v1/audit", get(list_audit))
-        .route("/api/v1/audit/recent", get(recent_audit))
-        .with_state(state)
 }
 
 #[utoipa::path(

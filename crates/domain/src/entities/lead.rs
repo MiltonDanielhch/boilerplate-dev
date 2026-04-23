@@ -16,12 +16,18 @@ pub struct Lead {
     pub id: String,     // UUID v7
     pub email: Email,
     pub name: Option<String>,
+    pub phone: Option<String>,
+    pub company: Option<String>,
+    pub message: Option<String>,
     pub source: Option<String>, // ej: "landing_v1", "blog_post_x"
     pub utm_campaign: Option<String>,
     pub utm_source: Option<String>,
     pub utm_medium: Option<String>,
+    pub ip_address: Option<String>,
+    pub user_agent: Option<String>,
     pub is_contacted: bool,
-    pub notes: Option<String>,
+    pub contact_notes: Option<String>,
+    pub contacted_at: Option<OffsetDateTime>,
     pub created_at: OffsetDateTime,
 }
 
@@ -30,21 +36,32 @@ impl Lead {
     pub fn new(
         email: Email,
         name: Option<String>,
+        phone: Option<String>,
+        company: Option<String>,
+        message: Option<String>,
         source: Option<String>,
         utm_campaign: Option<String>,
         utm_source: Option<String>,
         utm_medium: Option<String>,
+        ip_address: Option<String>,
+        user_agent: Option<String>,
     ) -> Result<Self, crate::errors::DomainError> {
         Ok(Self {
             id: Uuid::now_v7().to_string(),
             email,
             name,
+            phone,
+            company,
+            message,
             source,
             utm_campaign,
             utm_source,
             utm_medium,
+            ip_address,
+            user_agent,
             is_contacted: false,
-            notes: None,
+            contact_notes: None,
+            contacted_at: None,
             created_at: OffsetDateTime::now_utc(),
         })
     }
@@ -52,8 +69,7 @@ impl Lead {
     /// Marca como contactado.
     pub fn mark_contacted(&mut self, notes: Option<String>) {
         self.is_contacted = true;
-        if let Some(n) = notes {
-            self.notes = Some(n);
-        }
+        self.contact_notes = notes;
+        self.contacted_at = Some(OffsetDateTime::now_utc());
     }
 }

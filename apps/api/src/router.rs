@@ -31,6 +31,7 @@ pub fn create_router(state: AppState) -> Router {
         .route("/auth/login", post(auth::login))
         .route("/auth/refresh", post(auth::refresh))
         .route("/auth/logout", post(auth::logout))
+        .route("/api/v1/leads", post(leads::capture))
         // Documentación API - disponible en todos los entornos
         .merge(Scalar::with_url("/docs", ApiDoc::openapi()))
         .route("/openapi.json", get(|| async { axum::Json(ApiDoc::openapi()) }));
@@ -51,9 +52,7 @@ pub fn create_router(state: AppState) -> Router {
         .layer(middleware::from_fn_with_state(state.clone(), auth_middleware));
 
     // Router protegido general (solo auth, sin RBAC específico)
-    let protected_routes = Router::new()
-        .route("/api/v1/leads", post(leads::capture))
-        .layer(middleware::from_fn_with_state(state.clone(), auth_middleware));
+    let protected_routes = Router::new();
 
     // Router de auditoría (auth + permission)
     let audit_routes = Router::new()
