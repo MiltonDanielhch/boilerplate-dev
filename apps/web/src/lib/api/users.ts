@@ -11,8 +11,8 @@ import type { User, UserCreateInput, UserUpdateInput } from "$lib/types/user";
 interface ListUsersResponse {
 	users: User[];
 	total: number;
-	page: number;
-	perPage: number;
+	limit: number;
+	offset: number;
 }
 
 interface ListUsersParams {

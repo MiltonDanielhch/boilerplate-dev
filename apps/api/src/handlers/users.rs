@@ -73,9 +73,11 @@ pub async fn list(
     let input = application::users::ListUsersInput { limit, offset };
     
     let users = use_case.execute(input).await?;
+    let total = users.len() as i64;
     
     Ok(Json(ListUsersResponse {
         users: users.into_iter().map(UserResponse::from).collect(),
+        total,
         limit,
         offset,
     }))
@@ -197,6 +199,7 @@ pub struct UpdateUserRequest {
 #[derive(Debug, Serialize, ToSchema)]
 pub struct ListUsersResponse {
     pub users: Vec<UserResponse>,
+    pub total: i64,
     pub limit: i64,
     pub offset: i64,
 }

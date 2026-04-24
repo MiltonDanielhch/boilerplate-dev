@@ -22,6 +22,7 @@
 		change?: {
 			value: number;
 			label: string;
+			type?: "percentage" | "neutral";
 		};
 	}
 
@@ -43,14 +44,17 @@
 		<div class="text-2xl font-bold">{value}</div>
 		{#if change}
 			<p class="text-xs text-muted-foreground flex items-center gap-1">
-				{#if isPositiveChange(change.value)}
+				{#if change.type === "neutral"}
+					<span class="text-muted-foreground">{change.label}</span>
+				{:else if isPositiveChange(change.value)}
 					<TrendingUp class="h-3 w-3 text-green-500" />
 					<span class="text-green-500">+{change.value}%</span>
+					<span>{change.label}</span>
 				{:else}
 					<TrendingDown class="h-3 w-3 text-red-500" />
 					<span class="text-red-500">{change.value}%</span>
+					<span>{change.label}</span>
 				{/if}
-				<span>{change.label}</span>
 			</p>
 		{:else}
 			<p class="text-xs text-muted-foreground">—</p>

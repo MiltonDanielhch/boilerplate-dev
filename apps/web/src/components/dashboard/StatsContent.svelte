@@ -23,7 +23,7 @@
 	async function fetchUsers() {
 		try {
 			usersLoading = true;
-			const result = await listUsers({ perPage: 1 });
+			const result = await listUsers({ limit: 1000, offset: 0 });
 			usersTotal = result.total;
 			usersError = null;
 		} catch (err) {
@@ -86,7 +86,7 @@
 		title="Database"
 		value="SQLite"
 		badge={{ text: "Local", variant: "secondary" }}
-		change={{ value: 0, label: "Avg 12ms response" }}
+		change={{ value: 12, label: "Avg 12ms response", type: "neutral" }}
 	/>
 </div>
 

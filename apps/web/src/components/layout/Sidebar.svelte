@@ -58,6 +58,9 @@
 	const menuItems = $derived(
 		allMenuItems.filter(item => {
 			if (!item.permission) return true;
+			// Si auth no está inicializado, mostrar todos los items con permisos
+			const user = get(authStore.userStore);
+			if (!user) return true;
 			return authStore.hasPermission(item.permission);
 		})
 	);
