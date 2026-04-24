@@ -33,7 +33,7 @@
 | ✅ **Auth Fullstack** | `05-ROADMAP-AUTH-FULLSTACK.md` | **COMPLETADO** | 100% | $5 |
 | ✅ **Landing** | `06-ROADMAP-LANDING.md` | **COMPLETADO** | 90% | $5 |
 | ✅ **Infra** | `07-ROADMAP-INFRA.md` | **COMPLETADO** | 100% | $5 |
-| 🔄 **Desktop** | `08-ROADMAP-TAURI-DESKTOP.md` | **EN PROGRESO** | 10% | $5 |
+| 🔄 **Desktop** | `08-ROADMAP-TAURI-DESKTOP.md` | **25%** | 25% | $5 |
 | ⏳ **Mobile** | `09-ROADMAP-MOBILE.md` | Pendiente | 0% | $5 |
 | ⏳ **Admin** | `80-ROADMAP-ADMIN.md` | Post-MVP | 0% | $5 |
 | ⏳ **Fase 2** | `50-ROADMAP-FASE2.md` | Post-MVP | 0% | $10-20 |

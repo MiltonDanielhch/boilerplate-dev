@@ -23,11 +23,11 @@
 | Bloque | Nombre | Progreso |
 |--------|--------|----------|
 | D.I | Setup inicial | **100%** ✅ |
-| D.II | Configuración Tauri | 0% |
-| D.III | Comandos Tauri + Bridge con Rust | 0% |
+| D.II | Configuración Tauri | 50% |
+| D.III | Comandos Tauri + Bridge con Rust | 30% |
 | D.IV | Auth + estado local | 0% |
 | D.V | UI adaptada para desktop | 0% |
-| D.VI | Build + distribución | 0% |
+| D.VI | Build + distribución | 30% |
 | D.VII | CI para desktop | 0% |
 
 ---
