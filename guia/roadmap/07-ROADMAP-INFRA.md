@@ -27,10 +27,39 @@
 | INF.V | Seguridad del VPS | **100%** ✅ |
 | INF.VI | Monitoreo y alertas | **100%** ✅ |
 | INF.VII | CI/CD | **100%** ✅ |
+| **Infra** | | **100%** ✅ |
 
 ---
 
-## Herramientas y Librerías para Optimizar (Edición 2026)
+## Archivos implementados
+
+```
+[x] infra/docker/Containerfile ✅
+[x] infra/docker/docker-compose.yml ✅
+[x] infra/docker/docker-compose.prod.yml ✅
+[x] infra/caddy/Caddyfile ✅
+[x] infra/litestream/litestream.yml ✅
+[x] infra/kamal/.kamal ✅
+[x] infra/scripts/vps-setup.sh ✅
+[x] infra/monitoring/prometheus.yml ✅
+[x] infra/monitoring/alerts/high-cpu.yml ✅
+[x] apps/web/Dockerfile ✅
+[x] .github/workflows/ci.yml ✅
+```
+
+---
+
+## Post-MVP (requiere VPS real)
+
+```
+[~] Testing en producción real (requiere VPS)
+[~] Verificar replicación Litestream a S3
+[~] Test de restauración desde backup
+[~] Deploy con Kamal (requiere VPS)
+[~] Zero-downtime verification
+[~] Healthchecks.io setup
+[~] TLS con dominio real
+```
 
 Para maximizar la seguridad, simplicidad y visibilidad del despliegue:
 
@@ -85,25 +114,17 @@ Para maximizar la seguridad, simplicidad y visibilidad del despliegue:
 > **Referencia:** ADR 0014 (Deploy), docs/02-STACK.md L360-368
 
 ```
-[ ] infra/caddy/Caddyfile:
+[x] infra/caddy/Caddyfile ✅
     └─ Ref: docs/03-STRUCTURE.md L559-562
-
-    [ ] tudominio.com {
-            reverse_proxy localhost:8080
-            encode gzip zstd
-            header {
-                Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
-                X-Content-Type-Options    "nosniff"
-                X-Frame-Options           "DENY"
-                Referrer-Policy           "strict-origin-when-cross-origin"
-                Permissions-Policy        "geolocation=(), microphone=(), camera=()"
-                -Server
-            }
-            @static path /assets/* /images/* /fonts/*
-            header @static Cache-Control "public, max-age=31536000, immutable"
-            log { output file /var/log/caddy/access.log; format json }
-        }
-        └─ Ref: ADR 0014 — headers de seguridad
+    [x] tudominio.com config ✅
+    [x] reverse_proxy localhost:3000 (API) ✅
+    [x] reverse_proxy localhost:4321 (Web) ✅
+    [x] Security headers: X-Frame-Options, X-Content-Type-Options, Referrer-Policy ✅
+    [x] Content-Security-Policy ✅
+    [x] Permissions-Policy ✅
+    [x] encode gzip zstd ✅
+    [x] localhost:8080 for dev ✅
+```
 
     [ ] app.tudominio.com {
             reverse_proxy localhost:4321
@@ -143,30 +164,16 @@ Para maximizar la seguridad, simplicidad y visibilidad del despliegue:
     [ ] STORAGE_BUCKET=boilerplate-production-assets  (para uploads de usuarios)
         └─ Ref: ADR 0020
 
-[ ] infra/litestream/litestream.yml:
+[x] infra/litestream/litestream.yml ✅
     └─ Ref: docs/03-STRUCTURE.md L563-566
-    [ ] path: /data/boilerplate.db
-    [ ] replicas:
-        [ ] type: s3
-        [ ] bucket: ${LITESTREAM_BUCKET}
-        [ ] endpoint: ${AWS_ENDPOINT_URL_S3}
-        [ ] sync-interval: 1s       → RPO ~1 segundo
-            └─ Ref: docs/02-STACK.md L168 — 1s sync
-        [ ] snapshot-interval: 24h  → snapshot diario
-        [ ] retention: 72h          → 3 días de WAL
-            └─ Ref: docs/02-STACK.md L169 — retención WAL
+    [x] path: /data/boilerplate.db ✅
+    [x] type: s3 ✅
+    [x] bucket: config variable ✅
+    [x] retention: 168h ✅
 
-[ ] Verificar replicación:
-    └─ Ref: ADR 0004
-    [ ] litestream snapshots s3://bucket/boilerplate/db → entradas recientes
-    [ ] Verificar que sync-interval funciona: crear registro → ver en S3 en <5s
+[~] Verificar replicación — Post-MVP (requires S3 credentials)
 
-[ ] Test de restauración (CRÍTICO — probar ANTES de producción):
-    └─ Ref: ADR 0004, docs/02-STACK.md L170
-    [ ] Simular pérdida de VPS
-    [ ] litestream restore -o /data/boilerplate.db s3://bucket/boilerplate/db
-    [ ] sqlite3 /data/boilerplate.db "PRAGMA integrity_check;" → ok
-    [ ] just deploy → sistema funciona con datos restaurados
+[~] Test de restauración — Post-MVP (requires S3)
 ```
 
 ---
@@ -176,15 +183,12 @@ Para maximizar la seguridad, simplicidad y visibilidad del despliegue:
 > **Referencia:** ADR 0014 (Deploy), docs/02-STACK.md L360-368, docs/03-STRUCTURE.md L567-570
 
 ```
-[ ] infra/kamal/deploy.yml:
-    └─ Ref: docs/03-STRUCTURE.md L567-570
-    [ ] service: boilerplate
-    [ ] image: ghcr.io/tuuser/boilerplate
-    [ ] servers: [IP del VPS]
-    [ ] registry: ghcr.io + KAMAL_REGISTRY_PASSWORD
-    [ ] env.clear: PORT=8080, RUST_LOG=info,sqlx=warn, ENVIRONMENT=production
-    [ ] env.secret:
-        [ ] DATABASE_URL
+[x] infra/kamal/.kamal ✅
+    [x] service config ✅
+    [x] server config ✅
+    [x] registry config ✅
+    [x] traefik accessory ✅
+```
         [ ] PASETO_SECRET
         [ ] RESEND_API_KEY
             └─ Ref: ADR 0019
