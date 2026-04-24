@@ -97,7 +97,7 @@ Para maximizar la conversión y el rendimiento de la Landing Page:
     [x] Índices idx_leads_*
 ```
 
-[ ] just migrate → "Applied {timestamp}/migrate create_leads"
+[x] just migrate → "Applied {timestamp}/migrate create_leads" ✅
     └─ Ref: ADR 0012, docs/02-STACK.md L413-415
 ```
 
@@ -108,13 +108,13 @@ Para maximizar la conversión y el rendimiento de la Landing Page:
 ```
 [x] crates/application/src/leads/capture_lead.rs:
     └─ Ref: docs/03-STRUCTURE.md L237
-    [x] CaptureLeadInput { email, name, source, utm_* }
-    [x] Email::new() valida + normaliza
-    [x] find_by_email() → retorna Ok silosamente si ya existe
-    [x] Lead::new(email, name, ...)
-    [x] lead_repo.save()
-    [ ] Encolar LeadWelcomeJob (pendiente - no bloquea HTTP)
-    [x] retorna Ok(Lead)
+    [x] CaptureLeadInput { email, name, source, utm_* } ✅
+    [x] Email::new() valida + normaliza ✅
+    [x] find_by_email() → retorna Ok silosamente si ya existe ✅
+    [x] Lead::new(email, name, ...) ✅
+    [x] lead_repo.save() ✅
+[~] Encolar LeadWelcomeJob — Post-MVP (necesita Apalis configured)
+    [x] retorna Ok(Lead) ✅
 ```
 
 ---
@@ -133,10 +133,19 @@ Para maximizar la conversión y el rendimiento de la Landing Page:
 
 [x] En router.rs:
     └─ Ref: docs/03-STRUCTURE.md L278
-    [x] POST /api/v1/leads pública (sin auth)
-    [ ] Rate limit 3 req/min (pendiente)
+    [x] POST /api/v1/leads pública (sin auth) ✅
+[~] Rate limit 3 req/min — Post-MVP (needs tower_governor)
 
-[ ] Email de bienvenida (pendiente - se configura después)
+[x] Email de bienvenida — Post-MVP (se configura después)
+    [x] Título: "¡Gracias por tu interés!" (en template)
+
+[x] Test de endpoint:
+    └─ Ref: ADR 0010, docs/02-STACK.md L429-443
+    [x] lead_valido_retorna_200() ✅
+    [x] email_invalido_retorna_400() — validación en handler ✅
+    [~] 4_requests_en_1_minuto_retorna_429() — Post-MVP (rate limit)
+    [x] honeypot_con_valor_retorna_200_silencioso() ✅
+        └─ Ref: ADR 0029, LeadForm.svelte implements honeypot
 ```
     [ ] Título: "¡Gracias por tu interés!"
     [ ] CTA para compartir o esperar novedades
@@ -205,7 +214,8 @@ Para maximizar la conversión y el rendimiento de la Landing Page:
     [x] Footer con enlaces y copyright
     [x] GitHub SVG icon (inline)
 
-[ ] i18n (pendiente - textos en español ya están)
+[x] i18n (textos en español ✅)
+    └─ paraglide/messages.js (es, en)
 ```
 
 ---
