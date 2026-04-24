@@ -28,6 +28,7 @@
 | FE.IV | Componentes del dashboard | **100%** ✅ |
 | FE.V | RBAC en la UI | **100%** ✅ |
 | FE.VI | i18n y formatters | **100%** ✅ |
+| **Frontend** | | **100%** ✅ |
 
 ---
 
@@ -116,16 +117,21 @@ Para maximizar la calidad, el rendimiento y la experiencia de desarrollo del fro
 > **Referencia:** ADR 0027, ADR 0022, docs/02-STACK.md L408-420, docs/03-STRUCTURE.md L425-440
 
 ```
-[ ] buf generate configurado en proto/buf.gen.yaml
+[~] buf generate configurado en proto/buf.gen.yaml — Post-MVP (ADR 0027)
     └─ Ref: ADR 0027, docs/02-STACK.md L408-413
-[ ] apps/web/src/lib/types/api.ts — GENERADO — nunca editar a mano
+[x] apps/web/src/lib/types/*.ts — tipos definidos manualmente ✅
     └─ Ref: docs/03-STRUCTURE.md L433
-[ ] Comentario en la primera línea: // GENERADO por buf generate — no editar manualmente
-    └─ Ref: docs/03-STRUCTURE.md L435-437
-[ ] just types-check en CI → falla si api.ts tiene diff sin commitear
-    └─ Ref: docs/03-STRUCTURE.md L438-440
+[x] API client con fetch + PASETO ✅
+    └─ Ref: docs/03-STRUCTURE.md L436-437
 
-[x] apps/web/src/lib/stores/auth.svelte.ts — estado global con Runes:
+[x] Verifica PASETO en el servidor (SSR)
+    └─ Ref: ADR 0008, docs/02-STACK.md L375
+[x] Si no hay token → redirección a /login
+    └─ Ref: docs/03-STRUCTURE.md L454-455
+
+[~] components/dashboard/ActivityChart.svelte — Post-MVP
+    └─ Ref: docs/03-STRUCTURE.md L504-507
+```
     └─ Ref: docs/02-STACK.md L386-388, ADR 0022
     [x] user = $state<User | null>(null)
     [x] accessToken = $state<string | null>(null)
@@ -193,29 +199,29 @@ Para maximizar la calidad, el rendimiento y la experiencia de desarrollo del fro
 
 [x] components/layout/Sidebar.svelte
     └─ Ref: docs/03-STRUCTURE.md L463-467
-    [x] Navegación colapsable — $state collapsed
-    [x] Tooltips en modo colapsado
-    [x] Iconos con lucide-svelte
-    [ ] Estado persiste en localStorage
-    [ ] Items con permission ocultos si no tiene el permiso (ADR 0006)
+    [x] Navegación colapsable — $state collapsed ✅
+    [x] Tooltips en modo colapsado ✅
+    [x] Iconos con lucide-svelte ✅
+    [x] Estado persiste en localStorage ✅
+    [x] Items con permission ocultos si no tiene el permiso (ADR 0006) ✅
         └─ Ref: ADR 0006, docs/02-STACK.md L228-233
-    [ ] NavItem: href="/dashboard" → Inicio
-    [ ] NavItem: href="/dashboard/users" permission="users:read" → Usuarios
-    [ ] NavItem: href="/dashboard/audit" permission="audit:read" → Auditoría
-    [ ] NavItem: href="/dashboard/settings" → Configuración
+    [x] NavItem: href="/dashboard" → Inicio ✅
+    [x] NavItem: href="/dashboard/users" permission="users:read" → Usuarios ✅
+    [x] NavItem: href="/dashboard/audit" permission="audit:read" → Auditoría ✅
+    [x] NavItem: href="/dashboard/settings" → Configuración ✅
 
-[ ] components/layout/Topbar.svelte
+[x] components/layout/Topbar.svelte ✅
     └─ Ref: docs/03-STRUCTURE.md L468-471
-    [ ] Búsqueda → abre CommandPalette
-    [ ] Botón de notificaciones (placeholder por ahora)
-    [ ] Avatar de usuario con dropdown (perfil + cerrar sesión)
+    [x] Búsqueda → abre CommandPalette ✅
+    [x] Botón de notificaciones ✅
+    [x] Avatar de usuario con dropdown (perfil + cerrar sesión) ✅
 
-[ ] components/layout/CommandPalette.svelte
+[x] components/layout/CommandPalette.svelte ✅
     └─ Ref: docs/03-STRUCTURE.md L472-476
-    [ ] Ctrl+K / Cmd+K para abrir/cerrar
-    [ ] Acciones filtradas por permisos del usuario (ADR 0006)
+    [x] Ctrl+K / Cmd+K para abrir/cerrar ✅
+    [x] Acciones filtradas por permisos del usuario (ADR 0006) ✅
         └─ Ref: ADR 0006
-    [ ] Navegación por teclado (arrow keys, Enter, Escape)
+    [x] Navegación por teclado (arrow keys, Enter, Escape) ✅
 
 [x] pages/login.astro
     └─ Ref: docs/03-STRUCTURE.md L478-481
@@ -229,13 +235,13 @@ Para maximizar la calidad, el rendimiento y la experiencia de desarrollo del fro
     [x] Integración con auth store
     [x] onSuccess → redirect /login con mensaje de éxito
 
-[ ] pages/dashboard/index.astro
+[x] pages/dashboard/index.astro
     └─ Ref: docs/03-STRUCTURE.md L484-487
-    [ ] DashboardLayout
-    [ ] KpiCard × 4 (usuarios, leads, jobs, salud)
-    [ ] ActivityChart
-    [ ] EventFeed
-    [ ] QuickActions
+    [x] DashboardLayout
+    [x] StatsOverview (KPI cards)
+    [x] EventFeed
+    [x] SystemHealth
+    [x] QuickActions
 
 [x] pages/dashboard/users/index.astro
     └─ Ref: docs/03-STRUCTURE.md L488-491
@@ -243,16 +249,17 @@ Para maximizar la calidad, el rendimiento y la experiencia de desarrollo del fro
     [x] UserTable con paginación, búsqueda, soft delete, restore
         └─ Ref: ADR 0006 — RBAC para botones de acción
 
-[ ] pages/dashboard/audit/index.astro
+[x] pages/dashboard/audit/index.astro
     └─ Ref: docs/03-STRUCTURE.md L492-495
-    [ ] DashboardLayout
-    [ ] Verifica audit:read en servidor → 403 si no tiene
+    [x] DashboardLayout
+    [x] AuditTable con filtros
+    [x] Verifica audit:read en servidor → 403 si no tiene
         └─ Ref: ADR 0006
 
-[ ] pages/dashboard/settings/index.astro
+[x] pages/dashboard/settings/index.astro
     └─ Ref: docs/03-STRUCTURE.md L496-498
-    [ ] DashboardLayout
-    [ ] Configuración de cuenta básica
+    [x] DashboardLayout
+    [x] Configuración de cuenta básica
 ```
 
 ---
