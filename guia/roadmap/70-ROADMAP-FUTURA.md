@@ -11,7 +11,7 @@
 > **Garantía:** La arquitectura hexagonal (ADR 0001) asegura que cada cambio sea quirúrgico — solo adaptadores, nunca dominio.
 
 ---
-
+y 
 ## Estados
 
 ```
