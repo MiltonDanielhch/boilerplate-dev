@@ -13,6 +13,7 @@ use crate::middleware::request_id::request_id_middleware;
 use crate::middleware::trace::trace_middleware;
 use crate::state::AppState;
 use axum::{
+    http::StatusCode,
     middleware,
     routing::{get, post, put},
     Router,
@@ -85,7 +86,7 @@ pub fn create_router(state: AppState) -> Router {
         // State compartido
         .with_state(state.clone())
         // Middleware tower (orden: outer → inner)
-        .layer(TimeoutLayer::new(Duration::from_secs(30))) // Timeout 30s
+        .layer(TimeoutLayer::with_status_code(StatusCode::REQUEST_TIMEOUT, Duration::from_secs(30))) // Timeout 30s
         .layer(CompressionLayer::new()) // Gzip/Brotli
         .layer(CorsLayer::permissive()) // CORS (restringir en prod)
         // Middleware axum functions

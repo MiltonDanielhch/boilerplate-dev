@@ -23,8 +23,8 @@
 	async function fetchUsers() {
 		try {
 			usersLoading = true;
-			const result = await listUsers({ limit: 1000, offset: 0 });
-			usersTotal = result.total;
+			const result = await listUsers({ limit: 1, offset: 0 });
+			usersTotal = result.total || result.users.length;
 			usersError = null;
 		} catch (err) {
 			if (err instanceof Error && err.message.includes("401")) {

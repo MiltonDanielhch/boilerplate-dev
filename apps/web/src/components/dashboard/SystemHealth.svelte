@@ -66,7 +66,13 @@
 			<!-- API Status -->
 			<div class="flex items-center gap-3">
 				<div class="rounded-full p-2 {getBgColor(apiStatus)}">
-					<svelte:component this={getIcon(apiStatus)} class="h-4 w-4 {getColor(apiStatus)}" />
+					{#if apiStatus === 'checking'}
+						<Loader class="h-4 w-4 {getColor(apiStatus)}" />
+					{:else if apiStatus === 'ok'}
+						<CheckCircle class="h-4 w-4 {getColor(apiStatus)}" />
+					{:else}
+						<XCircle class="h-4 w-4 {getColor(apiStatus)}" />
+					{/if}
 				</div>
 				<div class="flex-1">
 					<p class="text-sm font-medium">API</p>
@@ -78,9 +84,6 @@
 								: "Error de conexión"}
 					</p>
 				</div>
-				{#if apiStatus === "checking"}
-					<Loader class="h-4 w-4 animate-spin text-muted-foreground" />
-				{/if}
 			</div>
 
 			<!-- Database Status -->
@@ -98,9 +101,6 @@
 								: "Desconectada"}
 					</p>
 				</div>
-				{#if dbStatus === "checking"}
-					<Loader class="h-4 w-4 animate-spin text-muted-foreground" />
-				{/if}
 			</div>
 
 			<!-- Last Check -->

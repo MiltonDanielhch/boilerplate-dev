@@ -18,6 +18,7 @@
     "@tanstack/svelte-query": "^6.1.16",
     "arktype": "^2.2.0",
     "astro": "^6.1.7",
+    "date-fns": "^4.1.0",
     "svelte": "^5.55.4",
     "tailwindcss": "^4.2.2",
     "typescript": "^5.9.3"

@@ -2,7 +2,6 @@
 	import { onMount } from "svelte";
 	import { api } from "$lib/api/client";
 	import * as Card from "$lib/components/ui/card/index.js";
-	import { ScrollArea } from "$lib/components/ui/scroll-area/index.js";
 	import { formatDistanceToNow } from "date-fns";
 	import { es } from "date-fns/locale";
 	import { Activity, Clock, User, LogIn } from "lucide-svelte";
@@ -93,12 +92,13 @@
 				<p>No hay actividad reciente</p>
 			</div>
 		{:else}
-			<ScrollArea class="h-[300px]">
+			<div class="h-[300px] overflow-y-auto">
 				<div class="space-y-3">
 					{#each events as event (event.timestamp + event.uri)}
+						{@const IconComponent = getIcon(event.method)}
 						<div class="flex gap-3 items-start">
 							<div class="rounded-full bg-primary/10 p-2">
-								<svelte:component this={getIcon(event.method)} class="h-4 w-4" />
+								<IconComponent class="h-4 w-4" />
 							</div>
 							<div class="flex-1 min-w-0">
 								<div class="flex items-center gap-2">
@@ -120,7 +120,7 @@
 						</div>
 					{/each}
 				</div>
-			</ScrollArea>
+			</div>
 		{/if}
 	</Card.Content>
 </Card.Root>

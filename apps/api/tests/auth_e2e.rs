@@ -37,6 +37,7 @@ struct LoginResponse {
 }
 
 #[derive(Deserialize)]
+#[allow(dead_code)]
 struct UserListResponse {
     users: Vec<UserSummary>,
     total: u64,
