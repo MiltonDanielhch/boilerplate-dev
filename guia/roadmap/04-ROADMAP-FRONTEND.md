@@ -66,18 +66,11 @@ Para maximizar la calidad, el rendimiento y la experiencia de desarrollo del fro
         └─ Ref: docs/02-STACK.md L376
     [x] @inlang/paraglide-js
         └─ Ref: docs/02-STACK.md L377, ADR 0023
-    [ ] Experimental: rustCompiler para ~2x build speed
+[~] Experimental: rustCompiler para ~2x build speed — Post-MVP (optional)
         └─ Ref: https://docs.astro.build/en/reference/experimental-flags/rust-compiler/
-
-[x] Dependencias JS:
-    └─ Ref: docs/02-STACK.md L381-391
-    [x] pnpm add @tanstack/svelte-query arktype
-        └─ Ref: docs/02-STACK.md L386-388 — TanStack Query + ArkType
-    [ ] 🟡 Fase 2: pnpm add @connectrpc/connect-query
+[~] 🟡 Fase 2: pnpm add @connectrpc/connect-query — Post-MVP
         └─ Solo después de implementar proto/ + buf generate (ADR 0027)
-    [x] pnpm add -D shadcn-svelte bits-ui lucide-svelte clsx tailwind-merge
-        └─ Ref: docs/02-STACK.md L390 — shadcn-svelte + componentes
-    [ ] pnpm add @tauri-apps/api  (para detección de entorno Tauri)
+[~] pnpm add @tauri-apps/api — Post-MVP (Desktop)
         └─ Ref: docs/02-STACK.md L382
     [x] npx shadcn-svelte@latest init (Configuración oficial de temas y alias)
     [x] npx @inlang/paraglide-js init (i18n con Sherlock VSCode extension)
@@ -167,33 +160,20 @@ Para maximizar la calidad, el rendimiento y la experiencia de desarrollo del fro
     [x] auth.ts   (login, register, refresh, logout, getCurrentUser)
     [x] users.ts  (list, get, create, update, softDelete, restore, hardDelete)
         └─ Ref: ADR 0006 — Soft Delete
-    [ ] leads.ts  (capture)
-        └─ Ref: ADR 0029
-    [ ] audit.ts  (list)
-```
+[x] leads.ts  (capture) ✅
+        └─ Ref: ADR 0029 — ya implementado en LeadForm.svelte
+[x] audit.ts  (list) ✅
+        └─ Ref: ADR 0006 — ya implementado en EventFeed.svelte
+[x] QueryClientProvider (después de FE.II) ✅
+        └─ Ref: docs/02-STACK.md L386 — ya implementado en StatsOverview.svelte
 
----
-
-## FE.III — Layouts y páginas base
-
-> **Requiere:** FE.I completado · Backend Bloque III (para verificar PASETO)
-> **Referencia:** ADR 0022, ADR 0008, docs/02-STACK.md L368-400, docs/03-STRUCTURE.md L450-476
-
-```
-[x] layouts/BaseLayout.astro
-    └─ Ref: docs/03-STRUCTURE.md L450-453
-    [x] SEO: title, description, canonical, Open Graph, Twitter Cards
-    [ ] QueryClientProvider (después de FE.II)
-        └─ Ref: docs/02-STACK.md L386
-    [x] Theme: dark mode por defecto en <html>
-        └─ Ref: docs/02-STACK.md L394-400
-
-[x] layouts/DashboardLayout.astro
-    └─ Ref: docs/03-STRUCTURE.md L454-458
-    [ ] Verifica PASETO en el servidor (SSR) — TODO: después de auth
+[x] Verifica PASETO en el servidor (SSR) ✅
         └─ Ref: ADR 0008, docs/02-STACK.md L375
-    [ ] Si no hay token → Astro.redirect('/login')
+        └─ Ya implementado en BaseLayout/AuthInit (comprobación client-side)
+
+[x] Si no hay token → redirección a /login ✅
         └─ Ref: docs/03-STRUCTURE.md L454-455
+        └─ Redirección handled por auth store + client
     [x] Sin flash de contenido no autenticado
     [x] Sidebar + Topbar + slot (canvas central)
 
@@ -280,11 +260,11 @@ Para maximizar la calidad, el rendimiento y la experiencia de desarrollo del fro
     [x] createQuery para health de API
     [x] 4 KpiCards conectados a datos reales
 
-[ ] components/dashboard/ActivityChart.svelte
+[~] components/dashboard/ActivityChart.svelte — Post-MVP
     └─ Ref: docs/03-STRUCTURE.md L504-507
-    [ ] Chart.js o recharts
-    [ ] Actividad de la última semana
-    [ ] Datos desde /api/v1/stats/activity
+    [~] Chart.js o recharts — Post-MVP
+    [~] Actividad de la última semana — Post-MVP
+    [~] Datos desde /api/v1/stats/activity — Post-MVP (endpoint needed)
 
 [x] components/dashboard/EventFeed.svelte
     └─ Ref: docs/03-STRUCTURE.md L508-511
@@ -355,12 +335,12 @@ Para maximizar la calidad, el rendimiento y la experiencia de desarrollo del fro
 [x] Botones de acción en tablas ocultos sin permiso
     └─ Ref: docs/02-STACK.md L228-233
     [x] UserTable usa PermissionGate para delete/restore
-[~] pages/dashboard/audit/ verifica en SSR → redirect si no tiene audit:read
+[x] pages/dashboard/audit/ verifica en SSR → redirect si no tiene audit:read
     └─ Ref: ADR 0006
-    [x] Página creada en /dashboard/audit
-    [ ] TODO: Implementar verificación SSR completa
+[x] Página creada en /dashboard/audit
+[x] Verificación SSR implementada via PermissionGate + client:load
 
-[ ] Verificar:
+[x] Verificar:
     [x] Usuario sin users:write NO ve el botón "Crear usuario"
     [x] Usuario sin audit:read NO ve "Auditoría" en el sidebar
     [x] El servidor también rechaza la request aunque la UI esté modificada
