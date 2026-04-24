@@ -12,6 +12,7 @@ members  = [
     # Apps
     "apps/api",
     "apps/cli",
+    "apps/desktop",
     # Crates
     "crates/domain",
     "crates/application",

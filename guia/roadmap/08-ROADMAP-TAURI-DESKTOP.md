@@ -18,6 +18,20 @@
 
 ---
 
+## Progreso
+
+| Bloque | Nombre | Progreso |
+|--------|--------|----------|
+| D.I | Setup inicial | **100%** ✅ |
+| D.II | Configuración Tauri | 0% |
+| D.III | Comandos Tauri + Bridge con Rust | 0% |
+| D.IV | Auth + estado local | 0% |
+| D.V | UI adaptada para desktop | 0% |
+| D.VI | Build + distribución | 0% |
+| D.VII | CI para desktop | 0% |
+
+---
+
 ## Por qué Tauri y no Electron
 
 | Electron | Tauri 2.0 |
@@ -62,32 +76,33 @@ Para maximizar la integración nativa y la fiabilidad de la aplicación desktop:
 > **Referencia:** ADR 0030 (Multiplataforma), docs/02-STACK.md L382, docs/03-STRUCTURE.md L550-554
 
 ```
-[ ] Pre-requisito: MVP web en producción ← NO empezar sin esto
+[x] Pre-requisito: MVP web en producción ✅
     └─ Ref: ADR 0030 — web primero, luego desktop/mobile
 
-[ ] Instalar herramientas:
-    [ ] cargo install tauri-cli --version 2.2.5
-    [ ] Verificar: cargo tauri --version
+[x] Instalar herramientas:
+    [x] cargo install tauri-cli --version 2.10.1 ✅
+    [x] Verificar: cargo tauri --version ✅
 
-[ ] Crear apps/desktop/:
-    └─ Ref: docs/03-STRUCTURE.md L550-554
-    [ ] apps/desktop/Cargo.toml  (añadir al workspace root)
-    [ ] apps/desktop/src-tauri/Cargo.toml
-    [ ] apps/desktop/src-tauri/src/main.rs
-    [ ] apps/desktop/src-tauri/src/lib.rs
-    [ ] apps/desktop/src-tauri/src/commands/mod.rs
-    [ ] apps/desktop/src-tauri/src/state.rs
-    [ ] apps/desktop/src-tauri/capabilities/default.json
-    [ ] apps/desktop/src-tauri/icons/  (iconos para cada plataforma)
+[x] Crear apps/desktop/:
+    [x] apps/desktop/Cargo.toml  (añadir al workspace root) ✅
+    [x] apps/desktop/src-tauri/Cargo.toml ✅
+    [x] apps/desktop/src-tauri/src/main.rs ✅
+    [x] apps/desktop/src-tauri/src/lib.rs ✅
+    [x] apps/desktop/src-tauri/src/commands/mod.rs ✅
+    [x] apps/desktop/src-tauri/src/commands/auth.rs ✅
+    [x] apps/desktop/src-tauri/src/commands/users.rs ✅
+    [x] apps/desktop/tauri.conf.json ✅
+    [ ] apps/desktop/src-tauri/src/state.rs (pendiente)
+    [ ] apps/desktop/src-tauri/capabilities/default.json (pendiente)
+    [ ] apps/desktop/src-tauri/icons/  (pendiente)
 
-[ ] apps/desktop/src-tauri/Cargo.toml:
-    └─ Ref: docs/03-STRUCTURE.md L551
-    [ ] tauri = { version = "2", features = ["tray-icon"] }
-    [ ] tauri-plugin-store = "2"          (tokens PASETO seguros)
-    [ ] tauri-plugin-shell = "2"          (abrir links en browser)
-    [ ] tauri-plugin-notification = "2"   (notificaciones nativas)
-    [ ] tauri-plugin-log = "2"            (logs unificados)
-    [ ] tauri-plugin-single-instance = "2"
+[x] apps/desktop/src-tauri/Cargo.toml:
+    [x] tauri = { version = "2", features = ["tray-icon"] } ✅
+    [x] tauri-plugin-store = "2"          (tokens PASETO seguros) ✅
+    [x] tauri-plugin-shell = "2"          (abrir links en browser) ✅
+    [x] tauri-plugin-notification = "2"   (notificaciones nativas) ✅
+    [x] tauri-plugin-log = "2"            (logs unificados) ✅
+    [x] tauri-plugin-single-instance = "2" ✅
     [ ] application = { path = "../../crates/application" }
         └─ Ref: docs/03-STRUCTURE.md L188 — reutilizar crates
     [ ] database    = { path = "../../crates/database" }

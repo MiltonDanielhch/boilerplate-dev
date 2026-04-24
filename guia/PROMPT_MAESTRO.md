@@ -31,16 +31,16 @@
 | ✅ **Backend IV** | `03-ROADMAP-BACKEND.md` | **COMPLETADO** | 100% | $5 |
 | ✅ **Frontend** | `04-ROADMAP-FRONTEND.md` | **COMPLETADO** | 100% | $5 |
 | ✅ **Auth Fullstack** | `05-ROADMAP-AUTH-FULLSTACK.md` | **COMPLETADO** | 100% | $5 |
-| ✅ **Landing** | `06-ROADMAP-LANDING.md` | **COMPLETADO** | 86% | $5 |
+| ✅ **Landing** | `06-ROADMAP-LANDING.md` | **COMPLETADO** | 90% | $5 |
 | ✅ **Infra** | `07-ROADMAP-INFRA.md` | **COMPLETADO** | 100% | $5 |
-| ⏳ **Desktop** | `08-ROADMAP-TAURI-DESKTOP.md` | Pendiente | 0% | $5 |
+| 🔄 **Desktop** | `08-ROADMAP-TAURI-DESKTOP.md` | **EN PROGRESO** | 10% | $5 |
 | ⏳ **Mobile** | `09-ROADMAP-MOBILE.md` | Pendiente | 0% | $5 |
 | ⏳ **Admin** | `80-ROADMAP-ADMIN.md` | Post-MVP | 0% | $5 |
 | ⏳ **Fase 2** | `50-ROADMAP-FASE2.md` | Post-MVP | 0% | $10-20 |
 | ⏳ **Fase 3** | `60-ROADMAP-FASE3.md` | Post-MVP | 0% | No $5 |
 | ⏳ **Futura** | `70-ROADMAP-FUTURA.md` | Post-MVP | 0% | $40-500 |
 
-**MVP COMPLETO - LISTO PARA PRODUCION** 🎉
+**MVP COMPLETO - Desktop Tauri 2.0 EN DESARROLLO** 🎉
 
 **Leyenda:** ✅ Completado | 🔄 Activo | ⏳ Pendiente | 🟡 Opcional
 
@@ -63,7 +63,7 @@
 - **Manejo de errores**: DomainError → AppError → IntoResponse HTTP
 - **Landing page**: captura de leads (entidad Lead separada de User)
 - **Sintonía CLI**: scaffolding (Fase 2 — después de 3 módulos a mano)
-- **Tauri 2.0**: Desktop (Fase 1 — después del MVP web en producción)
+- **Tauri 2.0**: Desktop (Fase 1 — **EN DESARROLLO**)
 - **Tauri Mobile + KMP**: (Fase 3 — después del Desktop validado)
 
 ## Tu Misión
@@ -498,27 +498,12 @@ Proyecto nuevo — empezar desde Génesis
 
 ## Cómo proseguir desde esta sesión
 
-**Último avance:** Infra 100% COMPLETA!
-- ✅ Containerfile distroless
-- ✅ Caddyfile + security headers
-- ✅ Litestream config
-- ✅ Kamal deploy config
-- ✅ VPS security script
-- ✅ Prometheus alerts
-- ✅ GitHub Actions CI/CD
+**Último avance:** Desktop Tauri 2.0 EN DESARROLLO!
 
-**MVP LISTO PARA DEPLOY**
+**MVP COMPLETO - WEB + DESKTOP EN MARCHA**
 
 **Estado actual:**
-- L.1 Dominio + DB (entidad Lead): 100%
-- L.2 Endpoint backend: 100%
-- L.3 Layout + estructura: 100%
-- L.4 Contenido y secciones: 100%
-- L.5 Formulario de leads: 100%
-- L.6 SEO + performance: 100%
-- L.7 Tests + deploy: opcional (se дела в Infra)
-- L.6 SEO + performance: 0%
-- L.7 Tests + deploy: 0%
+- D.I Setup inicial: EN PROGRESO (preparando workspace)
 
 **Comandos para continuar:**
 ```bash
