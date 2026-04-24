@@ -26,6 +26,13 @@ database = { path = "../../crates/database" }
 auth = { path = "../../crates/auth" }
 domain = { path = "../../crates/domain" }
 
+sqlx = { workspace = true }
+anyhow = { workspace = true }
+rand = { workspace = true }
+hex = { workspace = true }
+uuid = { workspace = true }
+time = { workspace = true }
+
 [build-dependencies]
 tauri-build = { version = "2", features = [] }
 

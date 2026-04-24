@@ -7,6 +7,7 @@
 use tauri::Manager;
 
 mod commands;
+mod state;
 
 pub fn run() {
     tracing::info!("Iniciando Boilerplate Desktop...");
@@ -27,10 +28,26 @@ pub fn run() {
             commands::auth::get_current_user,
             commands::users::list_users,
             commands::users::get_user,
+            commands::users::create_user,
         ])
         .setup(|app| {
             tracing::info!("Boilerplate Desktop iniciado correctamente");
-            let _ = app;
+            
+            // Inicializar base de datos y estado de la app local
+            let app_handle = app.handle().clone();
+            tauri::async_runtime::block_on(async move {
+                match state::AppState::new(&app_handle).await {
+                    Ok(state) => {
+                        app_handle.manage(state);
+                        tracing::info!("AppState configurado correctamente");
+                    }
+                    Err(e) => {
+                        tracing::error!("Error inicializando AppState: {}", e);
+                        std::process::exit(1);
+                    }
+                }
+            });
+
             Ok(())
         })
         .run(tauri::generate_context!())

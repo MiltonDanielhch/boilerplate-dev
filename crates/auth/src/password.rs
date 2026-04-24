@@ -46,6 +46,20 @@ pub fn verify_password(password: &str, hash: &str) -> Result<bool, DomainError> 
     }
 }
 
+pub struct Argon2Verifier;
+
+impl domain::ports::PasswordVerifier for Argon2Verifier {
+    fn verify_password(&self, plain: &str, hash: &str) -> Result<bool, DomainError> {
+        verify_password(plain, hash)
+    }
+}
+
+impl domain::ports::PasswordHasher for Argon2Verifier {
+    fn hash_password(&self, plain: &str) -> Result<String, DomainError> {
+        hash_password(plain)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

@@ -6,8 +6,10 @@
 //
 // ADRs relacionados: 0022 (Frontend), 0008 (PASETO), ADR 0006 (RBAC)
 
-import { writable, get, derived, type Readable } from "svelte/store";
+import { writable, get, derived, type Readable, type Writable } from "svelte/store";
 import type { User } from "$lib/types/user";
+import { isTauri } from "$lib/tauri";
+import { getCurrentUser } from "$lib/api/auth";
 
 // Stores individuales para reactivity
 export const userStore: Writable<User | null> = writable(null);
@@ -94,7 +96,25 @@ export const authStore = {
 		isLoadingStore.set(loading);
 	},
 
-	init() {
+	async init() {
+		if (isTauri()) {
+			// En Desktop, intentamos recuperar la sesión desde el backend Rust
+			try {
+				const user = await getCurrentUser();
+				if (user) {
+					// El backend Rust ya tiene el token, pero el store Svelte necesita estar al día
+					// (Aunque en Desktop los tokens se manejan internamente, para compatibilidad UI
+					// los marcamos como 'tauri-managed')
+					userStore.set(user);
+					accessTokenStore.set("tauri-managed");
+					refreshTokenStore.set("tauri-managed");
+				}
+			} catch (e) {
+				console.error("Error initializing Tauri auth:", e);
+			}
+			return;
+		}
+
 		if (typeof localStorage !== "undefined") {
 			const storedToken = localStorage.getItem("access_token");
 			const storedRefreshToken = localStorage.getItem("refresh_token");

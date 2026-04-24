@@ -10,5 +10,5 @@ pub mod paseto;
 pub mod token;
 
 pub use paseto::{PasetoService, TokenClaims};
-pub use password::{hash_password, verify_password};
+pub use password::{hash_password, verify_password, Argon2Verifier};
 pub use token::{generate_opaque_token, hash_token};

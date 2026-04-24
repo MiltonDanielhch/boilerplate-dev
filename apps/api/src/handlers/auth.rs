@@ -6,7 +6,7 @@
 
 use crate::error::{ApiError, ApiResult};
 use crate::state::AppState;
-use auth::{hash_password, verify_password, generate_opaque_token, hash_token};
+use auth::hash_password;
 use axum::{
     extract::State,
     response::Json,
@@ -140,71 +140,54 @@ pub async fn login(
 ) -> ApiResult<Json<LoginResponse>> {
     info!(email = %body.email, "Login request received");
 
-    // Validar email
-    let email = Email::new(&body.email)
-        .map_err(|_| ApiError::Unauthorized("Invalid credentials".to_string()))?;
-
-    // Buscar usuario por email
-    let user = state.user_repo.find_active_by_email(&email).await?
-        .ok_or_else(|| ApiError::Unauthorized("Invalid credentials".to_string()))?;
-
-    // Verificar password
-    let valid = verify_password(&body.password, user.password_hash.as_str())
-        .map_err(|e| ApiError::Internal(format!("Password verification error: {}", e)))?;
-    if !valid {
-        return Err(ApiError::Unauthorized("Invalid credentials".to_string()));
-    }
-
-    // Generar access token PASETO v4 (15 minutos)
-    let access_token = state.paseto.generate_access_token(&user.id.uuid())
-        .map_err(|e| ApiError::Internal(format!("Token generation failed: {}", e)))?;
-
-    // Generar refresh token opaco (32 bytes)
-    let raw_refresh = generate_opaque_token();
-    let refresh_token_hash = hash_token(&raw_refresh);
-
-    // Crear sesión en DB
-    use domain::ports::SessionRepository;
-    use time::{Duration, OffsetDateTime};
-    let session = domain::Session::new(
-        user.id.to_string(),
-        refresh_token_hash,
-        None, // ip_address - se puede extraer de headers
-        None, // user_agent - se puede extraer de headers
-        OffsetDateTime::now_utc() + Duration::days(7), // 7 días de expiración
+    let password_verifier = auth::password::Argon2Verifier;
+    
+    let use_case = application::auth::login::LoginUseCase::new(
+        &state.user_repo,
+        &state.session_repo,
+        &state.audit_repo,
+        &password_verifier,
+        &*state.paseto,
     );
 
-    state.session_repo
-        .create(&session)
-        .await
-        .map_err(|e| ApiError::Internal(format!("Failed to create session: {}", e)))?;
+    let input = application::auth::login::LoginInput {
+        email: body.email.clone(),
+        password: body.password,
+        ip_address: None, // TODO: Extract from headers
+        user_agent: None, // TODO: Extract from headers
+    };
 
-    info!(user_id = %user.id, session_id = %session.id, "User logged in successfully");
+    let output = use_case.execute(input).await
+        .map_err(|e| match e {
+            domain::errors::DomainError::InvalidCredentials => ApiError::Unauthorized("Invalid credentials".to_string()),
+            _ => ApiError::Internal(format!("Login error: {}", e)),
+        })?;
 
-    let role = if user.email.to_string().contains("admin") {
+    info!(user_id = %output.user.id, "User logged in successfully");
+
+    let role = if output.user.email.to_string().contains("admin") {
         "admin"
     } else {
         "user"
     };
 
-    // Obtener permisos del usuario desde la base de datos
-    let permissions = state.user_repo.get_permissions(&user.id).await
+    let permissions = state.user_repo.get_permissions(&output.user.id).await
         .map_err(|e| ApiError::Internal(format!("Failed to get permissions: {}", e)))?;
 
     Ok(Json(LoginResponse {
-        access_token,
-        refresh_token: raw_refresh,
+        access_token: output.access_token,
+        refresh_token: output.refresh_token,
         token_type: "Bearer".to_string(),
         expires_in: 900,
         user: UserResponse {
-            id: user.id.to_string(),
-            email: user.email.to_string(),
-            name: user.name,
+            id: output.user.id.to_string(),
+            email: output.user.email.to_string(),
+            name: output.user.name,
             role: role.to_string(),
-            is_active: user.is_active,
-            email_verified_at: user.email_verified_at.map(|dt| dt.to_string()),
+            is_active: output.user.is_active,
+            email_verified_at: output.user.email_verified_at.map(|dt| dt.to_string()),
             permissions,
-            created_at: user.created_at.to_string(),
+            created_at: output.user.created_at.to_string(),
         },
     }))
 }
@@ -240,88 +223,26 @@ pub async fn refresh(
     State(state): State<AppState>,
     Json(body): Json<RefreshRequest>,
 ) -> ApiResult<Json<RefreshResponse>> {
-    use tracing::warn;
-    use domain::ports::SessionRepository;
-
     info!("Refresh token request received");
 
-    // Hashear el refresh token recibido para buscarlo en DB
-    let refresh_hash = hash_token(&body.refresh_token);
+    let use_case = application::auth::refresh::RefreshUseCase::new(
+        &state.session_repo,
+        &state.user_repo,
+        &*state.paseto,
+    );
 
-    // Buscar sesión por refresh token hash
-    let session = state.session_repo
-        .find_by_token(&refresh_hash)
-        .await
-        .map_err(|e| ApiError::Internal(format!("Session lookup failed: {}", e)))?
-        .ok_or_else(|| {
-            warn!("Refresh token not found in database");
-            ApiError::Unauthorized("Invalid refresh token".to_string())
+    let output = use_case.execute(&body.refresh_token).await
+        .map_err(|e| match e {
+            domain::errors::DomainError::InvalidToken => ApiError::Unauthorized("Invalid refresh token".to_string()),
+            domain::errors::DomainError::InvalidCredentials => ApiError::Unauthorized("Invalid refresh token".to_string()),
+            _ => ApiError::Internal(format!("Refresh error: {}", e)),
         })?;
 
-    // Verificar que la sesión no esté revocada
-    if session.is_revoked {
-        warn!(session_id = %session.id, "Attempt to use revoked refresh token");
-        return Err(ApiError::Unauthorized("Refresh token has been revoked".to_string()));
-    }
-
-    // Verificar que el refresh token no haya expirado
-    if session.is_expired() {
-        warn!(session_id = %session.id, "Attempt to use expired refresh token");
-        return Err(ApiError::Unauthorized("Refresh token has expired".to_string()));
-    }
-
-    // Obtener el usuario para generar nuevos tokens
-    let user_id = domain::value_objects::UserId::parse(&session.user_id)
-        .map_err(|e| ApiError::Internal(format!("Invalid user ID in session: {}", e)))?;
-    let user = state
-        .user_repo
-        .find_by_id(&user_id)
-        .await
-        .map_err(|e| ApiError::Internal(format!("User lookup failed: {}", e)))?
-        .ok_or_else(|| ApiError::Unauthorized("User not found".to_string()))?;
-
-    // Revocar el refresh token anterior (rotación obligatoria)
-    state.session_repo
-        .revoke(&session.id)
-        .await
-        .map_err(|e| ApiError::Internal(format!("Failed to revoke old session: {}", e)))?;
-
-    info!(session_id = %session.id, "Old session revoked due to token rotation");
-
-    // Generar nuevo access token PASETO v4
-    let new_access_token = state.paseto
-        .generate_access_token(&user.id.uuid())
-        .map_err(|e| ApiError::Internal(format!("Token generation failed: {}", e)))?;
-
-    // Generar nuevo refresh token opaco (rotación)
-    let new_raw_refresh = generate_opaque_token();
-    let new_refresh_hash = hash_token(&new_raw_refresh);
-
-    // Crear nueva sesión con el nuevo refresh token
-    use time::{Duration, OffsetDateTime};
-    let new_session = domain::Session::new(
-        session.user_id.clone(),
-        new_refresh_hash,
-        session.ip_address.clone(),
-        session.user_agent.clone(),
-        OffsetDateTime::now_utc() + Duration::days(7), // 7 días
-    );
-
-    state.session_repo
-        .create(&new_session)
-        .await
-        .map_err(|e| ApiError::Internal(format!("Failed to create new session: {}", e)))?;
-
-    info!(
-        user_id = %user.id,
-        old_session = %session.id,
-        new_session = %new_session.id,
-        "Token rotation completed successfully"
-    );
+    info!("Token rotation completed successfully");
 
     Ok(Json(RefreshResponse {
-        access_token: new_access_token,
-        refresh_token: new_raw_refresh,
+        access_token: output.access_token,
+        refresh_token: output.refresh_token,
         token_type: "Bearer".to_string(),
         expires_in: 900, // 15 minutos
     }))

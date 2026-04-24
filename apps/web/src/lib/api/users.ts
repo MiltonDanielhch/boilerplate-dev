@@ -7,6 +7,7 @@
 
 import { api } from "./client";
 import type { User, UserCreateInput, UserUpdateInput } from "$lib/types/user";
+import { isTauri, tauriInvoke } from "$lib/tauri";
 
 interface ListUsersResponse {
 	users: User[];
@@ -25,6 +26,22 @@ interface ListUsersParams {
 
 // Listar usuarios con paginación
 export async function listUsers(params: ListUsersParams = {}): Promise<ListUsersResponse> {
+	if (isTauri()) {
+		// En desktop, list_users devuelve Vec<User> directamente por ahora
+		// Adaptamos la respuesta al formato ListUsersResponse
+		const users = await tauriInvoke<User[]>("list_users", {
+			page: params.page || 1,
+			perPage: params.perPage || 20,
+			search: params.search
+		});
+		return {
+			users,
+			total: users.length, // TODO: Implementar total en Tauri
+			limit: params.perPage || 20,
+			offset: ((params.page || 1) - 1) * (params.perPage || 20)
+		};
+	}
+
 	const searchParams = new URLSearchParams();
 	if (params.page) searchParams.set("page", params.page.toString());
 	if (params.perPage) searchParams.set("per_page", params.perPage.toString());
@@ -38,6 +55,9 @@ export async function listUsers(params: ListUsersParams = {}): Promise<ListUsers
 
 // Obtener usuario por ID
 export async function getUser(id: string): Promise<User> {
+	if (isTauri()) {
+		return await tauriInvoke<User>("get_user", { id });
+	}
 	return api.get<User>(`/users/${id}`);
 }
 

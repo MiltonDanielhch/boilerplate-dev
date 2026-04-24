@@ -9,6 +9,7 @@ import { api } from "./client";
 import { authStore } from "$lib/stores/auth.svelte";
 import type { LoginResponse, User, RegisterInput } from "$lib/types/user";
 import type { LoginInput } from "$lib/validation/schemas";
+import { isTauri, tauriInvoke } from "$lib/tauri";
 
 interface LoginRequest {
 	email: string;
@@ -25,8 +26,19 @@ interface RegisterRequest {
 export async function login(credentials: LoginInput): Promise<void> {
 	authStore.setLoading(true);
 	try {
-		const response = await api.post<LoginResponse>("/auth/login", credentials);
-		authStore.setAuth(response.user, response.access_token, response.refresh_token);
+		if (isTauri()) {
+			// En Desktop, invocamos al comando Rust directamente (Offline-first)
+			// El comando login en Rust ya guarda los tokens localmente
+			const response = await tauriInvoke<LoginResponse>("login", {
+				email: credentials.email,
+				password: credentials.password
+			});
+			authStore.setAuth(response.user, response.access_token, response.refresh_token);
+		} else {
+			// En Web, usamos la API REST
+			const response = await api.post<LoginResponse>("/auth/login", credentials);
+			authStore.setAuth(response.user, response.access_token, response.refresh_token);
+		}
 	} finally {
 		authStore.setLoading(false);
 	}
@@ -36,7 +48,15 @@ export async function login(credentials: LoginInput): Promise<void> {
 export async function register(data: RegisterInput): Promise<void> {
 	authStore.setLoading(true);
 	try {
-		await api.post("/auth/register", data);
+		if (isTauri()) {
+			await tauriInvoke("create_user", {
+				email: data.email,
+				password: data.password,
+				name: data.name
+			});
+		} else {
+			await api.post("/auth/register", data);
+		}
 		// Auto-login después de registro
 		await login({ email: data.email, password: data.password });
 	} finally {
@@ -48,8 +68,12 @@ export async function register(data: RegisterInput): Promise<void> {
 export async function logout(): Promise<void> {
 	authStore.setLoading(true);
 	try {
-		// Opcional: notificar al backend para invalidar token
-		await api.post("/auth/logout", {});
+		if (isTauri()) {
+			await tauriInvoke("logout");
+		} else {
+			// Opcional: notificar al backend para invalidar token
+			await api.post("/auth/logout", {});
+		}
 	} finally {
 		authStore.clearAuth();
 		authStore.setLoading(false);
@@ -78,8 +102,11 @@ export async function refreshAccessToken(): Promise<boolean> {
 // Obtener usuario actual
 export async function getCurrentUser(): Promise<User | null> {
 	try {
-		const user = await api.get<User>("/auth/me");
-		return user;
+		if (isTauri()) {
+			return await tauriInvoke<User | null>("get_current_user");
+		} else {
+			return await api.get<User>("/auth/me");
+		}
 	} catch {
 		return null;
 	}

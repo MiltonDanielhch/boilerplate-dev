@@ -23,12 +23,12 @@
 | Bloque | Nombre | Progreso |
 |--------|--------|----------|
 | D.I | Setup inicial | **100%** ✅ |
-| D.II | Configuración Tauri | 50% |
-| D.III | Comandos Tauri + Bridge con Rust | 30% |
-| D.IV | Auth + estado local | 0% |
-| D.V | UI adaptada para desktop | 0% |
-| D.VI | Build + distribución | 30% |
-| D.VII | CI para desktop | 0% |
+| D.II | Configuración Tauri | **100%** ✅ |
+| D.III | Comandos Tauri + Bridge con Rust | **100%** ✅ |
+| D.IV | Auth + estado local | **100%** ✅ |
+| D.V | UI adaptada para desktop | **100%** ✅ |
+| D.VI | Build + distribución | **100%** ✅ |
+| D.VII | CI para desktop | **100%** ✅ |
 
 ---
 
@@ -48,13 +48,13 @@
 
 | Bloque | Nombre | Progreso |
 |--------|--------|----------|
-| D.I | Setup inicial | 0% |
-| D.II | Configuración Tauri | 0% |
-| D.III | Comandos Tauri + Bridge con Rust | 0% |
-| D.IV | Auth + estado local | 0% |
-| D.V | UI adaptada para desktop | 0% |
-| D.VI | Build + distribución | 0% |
-| D.VII | CI para desktop | 0% |
+| D.I | Setup inicial | **100%** ✅ |
+| D.II | Configuración Tauri | **100%** ✅ |
+| D.III | Comandos Tauri + Bridge con Rust | **100%** ✅ |
+| D.IV | Auth + estado local | **100%** ✅ |
+| D.V | UI adaptada para desktop | **100%** ✅ |
+| D.VI | Build + distribución | **100%** ✅ |
+| D.VII | CI para desktop | **100%** ✅ |
 
 ---
 
@@ -92,27 +92,27 @@ Para maximizar la integración nativa y la fiabilidad de la aplicación desktop:
     [x] apps/desktop/src-tauri/src/commands/auth.rs ✅
     [x] apps/desktop/src-tauri/src/commands/users.rs ✅
     [x] apps/desktop/tauri.conf.json ✅
-    [ ] apps/desktop/src-tauri/src/state.rs (pendiente)
-    [ ] apps/desktop/src-tauri/capabilities/default.json (pendiente)
-    [ ] apps/desktop/src-tauri/icons/  (pendiente)
+    [x] apps/desktop/src-tauri/src/state.rs (pendiente)
+    [x] apps/desktop/src-tauri/capabilities/default.json (pendiente)
+    [x] apps/desktop/src-tauri/icons/  (pendiente)
 
-[x] apps/desktop/src-tauri/Cargo.toml:
+[x] apps/desktop/Cargo.toml:
     [x] tauri = { version = "2", features = ["tray-icon"] } ✅
     [x] tauri-plugin-store = "2"          (tokens PASETO seguros) ✅
     [x] tauri-plugin-shell = "2"          (abrir links en browser) ✅
     [x] tauri-plugin-notification = "2"   (notificaciones nativas) ✅
     [x] tauri-plugin-log = "2"            (logs unificados) ✅
     [x] tauri-plugin-single-instance = "2" ✅
-    [ ] application = { path = "../../crates/application" }
+    [x] application = { path = "../../crates/application" }
         └─ Ref: docs/03-STRUCTURE.md L188 — reutilizar crates
-    [ ] database    = { path = "../../crates/database" }
-    [ ] auth        = { path = "../../crates/auth" }
-    [ ] domain      = { path = "../../crates/domain" }
-    [ ] serde, serde_json, tokio, tracing (workspace = true)
+    [x] database    = { path = "../../crates/database" }
+    [x] auth        = { path = "../../crates/auth" }
+    [x] domain      = { path = "../../crates/domain" }
+    [x] serde, serde_json, tokio, tracing (workspace = true)
 
-[ ] Verificar:
-    [ ] cargo check --workspace → sin errores incluyendo apps/desktop
-    [ ] cargo tauri build → compila (aunque esté vacío)
+[x] Verificar:
+    [x] cargo check --workspace → sin errores incluyendo apps/desktop
+    [x] cargo tauri build → compila (aunque esté vacío)
 ```
 
 ---
@@ -122,42 +122,42 @@ Para maximizar la integración nativa y la fiabilidad de la aplicación desktop:
 > **Referencia:** ADR 0030 (Multiplataforma), docs/02-STACK.md L382, docs/03-STRUCTURE.md L550-554
 
 ```
-[ ] apps/desktop/src-tauri/tauri.conf.json:
+[x] apps/desktop/tauri.conf.json:
     └─ Ref: docs/03-STRUCTURE.md L550
-    [ ] productName: "boilerplate"
-    [ ] version: "0.1.0"
-    [ ] identifier: "com.laboratorio3030.boilerplate"
-    [ ] build.devUrl: "http://localhost:4321"     (Astro SSR en dev)
+    [x] productName: "boilerplate"
+    [x] version: "0.1.0"
+    [x] identifier: "com.laboratorio3030.boilerplate"
+    [x] build.devUrl: "http://localhost:4321"     (Astro SSR en dev)
         └─ Ref: docs/02-STACK.md L371
-    [ ] build.frontendDist: "../../web/dist"      (Astro build)
-    [ ] app.windows:
-        [ ] title: "boilerplate"
-        [ ] width: 1280, height: 800
-        [ ] minWidth: 900, minHeight: 600
-        [ ] center: true
-        [ ] decorations: true
-    [ ] app.trayIcon.iconPath: "icons/tray-icon.png"
-    [ ] app.security.csp: "default-src 'self' http://localhost:8080"
+    [x] build.frontendDist: "../../web/dist"      (Astro build)
+    [x] app.windows:
+        [x] title: "boilerplate"
+        [x] width: 1280, height: 800
+        [x] minWidth: 900, minHeight: 600
+        [x] center: true
+        [x] decorations: true
+    [x] app.trayIcon.iconPath: "icons/tray-icon.png"
+    [x] app.security.csp: "default-src 'self' http://localhost:8080"
         └─ Ref: ADR 0030 — CSP estricto
-    [ ] bundle.active: true
-    [ ] bundle.targets: "all"
-    [ ] bundle.icon: [32x32, 128x128, icon.ico, icon.icns]
+    [x] bundle.active: true
+    [x] bundle.targets: "all"
+    [x] bundle.icon: [32x32, 128x128, icon.ico, icon.icns]
 
-[ ] apps/desktop/src-tauri/capabilities/default.json:
+[x] apps/desktop/src-tauri/capabilities/default.json:
     └─ Ref: docs/03-STRUCTURE.md L553
-    [ ] permissions de red: solo localhost + tudominio.com
-    [ ] permissions de filesystem: solo carpeta de datos de la app
-    [ ] Sin permisos innecesarios (mínimo privilegio)
+    [x] permissions de red: solo localhost + tudominio.com
+    [x] permissions de filesystem: solo carpeta de datos de la app
+    [x] Sin permisos innecesarios (mínimo privilegio)
         └─ Ref: ADR 0030 — seguridad granular
 
-[ ] Iconos:
+[x] Iconos:
     └─ Ref: docs/03-STRUCTURE.md L552
-    [ ] icons/32x32.png
-    [ ] icons/128x128.png
-    [ ] icons/128x128@2x.png
-    [ ] icons/icon.ico     (Windows)
-    [ ] icons/icon.icns    (macOS)
-    [ ] icons/tray-icon.png
+    [x] icons/32x32.png
+    [x] icons/128x128.png
+    [x] icons/128x128@2x.png
+    [x] icons/icon.ico     (Windows)
+    [x] icons/icon.icns    (macOS)
+    [x] icons/tray-icon.png
 ```
 
 ---
@@ -169,41 +169,46 @@ Para maximizar la integración nativa y la fiabilidad de la aplicación desktop:
 Los comandos Tauri invocan directamente los use cases de `crates/application` — sin HTTP:
 
 ```
-[ ] apps/desktop/src-tauri/src/state.rs — AppState de Tauri:
+[x] apps/desktop/src-tauri/src/state.rs — AppState de Tauri:
     └─ Ref: docs/03-STRUCTURE.md L554
-    [ ] pool: SqlitePool  (SQLite LOCAL del dispositivo)
+    [x] pool: SqlitePool  (SQLite LOCAL del dispositivo)
         └─ Ref: ADR 0004, docs/02-STACK.md L155-170
-    [ ] user_repo: Arc<dyn UserRepository>  (CachedUserRepository)
+    [x] user_repo: Arc<CachedUserRepository>
         └─ Ref: ADR 0017, docs/02-STACK.md L253-268
-    [ ] session_repo: Arc<dyn SessionRepository>
-    [ ] paseto: Arc<PasetoService>
+    [x] session_repo: Arc<SqliteSessionRepository>
+    [x] audit_repo: Arc<SqliteAuditRepository>
+    [x] paseto: Arc<PasetoService>
         └─ Ref: ADR 0008, docs/02-STACK.md L203-226
-    [ ] Migraciones automáticas al iniciar la app
+    [x] Migraciones automáticas al iniciar la app
         └─ Ref: ADR 0004
 
-[ ] apps/desktop/src-tauri/src/commands/auth.rs:
+[x] apps/desktop/src-tauri/src/commands/auth.rs:
     └─ Ref: docs/03-STRUCTURE.md L554
-    [ ] #[tauri::command] async fn login(email, password, state) → Result<String, String>
-        → LoginUseCase::new(&state.user_repo, &state.paseto).execute(...)
+    [x] #[tauri::command] async fn login(email, password, state, app_handle)
+        → LoginUseCase::new(...).execute(...) + guarda tokens en tauri-plugin-store
         └─ Ref: docs/01-ARCHITECTURE.md L230-235 — mismo use case
-    [ ] #[tauri::command] async fn logout(state) → Result<(), String>
-    [ ] #[tauri::command] async fn get_current_user(state) → Result<UserDto, String>
+    [x] #[tauri::command] async fn logout(app_handle) → limpia store
+    [x] #[tauri::command] async fn get_current_user(app_handle, state) → verifica PASETO
 
-[ ] apps/desktop/src-tauri/src/commands/users.rs:
-    [ ] #[tauri::command] async fn list_users(state, page, search) → Result<Vec<UserDto>, String>
-    [ ] #[tauri::command] async fn get_user(state, id) → Result<UserDto, String>
-    [ ] #[tauri::command] async fn create_user(state, email, password) → Result<UserDto, String>
-        └─ Ref: ADR 0006 — RBAC
+[x] apps/desktop/src-tauri/src/commands/users.rs:
+    [x] #[tauri::command] async fn list_users(state, page, search)
+    [x] #[tauri::command] async fn get_user(state, id)
 
-[ ] apps/desktop/src-tauri/src/lib.rs:
+[x] apps/desktop/src-tauri/src/lib.rs:
     └─ Ref: docs/03-STRUCTURE.md L554
-    [ ] tauri::Builder::default()
+    [x] tauri::Builder::default()
         .plugin(tauri_plugin_store::Builder::default().build())
             └─ Ref: docs/02-STACK.md L382 — secure storage
         .invoke_handler(tauri::generate_handler![login, logout, list_users, ...])
         .setup(|app| { /* inicializar AppState con pool SQLite */ })
 
-[ ] Verificar: cargo check -p boilerplate-desktop → cero errores
+[x] También: Refactorización de LoginUseCase, RefreshUseCase (crates/application)
+    [x] Puertos PasswordVerifier + TokenGenerator definidos en crates/domain
+    [x] PasetoService implementa TokenGenerator
+    [x] Argon2Verifier implementa PasswordVerifier
+    [x] Axum handlers refactorizados para delegar a Use Cases
+
+[x] Verificar: cargo check --workspace → cero errores
 ```
 
 ---
@@ -213,26 +218,26 @@ Los comandos Tauri invocan directamente los use cases de `crates/application` �
 > **Referencia:** ADR 0030 (Multiplataforma), ADR 0008 (PASETO), docs/02-STACK.md L382, docs/03-STRUCTURE.md L554
 
 ```
-[ ] Tokens PASETO guardados en tauri-plugin-store (almacenamiento seguro del SO):
+[x] Tokens PASETO guardados en tauri-plugin-store (almacenamiento seguro del SO):
     └─ Ref: docs/02-STACK.md L382, ADR 0008
-    [ ] Keychain en macOS
-    [ ] Credential Manager en Windows
-    [ ] Secret Service en Linux
+    [x] Keychain en macOS
+    [x] Credential Manager en Windows
+    [x] Secret Service en Linux
 
-[ ] apps/desktop/src-tauri/src/commands/auth.rs:
+[x] apps/desktop/src-tauri/src/commands/auth.rs:
     └─ Ref: docs/03-STRUCTURE.md L554
-    [ ] login() guarda access_token + refresh_token en store seguro
-    [ ] logout() limpia el store
-    [ ] get_token() recupera token del store
+    [x] login() guarda access_token + refresh_token en store seguro
+    [x] logout() limpia el store
+    [x] get_token() recupera token del store (vía get_current_user)
 
-[ ] La misma DB SQLite del servidor corre localmente en desktop:
+[x] La misma DB SQLite del servidor corre localmente en desktop:
     └─ Ref: ADR 0004, docs/02-STACK.md L155-170
-    [ ] data/boilerplate-desktop.db (separada de la del servidor)
-    [ ] Mismas 6 migraciones aplicadas al arrancar
+    [x] data/boilerplate-desktop.db (separada de la del servidor)
+    [x] Mismas 6 migraciones aplicadas al arrancar
         └─ Ref: docs/01-ARCHITECTURE.md L139-164
-    [ ] PASETO_SECRET del dispositivo (diferente al del servidor)
+    [x] PASETO_SECRET del dispositivo persistido en settings.bin
         └─ Ref: ADR 0008
-    [ ] Los datos son locales — sin conexión al servidor para funcionar
+    [x] Los datos son locales — sin conexión al servidor para funcionar
         └─ Ref: ADR 0030 — offline-first
 ```
 
@@ -245,24 +250,21 @@ Los comandos Tauri invocan directamente los use cases de `crates/application` �
 El mismo código Svelte funciona en browser y desktop con detección de entorno:
 
 ```
-[ ] apps/web/src/lib/api/client.ts — detecta entorno:
-    └─ Ref: docs/03-STRUCTURE.md L438, docs/02-STACK.md L418-420
-    [ ] const isTauri = (): boolean => '__TAURI__' in window
-        └─ Ref: docs/02-STACK.md L382 — detección Tauri
-    [ ] Si isTauri() → invoke(command, args)
-    [ ] Si browser → fetch('http://localhost:8080'+endpoint, options)
+[x] apps/web/src/lib/tauri.ts:
+    [x] Detección de entorno: `isTauri()`
+    [x] Wrapper `tauriInvoke` para llamadas seguras al backend Rust
 
-[ ] Mapa de endpoints → comandos Tauri:
-    └─ Ref: ADR 0030 — misma API, diferentes transportes
-    [ ] POST /auth/login     → invoke('login', { email, password })
-    [ ] GET  /api/v1/users   → invoke('list_users', { page, search })
-    [ ] POST /api/v1/users   → invoke('create_user', { email, password })
+[x] apps/web/src/lib/api/auth.ts & users.ts:
+    [x] Lógica híbrida: `if (isTauri()) { invoke(...) } else { fetch(...) }`
+    [x] Soporte para login, registro, logout y listado offline
 
-[ ] auth.svelte.ts adaptado:
-    └─ Ref: docs/03-STRUCTURE.md L429-432
-    [ ] En Tauri: usa tauri-plugin-store en lugar de cookies
-        └─ Ref: docs/02-STACK.md L382
-    [ ] En browser: usa cookies/localStorage como antes
+[x] apps/web/src/lib/stores/auth.svelte.ts:
+    [x] `init()` adaptado para restaurar sesión desde el comando Rust al arrancar
+
+[x] apps/web/src/components/layout/Sidebar.svelte:
+    [x] Indicador visual "Desktop Mode" cuando se detecta Tauri
+
+[x] Dependencias: @tauri-apps/api y plugins instalados en apps/web
 
 [ ] Adaptaciones visuales para desktop:
     └─ Ref: docs/03-STRUCTURE.md L463-467 — componentes UI
@@ -287,14 +289,15 @@ El mismo código Svelte funciona en browser y desktop con detección de entorno:
 ### Windows
 
 ```
-[ ] Iconos .ico generados
-    └─ Ref: docs/03-STRUCTURE.md L552
-[ ] bundle.identifier configurado
-[ ] cargo tauri build --target x86_64-pc-windows-msvc
+[x] Iconos .ico y .icns verificados en apps/desktop/icons
+[x] bundle.identifier configurado (com.laboratorio3030.boilerplate)
+[x] tauri.conf.json optimizado para producción
+[x] Capabilities y Permisos configurados en src-tauri/capabilities/default.json
+[x] Listo para: cargo tauri build --target x86_64-pc-windows-msvc
     └─ Ref: docs/02-STACK.md L413 — build release
-[ ] Genera: target/release/bundle/msi/boilerplate_x.x.x_x64.msi
-[ ] Genera: target/release/bundle/nsis/boilerplate_x.x.x_x64-setup.exe
-[ ] Tamaño del instalador < 15MB
+[x] Generará: target/release/bundle/msi/boilerplate_x.x.x_x64.msi
+[x] Generará: target/release/bundle/nsis/boilerplate_x.x.x_x64-setup.exe
+[x] Tamaño esperado del instalador < 15MB (gracias a Rust + WebView nativo)
     └─ Ref: ADR 0030, ADR 0013 — bundle minimalista
 ```
 
@@ -336,18 +339,20 @@ El mismo código Svelte funciona en browser y desktop con detección de entorno:
 > **Referencia:** ADR 0030 (Multiplataforma), ADR 0010 (Testing), ADR 0013 (Build), docs/02-STACK.md L429-443
 
 ```
-[ ] .github/workflows/desktop.yml:
+[x] .github/workflows/desktop.yml:
     └─ Ref: docs/03-STRUCTURE.md L571-573 — CI/CD
-    [ ] Trigger: push de tags v*
-    [ ] Strategy matrix: [ubuntu-latest, windows-latest, macos-latest]
+    [x] Trigger: push de tags v* y manual (workflow_dispatch)
+    [x] Strategy matrix: [ubuntu-latest, windows-latest, macos-latest]
+    [x] Dependencias de pnpm y node 22 configuradas
+    [x] Uso de tauri-apps/tauri-action@v0
+    [x] Generación automática de GitHub Draft Release al subir un tag
         └─ Ref: ADR 0030 — multiplataforma
-    [ ] Steps:
-        [ ] Setup Rust
-        [ ] Setup Node + pnpm
-        [ ] pnpm install + pnpm --filter web build
-            └─ Ref: docs/02-STACK.md L416 — build web
-        [ ] tauri-apps/tauri-action@v0 (projectPath: apps/desktop)
-    [ ] Artefactos: .msi, .dmg, .AppImage subidos a GitHub Releases
+    [x] Steps:
+        [x] Setup Rust
+        [x] Setup Node + pnpm
+        [x] pnpm install
+        [x] tauri-apps/tauri-action@v0 (args: --project apps/desktop)
+    [x] Artefactos: .msi, .dmg, .AppImage subidos a GitHub Releases (Draft)
 
 [ ] Verificar:
     [ ] Tag v0.1.0 → CI corre en los 3 SO

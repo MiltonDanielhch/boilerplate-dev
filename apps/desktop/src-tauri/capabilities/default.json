@@ -6,6 +6,33 @@
     "main"
   ],
   "permissions": [
-    "core:default"
+    "core:default",
+    "shell:default",
+    "notification:default",
+    "log:default",
+    "store:default",
+    "core:event:default",
+    "core:window:default",
+    "core:path:default",
+    "core:app:default",
+    "core:resources:default",
+    "core:menu:default",
+    "core:tray:default",
+    {
+      "identifier": "allow-auth-commands",
+      "allow": [
+        "login",
+        "logout",
+        "get_current_user"
+      ]
+    },
+    {
+      "identifier": "allow-user-commands",
+      "allow": [
+        "list_users",
+        "get_user",
+        "create_user"
+      ]
+    }
   ]
 }

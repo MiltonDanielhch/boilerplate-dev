@@ -17,6 +17,7 @@
 	import { logout } from "$lib/api/auth";
 	import { get } from "svelte/store";
 	import * as m from "$lib/paraglide/messages.js";
+	import { isTauri } from "$lib/tauri";
 
 	let { class: className }: { class?: string } = $props();
 
@@ -101,7 +102,12 @@
 		<!-- Header -->
 		<div class="flex h-16 items-center justify-between border-b px-4">
 			{#if !collapsed}
-				<span class="font-semibold text-sidebar-foreground">🚀 Boilerplate</span>
+				<div class="flex flex-col">
+					<span class="font-semibold text-sidebar-foreground">🚀 Boilerplate</span>
+					{#if isTauri()}
+						<span class="text-[10px] font-bold uppercase tracking-wider text-primary">Desktop Mode</span>
+					{/if}
+				</div>
 			{/if}
 			<Button variant="ghost" size="icon" onclick={toggleSidebar} class="ml-auto">
 				{#if collapsed}

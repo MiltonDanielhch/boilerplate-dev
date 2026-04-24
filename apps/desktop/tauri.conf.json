@@ -5,7 +5,9 @@
   "identifier": "com.laboratorio3030.boilerplate",
   "build": {
     "devUrl": "http://localhost:4321",
-    "beforeDevCommand": "cd ../apps/web && pnpm dev"
+    "beforeDevCommand": "cd ../web && pnpm dev",
+    "beforeBuildCommand": "cd ../web && pnpm build",
+    "frontendDist": "../../apps/web/dist"
   },
   "app": {
     "windows": [
@@ -19,11 +21,21 @@
       }
     ],
     "security": {
-      "csp": "default-src 'self' http://localhost:4321 http://localhost:3000"
+      "csp": "default-src 'self' http://localhost:8080"
+    },
+    "trayIcon": {
+      "iconPath": "icons/32x32.png"
     }
   },
   "bundle": {
     "active": true,
-    "targets": ["nsis"]
+    "targets": "all",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ]
   }
 }

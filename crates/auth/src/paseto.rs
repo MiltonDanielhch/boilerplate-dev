@@ -170,6 +170,20 @@ impl PasetoService {
     }
 }
 
+impl domain::ports::TokenGenerator for PasetoService {
+    fn generate_access_token(&self, user_id: &Uuid) -> Result<String, DomainError> {
+        self.generate_access_token(user_id)
+    }
+
+    fn generate_refresh_token(&self) -> String {
+        crate::token::generate_opaque_token()
+    }
+
+    fn hash_refresh_token(&self, token: &str) -> String {
+        crate::token::hash_token(token)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
