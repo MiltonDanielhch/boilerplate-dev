@@ -1,0 +1,20 @@
+---
+// Ubicación: `apps/web/src/pages/admin/audit.astro`
+// Descripción: Registro de auditoría de seguridad.
+
+import AdminLayout from "../../layouts/AdminLayout.astro";
+import AuditLogTable from "../../components/admin/AuditLogTable.svelte";
+---
+
+<AdminLayout title="Security Audit">
+	<div class="space-y-6">
+		<div>
+			<h1 class="text-3xl font-extrabold tracking-tight text-white">Security Audit Logs</h1>
+			<p class="text-slate-400 mt-2">
+				Track all administrative and system actions for compliance and security.
+			</p>
+		</div>
+
+		<AuditLogTable client:load />
+	</div>
+</AdminLayout>

@@ -1,6 +1,5 @@
 <script lang="ts">
-	import { get } from "svelte/store";
-	import { userStore } from "$lib/stores/auth.svelte";
+	import { authStore } from "$lib/stores/auth.svelte";
 
 	interface Props {
 		permission: string;
@@ -10,7 +9,7 @@
 	let { permission, children }: Props = $props();
 
 	const allowed = $derived.by(() => {
-		const user = get(userStore);
+		const user = authStore.user;
 		return user?.permissions?.includes(permission) ?? false;
 	});
 </script>

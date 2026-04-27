@@ -122,6 +122,53 @@ impl AuditRepository for SqliteAuditRepository {
             .collect()
     }
 
+    async fn list(
+        &self,
+        limit: i64,
+        offset: i64,
+        user_id: Option<String>,
+        resource: Option<String>,
+        action: Option<String>,
+        from_date: Option<OffsetDateTime>,
+        to_date: Option<OffsetDateTime>,
+    ) -> Result<Vec<AuditLog>, DomainError> {
+        let mut query = String::from(
+            r#"
+            SELECT id, user_id, action, resource, resource_id,
+                   ip_address, user_agent, details, created_at
+            FROM audit_logs
+            WHERE 1=1
+            "#
+        );
+
+        if user_id.is_some() { query.push_str("AND user_id = ? "); }
+        if resource.is_some() { query.push_str("AND resource = ? "); }
+        if action.is_some() { query.push_str("AND action = ? "); }
+        if from_date.is_some() { query.push_str("AND created_at >= ? "); }
+        if to_date.is_some() { query.push_str("AND created_at <= ? "); }
+
+        query.push_str("ORDER BY created_at DESC LIMIT ? OFFSET ?");
+
+        let mut sql_query = sqlx::query_as::<_, AuditRow>(&query);
+
+        if let Some(uid) = user_id { sql_query = sql_query.bind(uid); }
+        if let Some(res) = resource { sql_query = sql_query.bind(res); }
+        if let Some(act) = action { sql_query = sql_query.bind(act); }
+        if let Some(fd) = from_date { sql_query = sql_query.bind(fd); }
+        if let Some(td) = to_date { sql_query = sql_query.bind(td); }
+
+        sql_query = sql_query.bind(limit).bind(offset);
+
+        let rows = sql_query
+            .fetch_all(&self.pool)
+            .await
+            .map_err(|e| DomainError::Database(e.to_string()))?;
+
+        rows.into_iter()
+            .map(|r| r.into_audit_log())
+            .collect()
+    }
+
     async fn find_by_date_range(
         &self,
         from: OffsetDateTime,

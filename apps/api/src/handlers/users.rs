@@ -6,7 +6,7 @@
 
 use crate::error::{ApiError, ApiResult};
 use crate::state::AppState;
-use application::users::{GetUserUseCase, ListUsersUseCase, SoftDeleteUserUseCase, UpdateUserUseCase};
+use application::users::{GetUserUseCase, ListUsersUseCase, SoftDeleteUserUseCase, UpdateUserUseCase, ImpersonateUserUseCase};
 use axum::{
     extract::{Path, Query, State},
     response::Json,
@@ -70,10 +70,16 @@ pub async fn list(
     let use_case = ListUsersUseCase::new(state.user_repo);
     let limit = params.limit.unwrap_or(20).min(100);
     let offset = params.offset.unwrap_or(0);
-    let input = application::users::ListUsersInput { limit, offset };
+    let input = application::users::ListUsersInput { 
+        limit, 
+        offset,
+        search: params.search,
+        role: params.role,
+        is_active: params.is_active,
+    };
     
     let users = use_case.execute(input).await?;
-    let total = users.len() as i64;
+    let total = users.len() as i64; // TODO: Implementar conteo real en DB
     
     Ok(Json(ListUsersResponse {
         users: users.into_iter().map(UserResponse::from).collect(),
@@ -135,11 +141,52 @@ pub async fn update(
 ) -> ApiResult<Json<UserResponse>> {
     let use_case = UpdateUserUseCase::new(state.user_repo);
     let id = UserId::parse(&id).map_err(|_| ApiError::Validation("Invalid user ID".to_string()))?;
-    let input = application::users::UpdateUserInput { name: body.name };
+    let input = application::users::UpdateUserInput { 
+        name: body.name,
+        is_active: body.is_active,
+        role: body.role,
+    };
     
     let user = use_case.execute(&id, input).await?;
     
     Ok(Json(UserResponse::from(user)))
+}
+
+/// POST /api/v1/users/:id/impersonate
+#[utoipa::path(
+    post,
+    path = "/api/v1/users/{id}/impersonate",
+    tag = "Users",
+    params(
+        ("id" = String, Path, description = "ID del usuario objetivo")
+    ),
+    security(
+        ("paseto" = [])
+    ),
+    responses(
+        (status = 200, description = "Token generado", body = ImpersonateResponse),
+        (status = 401, description = "No autenticado"),
+        (status = 403, description = "Sin permiso (admin only)"),
+    )
+)]
+pub async fn impersonate(
+    State(state): State<AppState>,
+    claims: crate::middleware::auth::AuthClaims,
+    Path(id): Path<String>,
+) -> ApiResult<Json<ImpersonateResponse>> {
+    let use_case = ImpersonateUserUseCase::new(state.user_repo, state.paseto);
+    
+    let admin_id = UserId::parse(&claims.user_id)
+        .map_err(|_| ApiError::Internal("Invalid admin_id in token".to_string()))?;
+    let target_user_id = UserId::parse(&id)
+        .map_err(|_| ApiError::Validation("Invalid target user ID".to_string()))?;
+
+    let token = use_case.execute(application::users::ImpersonateUserInput {
+        target_user_id,
+        admin_id,
+    }).await?;
+
+    Ok(Json(ImpersonateResponse { access_token: token }))
 }
 
 /// DELETE /api/v1/users/:id — Soft delete (ADR 0006)
@@ -179,6 +226,9 @@ pub async fn soft_delete(
 pub struct ListUsersQuery {
     pub limit: Option<i64>,
     pub offset: Option<i64>,
+    pub search: Option<String>,
+    pub role: Option<String>,
+    pub is_active: Option<bool>,
 }
 
 /// Request para crear usuario (admin)
@@ -193,6 +243,13 @@ pub struct CreateUserRequest {
 #[derive(Debug, Deserialize, ToSchema)]
 pub struct UpdateUserRequest {
     pub name: Option<String>,
+    pub is_active: Option<bool>,
+    pub role: Option<String>,
+}
+
+#[derive(Debug, Serialize, ToSchema)]
+pub struct ImpersonateResponse {
+    pub access_token: String,
 }
 
 /// Response con lista de usuarios
@@ -211,6 +268,9 @@ pub struct UserResponse {
     pub email: String,
     pub name: Option<String>,
     pub is_active: bool,
+    pub email_verified_at: Option<String>,
+    pub last_login_at: Option<String>,
+    pub created_by: Option<String>,
     pub created_at: String,
 }
 
@@ -220,8 +280,11 @@ impl From<domain::entities::User> for UserResponse {
         Self {
             id: user.id.to_string(),
             email: user.email.value().to_string(),
-            name: user.name, // move happens here
+            name: user.name,
             is_active,
+            email_verified_at: user.email_verified_at.map(|t| t.to_string()),
+            last_login_at: user.last_login_at.map(|t| t.to_string()),
+            created_by: user.created_by.map(|id| id.to_string()),
             created_at: user.created_at.to_string(),
         }
     }

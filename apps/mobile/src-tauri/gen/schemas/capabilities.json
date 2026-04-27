@@ -1,0 +1,1 @@
+{"mobile-capability":{"identifier":"mobile-capability","description":"Permissions for the mobile application","local":true,"windows":["main"],"permissions":["core:path:default","core:event:default","core:window:default","core:app:default","core:resources:default","core:menu:default","core:tray:default","shell:default","notification:default","log:default","store:default"]}}

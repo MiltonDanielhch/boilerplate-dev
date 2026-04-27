@@ -1,0 +1,69 @@
+# Ubicación: `.github/workflows/mobile.yml`
+#
+# Descripción: CI para empaquetado automático de aplicaciones Mobile.
+#              Genera APK/AAB para Android y IPA para iOS.
+#
+# ADRs relacionados: 0030 (Multiplataforma), 0013 (Build)
+
+name: "Mobile Release"
+
+on:
+  push:
+    tags:
+      - 'v*-mobile'
+  workflow_dispatch:
+
+jobs:
+  publish-mobile:
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: "ubuntu-latest"
+            target: "android"
+          - platform: "macos-latest"
+            target: "ios"
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: install Rust stable
+        uses: dtolnay/rust-action@stable
+
+      - name: install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
+      - name: setup java (android only)
+        if: matrix.target == 'android'
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: setup android sdk (android only)
+        if: matrix.target == 'android'
+        uses: android-actions/setup-android@v3
+
+      - name: install frontend dependencies
+        run: pnpm install
+
+      - uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: ${{ github.ref_name }}
+          releaseName: "Mobile Release v__VERSION__"
+          releaseBody: "Consulte los archivos adjuntos para descargar la versión móvil."
+          releaseDraft: true
+          prerelease: false
+          args: "--project apps/mobile"

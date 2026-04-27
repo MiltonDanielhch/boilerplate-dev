@@ -13,7 +13,9 @@ INSERT OR IGNORE INTO permissions (id, resource, action) VALUES
     ('01942e42-9a00-7e28-9256-f45d5b81b552', 'users',  'delete'),
     ('01942e42-9a00-7e28-9256-f45d5b81b553', 'roles',  'read'),
     ('01942e42-9a00-7e28-9256-f45d5b81b554', 'roles',  'write'),
-    ('01942e42-9a00-7e28-9256-f45d5b81b555', 'audit',  'read');
+    ('01942e42-9a00-7e28-9256-f45d5b81b555', 'audit',  'read'),
+    ('01942e42-9a00-7e28-9256-f45d5b81b556', 'admin',  'read'),
+    ('01942e42-9a00-7e28-9256-f45d5b81b557', 'system', 'settings');
 
 -- ─── Roles base ──────────────────────────────────────────────────────────────
 INSERT INTO roles (id, name, description, is_system)

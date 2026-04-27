@@ -13,7 +13,8 @@ use domain::value_objects::UserId;
 #[derive(Debug, Clone, Default)]
 pub struct UpdateUserInput {
     pub name: Option<String>,
-    // TODO: Agregar más campos actualizables según requerimientos
+    pub is_active: Option<bool>,
+    pub role: Option<String>,
 }
 
 /// Caso de uso: Actualizar usuario.
@@ -38,17 +39,28 @@ impl<R: UserRepository> UpdateUserUseCase<R> {
             .await?
             .ok_or_else(|| DomainError::not_found("User"))?;
 
-        if !user.is_active() {
-            return Err(DomainError::not_found("User"));
+        // Aplicar cambios básicos
+        if let Some(name) = input.name {
+            user.set_name(Some(name));
         }
 
-        // Aplicar cambios
-        if input.name.is_some() {
-            user.set_name(input.name);
+        if let Some(active) = input.is_active {
+            user.is_active = active;
         }
 
-        // Guardar cambios
+        // Guardar cambios en la entidad principal
         self.user_repo.save(&user).await?;
+
+        // Actualizar roles si se especifica
+        if let Some(new_role) = input.role {
+            // Simplificación: removemos todos los roles y asignamos el nuevo
+            // En un sistema real, un usuario podría tener múltiples roles
+            let current_roles = ["admin", "user", "moderator", "superadmin"];
+            for r in current_roles {
+                let _ = self.user_repo.remove_role(id, r).await;
+            }
+            self.user_repo.assign_role(id, &new_role).await?;
+        }
 
         Ok(user)
     }

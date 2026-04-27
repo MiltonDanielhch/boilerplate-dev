@@ -25,6 +25,7 @@ pub struct Lead {
     pub utm_medium: Option<String>,
     pub ip_address: Option<String>,
     pub user_agent: Option<String>,
+    pub status: String, // new, contacted, qualified, converted, archived
     pub is_contacted: bool,
     pub contact_notes: Option<String>,
     pub contacted_at: Option<OffsetDateTime>,
@@ -59,6 +60,7 @@ impl Lead {
             utm_medium,
             ip_address,
             user_agent,
+            status: "new".to_string(),
             is_contacted: false,
             contact_notes: None,
             contacted_at: None,

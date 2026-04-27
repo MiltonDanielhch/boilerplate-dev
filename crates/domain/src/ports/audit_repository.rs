@@ -26,6 +26,18 @@ pub trait AuditRepository: Send + Sync {
     /// Busca logs por usuario.
     fn find_by_user(&self, user_id: &str, limit: i64) -> impl Future<Output = Result<Vec<AuditLog>, DomainError>> + Send;
 
+    /// Lista logs con filtros y paginación.
+    fn list(
+        &self,
+        limit: i64,
+        offset: i64,
+        user_id: Option<String>,
+        resource: Option<String>,
+        action: Option<String>,
+        from_date: Option<OffsetDateTime>,
+        to_date: Option<OffsetDateTime>,
+    ) -> impl Future<Output = Result<Vec<AuditLog>, DomainError>> + Send;
+
     /// Busca logs por rango de fechas.
     fn find_by_date_range(
         &self,

@@ -1,72 +1,16 @@
 ---
 // Ubicación: `apps/web/src/pages/dashboard/settings.astro`
 //
-// Descripción: Página de configuración de cuenta sin Tabs para evitar errores de SSR.
-//              Permite actualizar perfil, cambiar contraseña y preferencias.
+// Descripción: Página de configuración unificada con tabs.
+//              - Profile: settings personales del usuario
+//              - System: configuración global (solo admins)
 //
-// ADRs relacionados: 0022 (Frontend), 0006 (RBAC), 0023 (i18n)
+// ADRs relacionados: 0022 (Frontend), 0006 (RBAC)
 
 import DashboardLayout from "../../layouts/DashboardLayout.astro";
-import * as Card from "$lib/components/ui/card/index.js";
-import { Button } from "$lib/components/ui/button/index.js";
-import { Input } from "$lib/components/ui/input/index.js";
-import { Label } from "$lib/components/ui/label/index.js";
+import SettingsTabs from "../../components/dashboard/SettingsTabs.svelte";
 ---
 
 <DashboardLayout title="Settings">
-	<div class="space-y-6">
-		<!-- Header -->
-		<div>
-			<h1 class="text-3xl font-bold tracking-tight">Settings</h1>
-			<p class="text-muted-foreground mt-2">
-				Manage your account settings and preferences
-			</p>
-		</div>
-
-		<!-- Profile Section -->
-		<Card.Root>
-			<Card.Header>
-				<Card.Title>Profile Information</Card.Title>
-				<Card.Description>
-					Update your personal information and profile details
-				</Card.Description>
-			</Card.Header>
-			<Card.Content>
-				<form class="space-y-4">
-					<div class="grid gap-2">
-						<Label for="name">Name</Label>
-						<Input id="name" type="text" placeholder="Your name" />
-					</div>
-					<div class="grid gap-2">
-						<Label for="email">Email</Label>
-						<Input id="email" type="email" placeholder="your@email.com" />
-					</div>
-				</form>
-			</Card.Content>
-			<Card.Footer>
-				<Button>Save Changes</Button>
-			</Card.Footer>
-		</Card.Root>
-
-		<!-- Security Section -->
-		<Card.Root>
-			<Card.Header>
-				<Card.Title>Security</Card.Title>
-				<Card.Description>
-					Update your security preferences
-				</Card.Description>
-			</Card.Header>
-			<Card.Content>
-				<div class="space-y-4">
-					<div class="flex items-center justify-between">
-						<div>
-							<p class="font-medium">Two-Factor Authentication</p>
-							<p class="text-sm text-muted-foreground">Add an extra layer of security</p>
-						</div>
-						<Button variant="outline" size="sm">Enable</Button>
-					</div>
-				</div>
-			</Card.Content>
-		</Card.Root>
-	</div>
+	<SettingsTabs client:only="svelte" />
 </DashboardLayout>

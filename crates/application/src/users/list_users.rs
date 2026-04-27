@@ -13,6 +13,9 @@ use domain::ports::UserRepository;
 pub struct ListUsersInput {
     pub limit: i64,
     pub offset: i64,
+    pub search: Option<String>,
+    pub role: Option<String>,
+    pub is_active: Option<bool>,
 }
 
 impl Default for ListUsersInput {
@@ -20,6 +23,9 @@ impl Default for ListUsersInput {
         Self {
             limit: 20,
             offset: 0,
+            search: None,
+            role: None,
+            is_active: None,
         }
     }
 }
@@ -34,8 +40,14 @@ impl<R: UserRepository> ListUsersUseCase<R> {
         Self { user_repo }
     }
 
-    /// Lista usuarios paginados.
+    /// Lista usuarios paginados con filtros.
     pub async fn execute(&self, input: ListUsersInput) -> Result<Vec<User>, DomainError> {
-        self.user_repo.list(input.limit, input.offset).await
+        self.user_repo.list(
+            input.limit, 
+            input.offset,
+            input.search,
+            input.role,
+            input.is_active
+        ).await
     }
 }

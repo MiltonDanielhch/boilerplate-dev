@@ -6,7 +6,8 @@
 
 use auth::PasetoService;
 use database::repositories::{
-    CachedUserRepository, SqliteAuditRepository, SqliteLeadRepository, SqliteSessionRepository,
+    CachedUserRepository, SqliteAuditRepository, SqliteContentRepository, SqliteLeadRepository, SqliteSessionRepository,
+    SqliteSettingsRepository,
 };
 use std::sync::Arc;
 
@@ -26,6 +27,8 @@ pub struct AppState {
     pub session_repo: SqliteSessionRepository,
     pub audit_repo: SqliteAuditRepository,
     pub lead_repo: SqliteLeadRepository,
+    pub content_repo: SqliteContentRepository,
+    pub settings_repo: SqliteSettingsRepository,
     pub paseto: Arc<PasetoService>,
 }
 
@@ -36,6 +39,8 @@ impl AppState {
         session_repo: SqliteSessionRepository,
         audit_repo: SqliteAuditRepository,
         lead_repo: SqliteLeadRepository,
+        content_repo: SqliteContentRepository,
+        settings_repo: SqliteSettingsRepository,
         paseto: Arc<PasetoService>,
     ) -> Self {
         Self {
@@ -44,6 +49,8 @@ impl AppState {
             session_repo,
             audit_repo,
             lead_repo,
+            content_repo,
+            settings_repo,
             paseto,
         }
     }
@@ -57,6 +64,8 @@ impl std::fmt::Debug for AppState {
             .field("session_repo", &"<SqliteSessionRepository>")
             .field("audit_repo", &"<SqliteAuditRepository>")
             .field("lead_repo", &"<SqliteLeadRepository>")
+            .field("content_repo", &"<SqliteContentRepository>")
+            .field("settings_repo", &"<SqliteSettingsRepository>")
             .field("paseto", &"<PasetoService>")
             .finish()
     }

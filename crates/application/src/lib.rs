@@ -4,8 +4,12 @@
 //
 // ADRs relacionados: ADR 0001
 
+pub mod admin;
+pub mod audit;
 pub mod auth;
+pub mod content;
 pub mod leads;
+pub mod settings;
 pub mod users;
 
 // Legacy module (preservado temporalmente)

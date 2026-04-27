@@ -7,8 +7,7 @@
 //
 // ADRs relacionados: 0022 (Frontend), 0008 (PASETO), 0007 (Error Handling)
 
-import { get } from "svelte/store";
-import { accessTokenStore, authStore } from "$lib/stores/auth.svelte";
+import { authStore } from "$lib/stores/auth.svelte";
 
 const API_BASE_URL = import.meta.env.PUBLIC_API_URL || "http://localhost:3000";
 const API_PREFIX = "/api/v1";
@@ -36,7 +35,7 @@ function getHeaders(): Record<string, string> {
 		"Accept": "application/json"
 	};
 
-	const token = get(accessTokenStore);
+	const token = authStore.accessToken;
 	if (token) {
 		headers["Authorization"] = `Bearer ${token}`;
 	}
@@ -52,7 +51,12 @@ async function attemptTokenRefresh(): Promise<boolean> {
 	if (typeof window === "undefined") return false;
 
 	const refreshToken = localStorage.getItem("refresh_token");
-	if (!refreshToken) return false;
+	if (!refreshToken) {
+		console.warn("[Auth] No refresh token found");
+		return false;
+	}
+
+	console.log("[Auth] Attempting token refresh with token:", refreshToken.substring(0, 20) + "...");
 
 	try {
 		const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
@@ -64,19 +68,22 @@ async function attemptTokenRefresh(): Promise<boolean> {
 			body: JSON.stringify({ refresh_token: refreshToken })
 		});
 
+		console.log("[Auth] Refresh response status:", response.status);
+
 		if (!response.ok) {
-			// Refresh falló - limpiar auth
-			console.warn("[Auth] Token refresh failed, clearing auth");
+			const errorText = await response.text();
+			console.warn("[Auth] Token refresh failed:", response.status, errorText);
 			authStore.clearAuth();
 			return false;
 		}
 
 		const data = await response.json();
 
-		// Actualizar tokens
+		// El refresh solo retorna tokens, no user. Mantenemos el user existente.
+		const currentUser = authStore.user;
 		localStorage.setItem("access_token", data.access_token);
 		localStorage.setItem("refresh_token", data.refresh_token);
-		accessTokenStore.set(data.access_token);
+		authStore.setAuth(currentUser, data.access_token, data.refresh_token);
 
 		console.log("[Auth] Token refresh successful");
 		return true;
@@ -104,7 +111,6 @@ export async function fetchApi<T>(
 	const prefix = needsPrefix(endpoint) ? API_PREFIX : "";
 	const url = `${API_BASE_URL}${prefix}${endpoint}`;
 
-	// Realizar la petición inicial
 	let response = await fetch(url, {
 		...options,
 		headers: {
@@ -113,14 +119,12 @@ export async function fetchApi<T>(
 		}
 	});
 
-	// Si recibimos 401 y no estamos en el endpoint de refresh, intentar refresh
 	if (response.status === 401 && endpoint !== "/auth/refresh") {
 		console.log("[Auth] Received 401, attempting token refresh...");
 
 		const refreshSuccess = await attemptTokenRefresh();
 
 		if (refreshSuccess) {
-			// Reintentar la petición original con el nuevo token
 			response = await fetch(url, {
 				...options,
 				headers: {
@@ -129,7 +133,6 @@ export async function fetchApi<T>(
 				}
 			});
 		} else {
-			// Refresh falló, redirigir a login
 			if (typeof window !== "undefined") {
 				window.location.href = "/login";
 			}
@@ -172,3 +175,5 @@ export const api = {
 	delete: <T>(endpoint: string) =>
 		fetchApi<T>(endpoint, { method: "DELETE" })
 };
+
+export const apiClient = api;

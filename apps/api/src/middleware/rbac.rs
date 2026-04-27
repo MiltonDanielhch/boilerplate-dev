@@ -104,3 +104,35 @@ pub async fn require_roles_write(
 ) -> Result<Response, ApiError> {
     rbac_middleware(State(state), request, next, "roles:write").await
 }
+
+/// Middleware que verifica si el usuario es Admin o SuperAdmin.
+pub async fn require_admin_role(
+    State(state): State<AppState>,
+    request: Request,
+    next: Next,
+) -> Result<Response, ApiError> {
+    let claims = request
+        .extensions()
+        .get::<AuthClaims>()
+        .ok_or_else(|| ApiError::Unauthorized("Authentication required".to_string()))?;
+
+    let user_id = UserId::parse(&claims.user_id)
+        .map_err(|_| ApiError::Internal("Invalid user_id in token".to_string()))?;
+
+    // Verificar si es admin o superadmin
+    let is_admin = state.user_repo.has_role(&user_id, "admin").await
+        .map_err(|e| ApiError::Internal(format!("Role check failed: {}", e)))?;
+    
+    let is_superadmin = if !is_admin {
+        state.user_repo.has_role(&user_id, "superadmin").await
+            .map_err(|e| ApiError::Internal(format!("Role check failed: {}", e)))?
+    } else {
+        false
+    };
+
+    if !is_admin && !is_superadmin {
+        return Err(ApiError::Forbidden("Administrator privileges required".to_string()));
+    }
+
+    Ok(next.run(request).await)
+}

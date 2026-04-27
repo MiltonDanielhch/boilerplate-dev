@@ -1,24 +1,25 @@
 ---
 // Ubicación: `apps/web/src/pages/dashboard/index.astro`
 //
-// Descripción: Página principal del dashboard con métricas KPI,
-//              gráficos de actividad, feed de eventos y acciones rápidas.
-//              Integra RBAC para mostrar/ocultar secciones según permisos.
+// Descripción: Dashboard unificado con métricas para todos los usuarios.
+//              Secciones de admin solo visibles con permiso admin:read.
 //
-// ADRs relacionados: 0022 (Frontend), 0006 (RBAC), 0021 (OpenAPI)
+// ADRs relacionados: 0022 (Frontend), 0006 (RBAC)
 
 import DashboardLayout from "../../layouts/DashboardLayout.astro";
 import StatsOverview from "../../components/dashboard/StatsOverview.svelte";
+import AdminStatsOverview from "../../components/admin/AdminStatsOverview.svelte";
+import AnalyticsCharts from "../../components/admin/AnalyticsCharts.svelte";
 import EventFeed from "../../components/dashboard/EventFeed.svelte";
 import SystemHealth from "../../components/dashboard/SystemHealth.svelte";
 import { PermissionGate } from "$lib/components/ui/permission-gate";
 import * as Card from "$lib/components/ui/card/index.js";
 import { Button } from "$lib/components/ui/button/index.js";
-import { Plus, Users, ClipboardList, Settings } from "lucide-svelte";
+import { Plus, Users, ClipboardList, Settings, Shield, Activity, MousePointerClick } from "lucide-svelte";
 ---
 
 <DashboardLayout title="Dashboard">
-	<div class="space-y-6">
+	<div class="space-y-8">
 		<!-- Header -->
 		<div class="flex items-center justify-between">
 			<div>
@@ -37,10 +38,20 @@ import { Plus, Users, ClipboardList, Settings } from "lucide-svelte";
 			</div>
 		</div>
 
-		<!-- Stats Overview -->
+		<!-- Stats Overview (para todos) -->
 		<StatsOverview client:load />
 
-		<!-- Grid de contenido -->
+		<!-- Admin Stats (solo admins) - Fusión de AdminStatsOverview -->
+		<PermissionGate permission="admin:read" client:load>
+			<AdminStatsOverview client:load />
+		</PermissionGate>
+
+		<!-- Analytics Charts (solo admins) -->
+		<PermissionGate permission="admin:read" client:load>
+			<AnalyticsCharts client:load />
+		</PermissionGate>
+
+		<!-- Grid de contenido (para todos) -->
 		<div class="grid gap-6 lg:grid-cols-2">
 			<!-- Event Feed -->
 			<Card.Root>
@@ -75,7 +86,42 @@ import { Plus, Users, ClipboardList, Settings } from "lucide-svelte";
 			</Card.Root>
 		</div>
 
-		<!-- Quick Actions -->
+		<!-- Admin Quick Actions (solo admins) -->
+		<PermissionGate permission="admin:read" client:load>
+			<Card.Root class="bg-slate-900 border-slate-800">
+				<Card.Header>
+					<Card.Title class="flex items-center gap-2">
+						<Shield class="h-5 w-5 text-primary" />
+						Admin Actions
+					</Card.Title>
+					<Card.Description>
+						Quick access to admin tools
+					</Card.Description>
+				</Card.Header>
+				<Card.Content>
+					<div class="flex flex-wrap gap-3">
+						<Button variant="secondary" href="/admin/leads" client:load>
+							<MousePointerClick class="h-4 w-4 mr-2" />
+							Manage Leads
+						</Button>
+						<Button variant="secondary" href="/admin/content" client:load>
+							<Settings class="h-4 w-4 mr-2" />
+							CMS Content
+						</Button>
+						<Button variant="secondary" href="/admin/settings" client:load>
+							<Settings class="h-4 w-4 mr-2" />
+							System Settings
+						</Button>
+						<Button variant="secondary" href="/admin/security" client:load>
+							<Shield class="h-4 w-4 mr-2" />
+							Security Control
+						</Button>
+					</div>
+				</Card.Content>
+			</Card.Root>
+		</PermissionGate>
+
+		<!-- Quick Actions (para todos) -->
 		<Card.Root>
 			<Card.Header>
 				<Card.Title>Quick Actions</Card.Title>
@@ -97,6 +143,10 @@ import { Plus, Users, ClipboardList, Settings } from "lucide-svelte";
 							View Audit Logs
 						</Button>
 					</PermissionGate>
+					<Button variant="outline" href="/dashboard/roles" client:load>
+						<Shield class="h-4 w-4 mr-2" />
+						Roles
+					</Button>
 					<Button variant="outline" href="/dashboard/settings" client:load>
 						<Settings class="h-4 w-4 mr-2" />
 						Settings

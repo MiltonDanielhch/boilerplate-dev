@@ -85,3 +85,9 @@ export async function restoreUser(id: string): Promise<User> {
 export async function hardDeleteUser(id: string): Promise<void> {
 	return api.delete(`/users/${id}/hard`);
 }
+
+// Impersonate (admin only)
+export async function impersonateUser(id: string): Promise<string> {
+	const res = await api.post<{ access_token: string }>(`/users/${id}/impersonate`, {});
+	return res.access_token;
+}

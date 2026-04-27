@@ -13,20 +13,25 @@
 	import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
 	import { Input } from "$lib/components/ui/input/index.js";
 	import { Avatar, AvatarFallback, AvatarImage } from "$lib/components/ui/avatar/index.js";
-	import { Search, Bell, User as UserIcon, Settings, LogOut, Command } from "lucide-svelte";
-	import { authStore, userStore } from "$lib/stores/auth.svelte";
+	import { Search, Bell, User as UserIcon, Settings, LogOut, Command, Menu } from "lucide-svelte";
+	import { authStore } from "$lib/stores/auth.svelte";
 	import { logout } from "$lib/api/auth";
-	import { get } from "svelte/store";
 	import type { User } from "$lib/types/user";
 
 	let { onSearchClick }: { onSearchClick?: () => void } = $props();
 
-	let user: User | null = $derived(get(userStore));
+	let user: User | null = $derived(authStore.user);
 
 	// Dispatch event to open CommandPalette
 	function handleSearchClick() {
 		if (typeof document !== 'undefined') {
 			document.dispatchEvent(new CustomEvent('open-command-palette'));
+		}
+	}
+
+	function handleMobileMenuClick() {
+		if (typeof document !== 'undefined') {
+			document.dispatchEvent(new CustomEvent('sidebar-mobile-toggle'));
 		}
 	}
 
@@ -49,6 +54,9 @@
 	<div class="flex h-full items-center justify-between px-6">
 		<!-- Left: Search trigger -->
 		<div class="flex items-center gap-4 flex-1">
+			<Button variant="ghost" size="icon" class="lg:hidden" onclick={handleMobileMenuClick}>
+				<Menu class="h-5 w-5" />
+			</Button>
 			<button
 				onclick={handleSearchClick}
 				class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors group"

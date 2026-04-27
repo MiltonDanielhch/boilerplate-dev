@@ -17,6 +17,8 @@ pub struct UserRow {
     pub name: Option<String>,
     pub is_active: bool,
     pub email_verified_at: Option<OffsetDateTime>,
+    pub last_login_at: Option<OffsetDateTime>,
+    pub created_by: Option<String>,
     pub created_at: OffsetDateTime,
     pub updated_at: OffsetDateTime,
     pub deleted_at: Option<OffsetDateTime>, // Soft Delete (ADR 0006)

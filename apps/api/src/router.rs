@@ -5,17 +5,17 @@
 // ADRs relacionados: ADR 0003 (Axum), ADR 0009 (Rate Limit), ADR 0021 (OpenAPI)
 
 use crate::docs::ApiDoc;
-use crate::handlers::{audit, auth, health, leads, users};
+use crate::handlers::{admin, audit, auth, content, health, leads, settings, users};
 use crate::middleware::audit::audit_middleware;
 use crate::middleware::auth::auth_middleware;
-use crate::middleware::rbac::{require_audit_read, require_users_read, require_users_write};
+use crate::middleware::rbac::{require_admin_role, require_audit_read, require_users_read, require_users_write};
 use crate::middleware::request_id::request_id_middleware;
 use crate::middleware::trace::trace_middleware;
 use crate::state::AppState;
 use axum::{
     http::StatusCode,
     middleware,
-    routing::{get, post, put},
+    routing::{delete, get, patch, post, put},
     Router,
 };
 use std::time::Duration;
@@ -59,11 +59,11 @@ pub fn create_router(state: AppState) -> Router {
 
     let users_write_routes = Router::new()
         .route("/api/v1/users", post(users::create))
-        .route("/api/v1/users/{id}", put(users::update).delete(users::soft_delete))
+        .route("/api/v1/users/{id}", put(users::update).patch(users::update).delete(users::soft_delete))
+        .route("/api/v1/users/{id}/impersonate", post(users::impersonate))
         .layer(middleware::from_fn_with_state(state.clone(), require_users_write))
         .layer(middleware::from_fn_with_state(state.clone(), auth_middleware));
 
-    // Router protegido general (solo auth, sin RBAC específico)
     let protected_routes = Router::new();
 
     // Router de auditoría (auth + permission)
@@ -71,6 +71,22 @@ pub fn create_router(state: AppState) -> Router {
         .route("/api/v1/audit", get(audit::list_audit))
         .route("/api/v1/audit/recent", get(audit::recent_audit))
         .layer(middleware::from_fn_with_state(state.clone(), require_audit_read))
+        .layer(middleware::from_fn_with_state(state.clone(), auth_middleware));
+
+    // Router de administración (solo admins)
+    let admin_routes = Router::new()
+        .route("/api/v1/admin/me", get(admin::admin_me))
+        .route("/api/v1/admin/stats", get(admin::stats))
+        .route("/api/v1/admin/analytics", get(admin::analytics))
+        .route("/api/v1/admin/sessions", get(admin::list_sessions))
+        .route("/api/v1/admin/sessions/{id}", delete(admin::revoke_session))
+        .route("/api/v1/admin/leads", get(leads::list_admin))
+        .route("/api/v1/admin/leads/{id}/status", patch(leads::update_status))
+        .route("/api/v1/admin/content", get(content::list))
+        .route("/api/v1/admin/content/{key}", put(content::update))
+        .route("/api/v1/admin/settings", get(settings::list))
+        .route("/api/v1/admin/settings/{key}", put(settings::update))
+        .layer(middleware::from_fn_with_state(state.clone(), require_admin_role))
         .layer(middleware::from_fn_with_state(state.clone(), auth_middleware));
 
     // Combinar routers
@@ -83,6 +99,7 @@ pub fn create_router(state: AppState) -> Router {
         .merge(users_write_routes)
         .merge(protected_routes)
         .merge(audit_routes)
+        .merge(admin_routes)
         // State compartido
         .with_state(state.clone())
         // Middleware tower (orden: outer → inner)

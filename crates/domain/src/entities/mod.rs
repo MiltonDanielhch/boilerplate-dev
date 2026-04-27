@@ -6,9 +6,11 @@
 // ADRs relacionados: ADR 0001, ADR 0006 (Soft Delete)
 
 pub mod audit_log;
+pub mod content_block;
 pub mod lead;
 pub mod role;
 pub mod session;
+pub mod system_setting;
 pub mod user;
 
 // Re-exports

@@ -1,0 +1,19 @@
+[package]
+name = "mobile-bridge"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "mobile_bridge"
+crate-type = ["cdylib", "staticlib", "rlib"]
+
+[dependencies]
+uniffi = { version = "0.28", features = ["tokio"] }
+application = { path = "../application" }
+domain = { path = "../domain" }
+auth = { path = "../auth" }
+anyhow = "1.0"
+tokio = { version = "1.43", features = ["full"] }
+
+[build-dependencies]
+uniffi = { version = "0.28", features = ["build"] }

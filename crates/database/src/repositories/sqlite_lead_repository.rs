@@ -32,9 +32,9 @@ impl LeadRepository for SqliteLeadRepository {
             r#"
             INSERT INTO leads (id, name, email, phone, company, message, 
                                source, utm_source, utm_medium, utm_campaign,
-                               ip_address, user_agent, is_contacted, 
+                               ip_address, user_agent, status, is_contacted, 
                                contact_notes, contacted_at, created_at)
-            VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16)
+            VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17)
             "#
         )
         .bind(&lead.id)
@@ -49,6 +49,7 @@ impl LeadRepository for SqliteLeadRepository {
         .bind(&lead.utm_campaign)
         .bind(&lead.ip_address)
         .bind(&lead.user_agent)
+        .bind(&lead.status)
         .bind(lead.is_contacted)
         .bind(&lead.contact_notes)
         .bind(lead.contacted_at)
@@ -66,7 +67,7 @@ impl LeadRepository for SqliteLeadRepository {
             r#"
             SELECT id, name, email, phone, company, message,
                    source, utm_source, utm_medium, utm_campaign,
-                   ip_address, user_agent, is_contacted,
+                   ip_address, user_agent, status, is_contacted,
                    contact_notes, contacted_at, created_at
             FROM leads WHERE email = ?1
             "#
@@ -88,7 +89,7 @@ impl LeadRepository for SqliteLeadRepository {
             r#"
             SELECT id, name, email, phone, company, message,
                    source, utm_source, utm_medium, utm_campaign,
-                   ip_address, user_agent, is_contacted,
+                   ip_address, user_agent, status, is_contacted,
                    contact_notes, contacted_at, created_at
             FROM leads WHERE id = ?1
             "#
@@ -104,26 +105,89 @@ impl LeadRepository for SqliteLeadRepository {
         }
     }
 
-    /// Listar leads con paginación
-    async fn list(&self, limit: i64, offset: i64) -> Result<Vec<Lead>, DomainError> {
-        let rows = sqlx::query_as::<_, LeadRow>(
+    async fn list(
+        &self, 
+        limit: i64, 
+        offset: i64,
+        search: Option<String>,
+        status: Option<String>,
+        from_date: Option<time::OffsetDateTime>,
+        to_date: Option<time::OffsetDateTime>
+    ) -> Result<Vec<Lead>, DomainError> {
+        let mut query = String::from(
             r#"
             SELECT id, name, email, phone, company, message,
                    source, utm_source, utm_medium, utm_campaign,
-                   ip_address, user_agent, is_contacted,
+                   ip_address, user_agent, status, is_contacted,
                    contact_notes, contacted_at, created_at
             FROM leads
-            ORDER BY created_at DESC
-            LIMIT ?1 OFFSET ?2
+            WHERE 1=1
             "#
-        )
-        .bind(limit)
-        .bind(offset)
-        .fetch_all(&*self.pool)
-        .await
-        .map_err(|e| DomainError::Database(e.to_string()))?;
+        );
+
+        if let Some(s) = &search {
+            if !s.is_empty() {
+                query.push_str("AND (email LIKE ? OR name LIKE ?) ");
+            }
+        }
+
+        if let Some(st) = &status {
+            if !st.is_empty() {
+                query.push_str("AND status = ? ");
+            }
+        }
+
+        if from_date.is_some() {
+            query.push_str("AND created_at >= ? ");
+        }
+
+        if to_date.is_some() {
+            query.push_str("AND created_at <= ? ");
+        }
+
+        query.push_str("ORDER BY created_at DESC LIMIT ? OFFSET ?");
+
+        let mut sql_query = sqlx::query_as::<_, LeadRow>(&query);
+
+        if let Some(s) = search {
+            if !s.is_empty() {
+                let pattern = format!("%{}%", s);
+                sql_query = sql_query.bind(pattern.clone()).bind(pattern);
+            }
+        }
+
+        if let Some(st) = status {
+            if !st.is_empty() {
+                sql_query = sql_query.bind(st);
+            }
+        }
+
+        if let Some(fd) = from_date {
+            sql_query = sql_query.bind(fd);
+        }
+
+        if let Some(td) = to_date {
+            sql_query = sql_query.bind(td);
+        }
+
+        sql_query = sql_query.bind(limit).bind(offset);
+
+        let rows = sql_query
+            .fetch_all(&*self.pool)
+            .await
+            .map_err(|e| DomainError::Database(e.to_string()))?;
 
         Ok(rows.into_iter().map(|r| r.into_lead()).collect::<Result<Vec<_>, _>>()?)
+    }
+
+    async fn set_status(&self, id: &str, status: &str) -> Result<(), DomainError> {
+        sqlx::query("UPDATE leads SET status = ? WHERE id = ?")
+            .bind(status)
+            .bind(id)
+            .execute(&*self.pool)
+            .await
+            .map_err(|e| DomainError::Database(e.to_string()))?;
+        Ok(())
     }
 
     /// Marcar lead como contactado
@@ -143,6 +207,47 @@ impl LeadRepository for SqliteLeadRepository {
 
         Ok(())
     }
+
+    async fn get_counts_by_date(&self, days: i64) -> Result<Vec<(String, i64)>, DomainError> {
+        let rows = sqlx::query_as::<_, (String, i64)>(
+            r#"
+            WITH RECURSIVE dates(date) AS (
+                SELECT DATE('now', '-' || (? - 1) || ' days')
+                UNION ALL
+                SELECT DATE(date, '+1 day') FROM dates WHERE date < DATE('now')
+            )
+            SELECT 
+                d.date,
+                COUNT(l.id) as count
+            FROM dates d
+            LEFT JOIN leads l ON DATE(l.created_at) = d.date
+            GROUP BY d.date
+            ORDER BY d.date ASC
+            "#
+        )
+        .bind(days)
+        .fetch_all(&*self.pool)
+        .await
+        .map_err(|e| DomainError::Database(e.to_string()))?;
+
+        Ok(rows)
+    }
+
+    async fn get_counts_by_status(&self) -> Result<Vec<(String, i64)>, DomainError> {
+        let rows = sqlx::query_as::<_, (String, i64)>(
+            r#"
+            SELECT status, COUNT(*) as count
+            FROM leads
+            GROUP BY status
+            ORDER BY count DESC
+            "#
+        )
+        .fetch_all(&*self.pool)
+        .await
+        .map_err(|e| DomainError::Database(e.to_string()))?;
+
+        Ok(rows)
+    }
 }
 
 /// Estructura intermedia para SQLx
@@ -160,6 +265,7 @@ pub struct LeadRow {
     utm_campaign: Option<String>,
     ip_address: Option<String>,
     user_agent: Option<String>,
+    status: String,
     is_contacted: bool,
     contact_notes: Option<String>,
     contacted_at: Option<time::OffsetDateTime>,
@@ -184,6 +290,7 @@ impl LeadRow {
             utm_campaign: self.utm_campaign,
             ip_address: self.ip_address,
             user_agent: self.user_agent,
+            status: self.status,
             is_contacted: self.is_contacted,
             contact_notes: self.contact_notes,
             contacted_at: self.contacted_at,

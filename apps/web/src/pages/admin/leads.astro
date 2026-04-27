@@ -1,0 +1,20 @@
+---
+// Ubicación: `apps/web/src/pages/admin/leads.astro`
+// Descripción: Panel de gestión de leads capturados.
+
+import AdminLayout from "../../layouts/AdminLayout.astro";
+import LeadTable from "../../components/admin/LeadTable.svelte";
+---
+
+<AdminLayout title="Lead Management">
+	<div class="space-y-6">
+		<div>
+			<h1 class="text-3xl font-extrabold tracking-tight">Leads & Prospects</h1>
+			<p class="text-slate-400 mt-2">
+				Manage and track interested customers from your landing page.
+			</p>
+		</div>
+
+		<LeadTable client:load />
+	</div>
+</AdminLayout>

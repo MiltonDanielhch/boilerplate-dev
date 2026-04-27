@@ -30,6 +30,25 @@ pub trait UserRepository: Send + Sync {
     /// Obtiene todos los permisos de un usuario (vía roles).
     fn get_permissions(&self, user_id: &UserId) -> impl Future<Output = Result<Vec<String>, DomainError>> + Send;
 
-    /// Lista usuarios con paginación.
-    fn list(&self, limit: i64, offset: i64) -> impl Future<Output = Result<Vec<User>, DomainError>> + Send;
+    /// Verifica si un usuario tiene un rol específico.
+    fn has_role(&self, user_id: &UserId, role: &str) -> impl Future<Output = Result<bool, DomainError>> + Send;
+
+    /// Asigna un rol a un usuario.
+    fn assign_role(&self, user_id: &UserId, role_name: &str) -> impl Future<Output = Result<(), DomainError>> + Send;
+
+    /// Remueve un rol de un usuario.
+    fn remove_role(&self, user_id: &UserId, role_name: &str) -> impl Future<Output = Result<(), DomainError>> + Send;
+
+    /// Lista usuarios con paginación y filtros.
+    fn list(
+        &self, 
+        limit: i64, 
+        offset: i64, 
+        search: Option<String>,
+        role: Option<String>,
+        is_active: Option<bool>
+    ) -> impl Future<Output = Result<Vec<User>, DomainError>> + Send;
+
+    /// Retorna conteos de registros por día en un rango.
+    fn get_counts_by_date(&self, days: i64) -> impl Future<Output = Result<Vec<(String, i64)>, DomainError>> + Send;
 }

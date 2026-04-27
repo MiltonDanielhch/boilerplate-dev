@@ -26,16 +26,19 @@ export const onRequest: MiddlewareHandler = async (context, next) => {
   }
 
   const isAuthenticated = hasSessionSSR(cookies);
+  
+  // Debug log
+  const token = cookies.get('access_token')?.value;
+  const userCookie = cookies.get('user')?.value;
+  console.log(`[Auth Middleware] ${pathname} - Auth: ${isAuthenticated} - Token: ${token ? 'present' : 'missing'} - User: ${userCookie ? 'present' : 'missing'}`);
 
   // Si está autenticado y trata de acceder a login/register → redirigir a dashboard
   if (isAuthenticated && isAuthRoute(pathname)) {
-    console.log(`[Auth Middleware] Usuario autenticado intentando acceder a ${pathname} → redirect /dashboard`);
     return redirect('/dashboard');
   }
 
   // Si no está autenticado y trata de acceder a ruta protegida → redirigir a login
   if (!isAuthenticated && isProtectedRoute(pathname)) {
-    console.log(`[Auth Middleware] Usuario no autenticado intentando acceder a ${pathname} → redirect /login`);
     return redirect('/login');
   }
 

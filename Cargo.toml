@@ -13,6 +13,7 @@ members  = [
     "apps/api",
     "apps/cli",
     "apps/desktop",
+    "apps/mobile/src-tauri",
     # Crates
     "crates/domain",
     "crates/application",
@@ -21,7 +22,7 @@ members  = [
     "crates/auth",
     "crates/mailer",
     "crates/storage",
-    "crates/events",
+    "crates/events", "crates/mobile-bridge",
 ]
 
 [profile.release]

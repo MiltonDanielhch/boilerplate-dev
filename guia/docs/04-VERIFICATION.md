@@ -748,17 +748,28 @@ ls target/release/bundle/
 # Chrome Android → "Añadir a pantalla de inicio" → app funciona
 # └─ Ref: ADR 0022, ADR 0024
 
-# 3. Tauri Android arranca
-npx tauri android dev
-# Esperado: App abre en emulador, UI visible
-# └─ Ref: docs/02-STACK.md L382
+# 3. Proyectos nativos (Tauri 2.0)
+cd apps/mobile/src-tauri
+npx tauri android init
+npx tauri ios init      # Solo macOS
+# Esperado: carpetas gen/android y gen/apple creadas
 
-# 4. Login funciona sin internet
+# 4. Modo desarrollo
+npx tauri android dev
+npx tauri ios dev       # Solo macOS
+# Esperado: App abre en emulador o dispositivo físico
+
+# 5. Generar binarios (APK/AAB/IPA)
+npx tauri android build
+npx tauri ios build     # Solo macOS
+# Esperado: Binarios generados en src-tauri/gen/android/app/outputs/apk/
+
+# 6. Login funciona sin internet
 # Activar modo avión en el dispositivo
 # Intentar login → funciona (SQLite local)
 # └─ Ref: ADR 0024, ADR 0004
 
-# 5. El mismo código de validación
+# 7. El mismo código de validación
 # Email inválido → mismo error en servidor, desktop y mobile
 # └─ Ref: ADR 0030 — código compartido
 ```

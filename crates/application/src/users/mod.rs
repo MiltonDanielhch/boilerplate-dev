@@ -5,12 +5,14 @@
 // ADRs relacionados: ADR 0001, ADR 0006 (Soft Delete)
 
 pub mod get_user;
+pub mod impersonate_user;
 pub mod list_users;
 pub mod soft_delete_user;
 pub mod update_user;
 
 // Re-exports
 pub use get_user::GetUserUseCase;
+pub use impersonate_user::{ImpersonateUserUseCase, ImpersonateUserInput};
 pub use list_users::{ListUsersUseCase, ListUsersInput};
 pub use soft_delete_user::SoftDeleteUserUseCase;
 pub use update_user::{UpdateUserUseCase, UpdateUserInput};

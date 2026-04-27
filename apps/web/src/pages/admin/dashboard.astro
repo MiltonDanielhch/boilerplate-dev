@@ -1,0 +1,96 @@
+---
+// Ubicación: `apps/web/src/pages/admin/dashboard.astro`
+//
+// Descripción: Panel principal de administración.
+//
+// ADRs relacionados: 0022 (Frontend), 0006 (RBAC)
+
+import AdminLayout from "../../layouts/AdminLayout.astro";
+import AdminStatsOverview from "../../components/admin/AdminStatsOverview.svelte";
+import AnalyticsCharts from "../../components/admin/AnalyticsCharts.svelte";
+import SystemHealth from "../../components/dashboard/SystemHealth.svelte";
+import { PermissionGate } from "$lib/components/ui/permission-gate";
+import * as Card from "$lib/components/ui/card/index.js";
+import { Button } from "$lib/components/ui/button/index.js";
+import { Users, ShieldAlert, Activity, Settings, MousePointerClick } from "lucide-svelte";
+---
+
+<AdminLayout title="Admin Dashboard">
+	<div class="space-y-8">
+		<!-- Header de Admin -->
+		<div class="flex items-center justify-between">
+			<div>
+				<h1 class="text-3xl font-extrabold tracking-tight">System Administration</h1>
+				<p class="text-slate-400 mt-2">
+					Critical metrics and system management tools.
+				</p>
+			</div>
+			<div class="flex gap-3">
+				<Button variant="outline" href="/dashboard" client:load>
+					Back to App
+				</Button>
+				<PermissionGate permission="system:settings" client:load>
+					<Button client:load>
+						<Settings class="h-4 w-4 mr-2" />
+						Global Settings
+					</Button>
+				</PermissionGate>
+			</div>
+		</div>
+
+		<!-- KPIs -->
+		<AdminStatsOverview client:load />
+
+		<!-- Charts -->
+		<AnalyticsCharts client:load />
+
+		<!-- Admin Specific Grid -->
+		<div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+			<!-- User Stats Card -->
+			<Card.Root class="bg-slate-900 border-slate-800">
+				<Card.Header>
+					<Card.Title class="flex items-center gap-2">
+						<Users class="h-5 w-5 text-blue-400" />
+						User Directory
+					</Card.Title>
+					<Card.Description>Manage {1234} total accounts</Card.Description>
+				</Card.Header>
+				<Card.Content>
+					<Button variant="secondary" class="w-full" href="/admin/users" client:load>
+						Manage Users
+					</Button>
+				</Card.Content>
+			</Card.Root>
+
+			<!-- Security Card -->
+			<Card.Root class="bg-slate-900 border-slate-800">
+				<Card.Header>
+					<Card.Title class="flex items-center gap-2">
+						<ShieldAlert class="h-5 w-5 text-red-400" />
+						Security Audit
+					</Card.Title>
+					<Card.Description>0 active security alerts</Card.Description>
+				</Card.Header>
+				<Card.Content>
+					<Button variant="secondary" class="w-full" href="/dashboard/audit" client:load>
+						View Audit Logs
+					</Button>
+				</Card.Content>
+			</Card.Root>
+
+			<!-- Infrastructure Card -->
+			<Card.Root class="bg-slate-900 border-slate-800">
+				<Card.Header>
+					<Card.Title class="flex items-center gap-2">
+						<Activity class="h-5 w-5 text-green-400" />
+						Infrastructure
+					</Card.Title>
+					<Card.Description>All services operational</Card.Description>
+				</Card.Header>
+				<Card.Content>
+					<SystemHealth client:load />
+				</Card.Content>
+			</Card.Root>
+		</div>
+	</div>
+</AdminLayout>

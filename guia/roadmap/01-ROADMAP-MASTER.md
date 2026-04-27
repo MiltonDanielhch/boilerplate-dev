@@ -16,8 +16,8 @@
 | 4 | `ROADMAP-LANDING.md` | Landing + captura de leads | Paralelo con Auth Fullstack | ✅ Completado |
 | 5 | `ROADMAP-INFRA.md` | Deploy + Caddy + Kamal | MVP backend+frontend listo | ✅ Completado |
 | — | **MVP EN PRODUCCIÓN** | — | — | ✅ |
-| 6 | `ROADMAP-TAURA-DESKTOP.md` | Desktop Tauri 2.0 | MVP web validado | ⏳ Pendiente |
-| 7 | `ROADMAP-MOBILE.md` | Mobile Tauri + KMP | Desktop validado | ⏳ Pendiente |
+| 6 | `ROADMAP-TAURI-DESKTOP.md` | Desktop Tauri 2.0 | MVP web validado | ✅ Completado |
+| 7 | `ROADMAP-MOBILE.md` | Mobile Tauri + KMP | Desktop validado | 🔄 Activo |
 
 **MVP COMPLETO - LISTO PARA PRODUCCIÓN** 🎉
 
@@ -65,10 +65,10 @@ DÍA 9 ─── INFRA — Deploy
 │
 ──────────── MVP EN PRODUCCIÓN ────────────────────────────
 │
-DÍA 10+ ─ DESKTOP (solo si MVP web validado)
+DÍA 10+ ─ DESKTOP (COMPLETADO) ✅
 │         Tauri 2.0 + comandos Rust + build Win/Mac/Linux
 │
-DÍA 12+ ─ MOBILE (solo si Desktop validado)
+DÍA 12+ ─ MOBILE (EN MARCHA) 🔄
           Tauri Mobile + PWA + KMP si necesario
 ```
 
@@ -296,4 +296,4 @@ litestream snapshots → entradas de hoy
 | 50 | `50-ROADMAP-FASE2.md` | NATS + Workers desacoplados | 🟡 Sí ($10-20) |
 | 60 | `60-ROADMAP-FASE3.md` | KMP + Mobile Nativo 120Hz | 🔴 No (requiere equipo especializado) |
 | 70 | `70-ROADMAP-FUTURA.md` | Escalamiento enterprise post-Fase 3 | 🔴 No ($40-500/mes) |
-| 80 | `80-ROADMAP-ADMIN.md` | Admin Dashboard — gestión users, analytics | 🟢 Opcional (sigue siendo $5) |
+| 80 | `80-ROADMAP-ADMIN.md` | Admin Dashboard — gestión users, analytics | ✅ Completado |

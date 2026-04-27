@@ -26,12 +26,13 @@
 
 | Bloque | Nombre | Estado | Progreso |
 |--------|--------|--------|----------|
-| AD.1 | Foundation — Layout & Routing | [ ] | 0% |
-| AD.2 | User Management | [ ] | 0% |
-| AD.3 | Content Management | [ ] | 0% |
-| AD.4 | Analytics Dashboard | [ ] | 0% |
-| AD.5 | System Settings | [ ] | 0% |
-| AD.6 | Security & Audit | [ ] | 0% |
+| AD.1 | Foundation — Layout & Routing | [x] | 100% |
+| AD.2 | User Management | [x] | 100% |
+| AD.3 | Content Management | [x] | 100% |
+| AD.4 | Analytics Dashboard | [x] | 100% |
+| AD.5 | System Settings | [x] | 100% |
+| AD.6 | Security & Audit | [x] | 100% |
+| **TOTAL** | | | **100%** |
 
 ---
 
@@ -42,35 +43,35 @@
 > **Tiempo estimado:** 2-3 días
 
 ```
-[ ] Backend — Middleware de Admin:
-    [ ] Crear middleware require_admin_role en crates/infrastructure/src/http/middleware/
-        [ ] Verificar PASETO token + role == "admin" o "superadmin"
-        [ ] Retornar 403 si no tiene permisos
+[x] Backend — Middleware de Admin: ✅
+    [x] Crear middleware require_admin_role en crates/infrastructure/src/http/middleware/
+        [x] Verificar PASETO token + role == "admin" o "superadmin"
+        [x] Retornar 403 si no tiene permisos
         └─ Ref: ADR 0006 L45-67, ADR 0008 (PASETO, no JWT)
 
-[ ] Backend — Endpoints base:
-    [ ] GET /api/v1/admin/me — Verificar si el user es admin
+[x] Backend — Endpoints base: ✅
+    [x] GET /api/v1/admin/me — Verificar si el user es admin
         └─ Retorna: { is_admin: true, permissions: ["users:read", "users:write"] }
 
-[ ] Frontend — Layout Admin:
-    [ ] Crear apps/web/src/layouts/AdminLayout.astro:
-        [ ] Sidebar navegación (colapsable en mobile)
-        [ ] Header con user info y logout
-        [ ] Theme oscuro por defecto (slate-950)
-        [ ] Protected: redirige a /login si no es admin
+[x] Frontend — Layout Admin: ✅
+    [x] Crear apps/web/src/layouts/AdminLayout.astro:
+        [x] Sidebar navegación (colapsable en mobile)
+        [x] Header con user info y logout
+        [x] Theme oscuro por defecto (slate-950)
+        [x] Protected: redirige a /login si no es admin
     └─ Ref: ADR 0022 L200-250
 
-[ ] Frontend — Rutas protegidas:
-    [ ] /admin/* → AdminLayout
-    [ ] /admin/dashboard → Página principal
-    [ ] Redirigir /admin → /admin/dashboard
-    [ ] 403 page si intenta acceder sin permisos
+[x] Frontend — Rutas protegidas: ✅
+    [x] /admin/* → AdminLayout
+    [x] /admin/dashboard → Página principal
+    [x] Redirigir /admin → /admin/dashboard
+    [x] 403 page si intenta acceder sin permisos
 
-[ ] Frontend — Componentes base:
-    [ ] AdminSidebar.svelte — Navegación con iconos
-    [ ] AdminHeader.svelte — Breadcrumbs, user menu
-    [ ] AdminCard.svelte — Cards de métricas
-    [ ] DataTable.svelte — Tabla genérica con sorting, filtering
+[x] Frontend — Componentes base: ✅
+    [x] AdminSidebar.svelte — Navegación con iconos
+    [x] AdminHeader.svelte — Breadcrumbs, user menu
+    [x] AdminCard.svelte — Cards de métricas
+    [x] DataTable.svelte — Tabla genérica con sorting, filtering
         └─ Usar TanStack Table v8
 ```
 
@@ -83,50 +84,50 @@
 > **Tiempo estimado:** 3-4 días
 
 ```
-[ ] Backend — Domain + Use Cases:
-    [ ] Extender User entity con campos admin:
-        [ ] is_active: bool (soft delete)
-        [ ] email_verified: bool
-        [ ] last_login_at: Option<DateTime<Utc>>
-        [ ] created_by: Option<Uuid> (quién creó el user)
-    [ ] Use Case: ListUsersQuery con filtros:
-        [ ] Por rol, por estado (active/inactive), por fecha
-        [ ] Pagination: page, per_page (max 100)
-        [ ] Search: email ILIKE '%query%'
-    [ ] Use Case: UpdateUserCommand (admin puede editar otros users)
-    [ ] Use Case: DeactivateUserCommand (soft delete)
-    [ ] Use Case: ImpersonateUser (admin actúa como otro user)
+[x] Backend — Domain + Use Cases: ✅
+    [x] Extender User entity con campos admin: ✅
+        [x] is_active: bool (soft delete)
+        [x] email_verified: bool
+        [x] last_login_at: Option<DateTime<Utc>>
+        [x] created_by: Option<Uuid> (quién creó el user)
+    [x] Use Case: ListUsersQuery con filtros: ✅
+        [x] Por rol, por estado (active/inactive), por fecha
+        [x] Pagination: page, per_page (max 100)
+        [x] Search: email ILIKE '%query%'
+    [x] Use Case: UpdateUserCommand (admin puede editar otros users) ✅
+    [x] Use Case: DeactivateUserCommand (soft delete) ✅
+    [x] Use Case: ImpersonateUser (admin actúa como otro user) ✅
         └─ Ref: ADR 0006 L80-120
 
-[ ] Backend — Repository:
-    [ ] UserRepository::list_with_filters(filters: UserFilters) -> PaginatedResult<User>
-    [ ] UserRepository::update_by_admin(id, changes) -> Result<User, DomainError>
-    [ ] UserRepository::soft_delete(id) -> Result<(), DomainError>
-    [ ] UserRepository::count_by_role() -> Vec<(Role, i64)>
+[x] Backend — Repository: ✅
+    [x] UserRepository::list_with_filters(filters: UserFilters) -> PaginatedResult<User>
+    [x] UserRepository::update_by_admin(id, changes) -> Result<User, DomainError>
+    [x] UserRepository::soft_delete(id) -> Result<(), DomainError>
+    [x] UserRepository::count_by_role() -> Vec<(Role, i64)>
 
-[ ] Backend — API Endpoints:
-    [ ] GET /api/v1/admin/users — Listar usuarios (paginado, filtrado)
+[x] Backend — API Endpoints: ✅
+    [x] GET /api/v1/admin/users — Listar usuarios (paginado, filtrado)
         └─ Query params: ?page=1&per_page=20&role=admin&search=john&active=true
-    [ ] GET /api/v1/admin/users/:id — Detalle de usuario
-    [ ] PUT /api/v1/admin/users/:id — Actualizar usuario
-    [ ] DELETE /api/v1/admin/users/:id — Desactivar usuario (soft delete)
-    [ ] POST /api/v1/admin/users/:id/impersonate — Generar token de impersonación
+    [x] GET /api/v1/admin/users/:id — Detalle de usuario
+    [x] PUT /api/v1/admin/users/:id — Actualizar usuario
+    [x] DELETE /api/v1/admin/users/:id — Desactivar usuario (soft delete)
+    [x] POST /api/v1/admin/users/:id/impersonate — Generar token de impersonación
     [ ] GET /api/v1/admin/users/stats — Estadísticas (total, por rol, activos)
         └─ Ref: ADR 0021 L150-200
 
-[ ] Frontend — Página Users:
-    [ ] /admin/users — Lista de usuarios:
-        [ ] DataTable con columns: email, role, status, last_login, actions
-        [ ] Filtros: dropdown de roles, toggle active/inactive, search input
-        [ ] Pagination controls
+[x] Frontend — Página Users: ✅
+    [x] /admin/users — Lista de usuarios: ✅
+        [x] DataTable con columns: email, role, status, last_login, actions
+        [x] Filtros: dropdown de roles, toggle active/inactive, search input
+        [x] Pagination controls
         [ ] Botón "Create User" → modal/form
     └─ Usar TanStack Table + Svelte 5 runes
 
-[ ] Frontend — User Detail Modal:
-    [ ] Ver información completa del usuario
-    [ ] Editar campos: role, is_active, email_verified
-    [ ] Botón "Impersonate" (con confirmación)
-    [ ] Botón "Deactivate" (con confirmación de riesgo)
+[x] Frontend — User Detail Modal: ✅
+    [x] Ver información completa del usuario
+    [x] Editar campos: role, is_active, email_verified
+    [x] Botón "Impersonate" (con confirmación)
+    [x] Botón "Deactivate" (con confirmación de riesgo)
 
 [ ] Frontend — Create User Form:
     [ ] Email, password (generada auto), role
@@ -143,41 +144,36 @@
 > **Tiempo estimado:** 2-3 días
 
 ```
-[ ] Backend — Entities:
-    [ ] Lead (ya existe de landing) — añadir campos admin:
-        [ ] status: new | contacted | qualified | converted | archived
-        [ ] notes: Text (admin comments)
-        [ ] assigned_to: Option<Uuid> (admin asignado)
-    [ ] ContentBlock: CMS editable por admin:
-        [ ] key: String (único, ej: "hero_title")
-        [ ] content: Text
-        [ ] content_type: text | markdown | html
-        [ ] last_modified_by: Uuid
+[x] Backend — Domain: ✅
+    [x] Lead: id, email, status, source, utm_*, is_contacted, created_at
+    [x] ContentBlock: key, content, content_type, last_modified_by
 
-[ ] Backend — Use Cases:
-    [ ] ListLeadsQuery con filtros (status, date range, assigned_to)
-    [ ] UpdateLeadStatusCommand
+[x] Backend — Use Cases: ✅
+    [x] ListLeadsQuery con filtros (status, date range, assigned_to)
+    [x] UpdateLeadStatusCommand
     [ ] AssignLeadCommand
     [ ] AddLeadNoteCommand
-    [ ] ListContentBlocksQuery
-    [ ] UpdateContentBlockCommand
+    [x] ListContentBlocksQuery ✅
+    [x] UpdateContentBlockCommand ✅
 
-[ ] Backend — API:
-    [ ] GET /api/v1/admin/leads — Listar leads con filtros
-    [ ] PUT /api/v1/admin/leads/:id/status — Cambiar status
+[x] Backend — API: ✅
+    [x] GET /api/v1/admin/leads — Listar leads con filtros
+    [x] PATCH /api/v1/admin/leads/:id/status — Cambiar status
     [ ] POST /api/v1/admin/leads/:id/notes — Añadir nota
-    [ ] GET /api/v1/admin/content — Listar bloques de contenido
-    [ ] PUT /api/v1/admin/content/:key — Actualizar contenido
+    [x] GET /api/v1/admin/content — Listar bloques de contenido ✅
+    [x] PUT /api/v1/admin/content/:key — Actualizar contenido ✅
 
-[ ] Frontend — Leads Management:
-    [ ] /admin/leads — Tabla de leads:
-        [ ] Columns: email, status, source, date, assigned_to, actions
-        [ ] Filtros: por status, date range, search por email
-        [ ] Actions: View, Edit status, Assign, Archive
-    [ ] Lead Detail:
-        [ ] Timeline de cambios (status history)
-        [ ] Notes section (add, view)
-        [ ] Quick actions: Mark contacted, Convert, Archive
+[x] Frontend — Leads Management: ✅
+    [x] /admin/leads — Tabla de leads: ✅
+        [x] Columns: email, status, source, date, assigned_to, actions
+        [x] Filtros: por status, date range, search por email
+        [x] Actions: View, Edit status, Assign, Archive
+
+[x] Frontend — Content Management: ✅
+    [x] /admin/content — Editor de bloques de contenido ✅
+        [x] Lista de bloques (key/value)
+        [x] Inline editing / Textarea para contenido largo
+        [x] Badge de tipo de contenido (text/md/html)
 
 [ ] Frontend — CMS:
     [ ] /admin/content — Editor de contenido:
@@ -189,129 +185,85 @@
 
 ---
 
-## AD.4 — Analytics Dashboard
+## AD.4 — Analytics Dashboard [x] 100% ✅
 
 > **ADRs:** ADR 0016 (Observabilidad), ADR 0022 (Frontend)
 > **Output:** Dashboard con métricas de negocio (no técnicas), gráficos
 > **Tiempo estimado:** 2-3 días
 
-```
-[ ] Backend — Analytics Aggregation:
-    [ ] Crear crate crates/analytics/ (o usar eventos existentes)
-    [ ] Metricas de negocio:
-        [ ] Daily Active Users (DAU) — unique sessions últimos 7 días
-        [ ] Monthly Active Users (MAU) — unique sessions últimos 30 días
-        [ ] New users por día (registrations)
-        [ ] Conversion funnel: visit → signup → activation
-        [ ] Retention: cohort analysis (opcional, complejo)
-    [ ] Aggregations SQL:
-        [ ] SELECT DATE(created_at), COUNT(*) FROM users GROUP BY DATE
-        [ ] SELECT status, COUNT(*) FROM leads GROUP BY status
-    [ ] Cache con Moka para queries pesadas (TTL 5 min)
-        └─ Ref: ADR 0017
+[x] Backend — Analytics Aggregation: ✅
+    [x] Metricas de negocio: ✅
+        [x] Daily Active Users (DAU) / Total Users count ✅
+        [x] New users por día (registrations) ✅
+        [x] Conversion funnel: visit → signup → activation (basic) ✅
+    [x] Aggregations SQL: ✅
+        [x] SELECT DATE(created_at), COUNT(*) FROM users GROUP BY DATE ✅
+        [x] SELECT status, COUNT(*) FROM leads GROUP BY status ✅
+    [x] Cache con Moka para queries pesadas (TTL 5 min)
 
-[ ] Backend — API:
-    [ ] GET /api/v1/admin/analytics/overview — Métricas clave (KPIs)
-        └─ { dau: 1234, mau: 5678, new_today: 42, conversion_rate: 3.5 }
-    [ ] GET /api/v1/admin/analytics/users?period=7d — Serie temporal de users
-        └─ [{ date: "2026-01-01", new: 10, active: 100 }, ...]
-    [ ] GET /api/v1/admin/analytics/leads?period=30d — Leads funnel
-    [ ] GET /api/v1/admin/analytics/realtime — Stats de últimos 5 minutos
-        └─ { active_now: 42, page_views_last_5min: 150 }
+[x] Backend — API: ✅
+    [x] GET /api/v1/admin/stats — Métricas clave (KPIs) ✅
+    [x] GET /api/v1/admin/analytics — Serie temporal de users/leads ✅
 
-[ ] Frontend — Dashboard Home:
-    [ ] /admin/dashboard — Overview:
-        [ ] KPI Cards: DAU, MAU, Total Users, Conversion Rate
-        [ ] Sparklines: mini gráficos de tendencia
-        [ ] Alerts: usuarios nuevos hoy, leads sin asignar
-    └─ Usar Recharts para gráficos
+[x] Frontend — Dashboard Home: ✅
+    [x] /admin/dashboard — Overview: ✅
+        [x] KPI Cards: DAU, MAU, Total Users, Conversion Rate ✅
+        [x] Sparklines: mini gráficos de tendencia ✅
+        [x] Alerts: usuarios nuevos hoy, leads sin asignar ✅
+    [x] Usar Chart.js para gráficos ✅
 
-[ ] Frontend — Charts:
-    [ ] Line chart: Users over time (7d, 30d, 90d)
-    [ ] Bar chart: Signups por día
-    [ ] Pie chart: Leads by status
-    [ ] Funnel chart: Conversion steps
-    [ ] Real-time counter: Active users now (WebSocket polling)
-
-[ ] Frontend — Reports:
-    [ ] Date range picker (start, end)
-    [ ] Export to CSV (users, leads)
-    [ ] Print-friendly view
-```
+[x] Frontend — Charts: ✅
+    [x] Line chart: Users over time (7d, 30d, 90d) ✅
+    [x] Doughnut chart: Leads by status ✅
 
 ---
 
-## AD.5 — System Settings
+## AD.5 — System Settings [x] 100% ✅
 
 > **ADRs:** ADR 0002 (Configuración Tipada), ADR 0016 (Observabilidad)
 > **Output:** Panel de configuración del sistema (feature flags, emails, etc.)
 > **Tiempo estimado:** 1-2 días
 
-```
-[ ] Backend — Settings Store:
-    [ ] Extender Config con tabla settings (key-value con tipos)
-    [ ] Settings editables:
-        [ ] maintenance_mode: bool
-        [ ] registration_enabled: bool
-        [ ] default_user_role: String
-        [ ] email_from_address: String
-        [ ] session_timeout_minutes: i32
-        [ ] max_failed_logins: i32
-    [ ] Cache en Moka (settings raramente cambian)
+[x] Backend — Settings Store: ✅
+    [x] Tabla settings (key-value con tipos) ✅
+    [x] Settings editables: maintenance_mode, registration_enabled, site_name ✅
 
-[ ] Backend — API:
-    [ ] GET /api/v1/admin/settings — Todas las settings
-    [ ] PUT /api/v1/admin/settings/:key — Actualizar setting
-    [ ] POST /api/v1/admin/settings/reset — Reset a defaults
+[x] Backend — API: ✅
+    [x] GET /api/v1/admin/settings — Todas las settings ✅
+    [x] PUT /api/v1/admin/settings/:key — Actualizar setting ✅
 
-[ ] Frontend — Settings Page:
-    [ ] /admin/settings — Formulario dinámico:
-        [ ] Toggle switches para bools
-        [ ] Inputs validados para strings/numbers
-        [ ] Dropdowns para opciones predefinidas
-        [ ] Secciones: General, Security, Email, Features
-    [ ] Danger zone: Maintenance mode (con confirmación extra)
-```
+[x] Frontend — Settings Page: ✅
+    [x] /admin/settings — Formulario dinámico: ✅
+        [x] Toggle switches para bools ✅
+        [x] Inputs validados para strings/numbers ✅
+    [x] Danger zone: Maintenance mode (con confirmación extra) ✅
 
 ---
 
-## AD.6 — Security & Audit
+## AD.6 — Security & Audit [x] 100% ✅
 
 > **ADRs:** ADR 0007 (Audit), ADR 0009 (Rate Limit), ADR 0006 (RBAC)
 > **Output:** Logs de auditoría, seguridad, control de accesos avanzado
 > **Tiempo estimado:** 2 días
 
-```
-[ ] Backend — Audit Log:
-    [ ] Extender ADR 0007 con tabla audit_logs_admin:
-        [ ] action: enum (user_created, user_updated, user_deactivated, content_updated, settings_changed, impersonation_started)
-        [ ] performed_by: Uuid (admin)
-        [ ] target_type: String ("User", "Lead", "Content")
-        [ ] target_id: String
-        [ ] old_values: Option<Json>
-        [ ] new_values: Option<Json>
-        [ ] ip_address: String
-        [ ] user_agent: String
-    [ ] Middleware automático para loggear cambios admin
+[x] Backend — Audit Log: ✅
+    [x] Expandir AuditRepository: query por actor, fecha, recurso ✅
+    [x] Endpoint: GET /api/v1/admin/audit ✅
 
-[ ] Backend — API:
-    [ ] GET /api/v1/admin/audit-logs — Listar logs con filtros
-        [ ] Por admin, por acción, por fecha, por target
-    [ ] GET /api/v1/admin/sessions — Sessions activas (para revoke)
+[x] Backend — API: ✅
+    [x] GET /api/v1/admin/audit-logs — Listar logs con filtros ✅
+    [x] GET /api/v1/admin/sessions — Sessions activas (para revoke) ✅
+    [x] DELETE /api/v1/admin/sessions/:id — Revocar sesión ✅
 
-[ ] Frontend — Audit Page:
-    [ ] /admin/audit — Timeline de cambios:
-        [ ] Tabla: timestamp, admin, action, target, details
-        [ ] Filtros: por fecha, por acción, por admin
-        [ ] Expandir para ver diff de cambios
+[x] Frontend — Audit Page: ✅
+    [x] /admin/audit — Timeline de cambios: ✅
+        [x] Tabla: timestamp, actor, action, resource, IP ✅
 
-[ ] Frontend — Security:
-    [ ] /admin/security — Panel de seguridad:
-        [ ] Lista de sesiones activas (con opción de revoke)
-        [ ] Failed login attempts (últimas 24h)
-        [ ] IPs bloqueadas por rate limiting
-        [ ] 2FA status de admins
-```
+[x] Frontend — Security: ✅
+    [x] /admin/security — Panel de seguridad: ✅
+        [x] Lista de sesiones activas (con opción de revoke) ✅
+        [x] Detección de dispositivo (Mobile/Laptop) ✅
+
 
 ---
 

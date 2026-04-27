@@ -12,6 +12,8 @@ export interface User {
 	role: "admin" | "user" | "moderator";
 	isActive: boolean;
 	emailVerifiedAt: string | null;
+	lastLoginAt: string | null;
+	createdBy: string | null;
 	permissions?: string[];
 	createdAt: string;
 	updatedAt: string;

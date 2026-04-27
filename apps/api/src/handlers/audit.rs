@@ -11,6 +11,7 @@ use axum::{
     response::Json,
 };
 use domain::ports::AuditRepository;
+use application::audit::{ListAuditUseCase, ListAuditInput};
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 
@@ -46,9 +47,12 @@ impl From<domain::entities::AuditLog> for AuditEntry {
 #[derive(Debug, Deserialize)]
 pub struct ListAuditQuery {
     pub limit: Option<i64>,
+    pub offset: Option<i64>,
     pub user_id: Option<String>,
     pub resource: Option<String>,
-    pub resource_id: Option<String>,
+    pub action: Option<String>,
+    pub from_date: Option<time::OffsetDateTime>,
+    pub to_date: Option<time::OffsetDateTime>,
 }
 
 #[derive(Debug, Serialize, ToSchema)]
@@ -71,26 +75,19 @@ pub async fn list_audit(
     State(state): State<AppState>,
     axum::extract::Query(query): axum::extract::Query<ListAuditQuery>,
 ) -> ApiResult<Json<ListAuditResponse>> {
-    let limit = query.limit.unwrap_or(50).min(100);
-    
-    let entries = if let Some(user_id) = query.user_id {
-        state.audit_repo
-            .find_by_user(&user_id, limit)
-            .await
-            .map_err(|e| crate::error::ApiError::Internal(e.to_string()))?
-    } else if let Some(resource) = query.resource {
-        state.audit_repo
-            .find_by_resource(&resource, query.resource_id.as_deref(), limit)
-            .await
-            .map_err(|e| crate::error::ApiError::Internal(e.to_string()))?
-    } else {
-        state.audit_repo
-            .find_by_resource("api", None, limit)
-            .await
-            .map_err(|e| crate::error::ApiError::Internal(e.to_string()))?
+    let use_case = ListAuditUseCase::new(state.audit_repo);
+    let input = ListAuditInput {
+        limit: query.limit.unwrap_or(50).min(100),
+        offset: query.offset.unwrap_or(0),
+        user_id: query.user_id,
+        resource: query.resource,
+        action: query.action,
+        from_date: query.from_date,
+        to_date: query.to_date,
     };
-
-    let total = entries.len() as i64;
+    
+    let entries = use_case.execute(input).await?;
+    let total = entries.len() as i64; // TODO: Real count
     let entries: Vec<AuditEntry> = entries.into_iter().map(AuditEntry::from).collect();
 
     Ok(Json(ListAuditResponse { entries, total }))

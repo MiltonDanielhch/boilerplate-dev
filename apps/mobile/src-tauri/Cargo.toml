@@ -1,0 +1,40 @@
+[package]
+name = "boilerplate-mobile"
+version = "0.1.0"
+description = "Boilerplate Mobile App"
+authors = ["Sintonía"]
+edition = "2021"
+rust-version = "1.85"
+
+[lib]
+name = "boilerplate_mobile_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2.0", features = [] }
+
+[dependencies]
+tauri = { version = "2.0", features = [] }
+tauri-plugin-shell = "2.0"
+tauri-plugin-notification = "2.0"
+tauri-plugin-log = "2.0"
+tauri-plugin-store = "2.0"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+tracing = "0.1"
+anyhow = "1.0"
+sqlx = { version = "0.8", features = ["sqlite", "runtime-tokio", "macros"] }
+tokio = { version = "1.43", features = ["full"] }
+rand = "0.8"
+hex = "0.4"
+uuid = { version = "1.0", features = ["v7"] }
+time = { version = "0.3", features = ["serde"] }
+
+# Shared internal crates
+application = { path = "../../../crates/application" }
+database = { path = "../../../crates/database" }
+auth = { path = "../../../crates/auth" }
+domain = { path = "../../../crates/domain" }
+
+# Reusing desktop commands (or I'll copy them to a shared place later)
+# For now, I'll copy them to apps/mobile to follow the roadmap strictly

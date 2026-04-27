@@ -17,6 +17,8 @@ pub struct User {
     pub name: Option<String>,
     pub is_active: bool,
     pub email_verified_at: Option<OffsetDateTime>,
+    pub last_login_at: Option<OffsetDateTime>,
+    pub created_by: Option<UserId>,
     pub created_at: OffsetDateTime,
     pub updated_at: OffsetDateTime,
     pub deleted_at: Option<OffsetDateTime>, // Soft Delete (ADR 0006)
@@ -38,6 +40,8 @@ impl User {
             name,
             is_active: true,
             email_verified_at: None,
+            last_login_at: None,
+            created_by: None,
             created_at: now,
             updated_at: now,
             deleted_at: None,

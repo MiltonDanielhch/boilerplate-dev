@@ -31,4 +31,7 @@ pub trait SessionRepository: Send + Sync {
 
     /// Limpia sesiones expiradas (job de mantenimiento).
     fn cleanup_expired(&self, before: OffsetDateTime) -> impl Future<Output = Result<u64, DomainError>> + Send;
+
+    /// Lista todas las sesiones activas del sistema (admin).
+    fn list_all(&self, limit: i64, offset: i64) -> impl Future<Output = Result<Vec<Session>, DomainError>> + Send;
 }

@@ -22,6 +22,7 @@
 	import { ChevronLeft, ChevronRight, Search, Trash2, RefreshCw } from "lucide-svelte";
 	import { listUsers, softDeleteUser, restoreUser } from "$lib/api/users";
 	import { PermissionGate } from "$lib/components/ui/permission-gate";
+	import UserEditDrawer from "./UserEditDrawer.svelte";
 	import type { User } from "$lib/types/user";
 
 	// Estado
@@ -29,10 +30,21 @@
 	let loading = $state(true);
 	let error = $state<string | null>(null);
 	let search = $state("");
+	let selectedRole = $state<string>("");
+	let statusFilter = $state<string>("all");
 	let page = $state(1);
 	let perPage = $state(10);
 	let total = $state(0);
 	let totalPages = $derived(Math.ceil(total / perPage));
+
+	// Drawer
+	let selectedUser = $state<User | null>(null);
+	let isDrawerOpen = $state(false);
+
+	function openEdit(user: User) {
+		selectedUser = user;
+		isDrawerOpen = true;
+	}
 
 	// Cargar usuarios
 	async function loadUsers() {
@@ -42,7 +54,9 @@
 			const result = await listUsers({
 				page,
 				perPage,
-				search: search || undefined
+				search: search || undefined,
+				role: selectedRole || undefined,
+				isActive: statusFilter === "all" ? undefined : statusFilter === "active"
 			});
 			users = result.users;
 			total = result.total;
@@ -107,18 +121,42 @@
 	</Card.Header>
 	<Card.Content>
 		<!-- Search -->
-		<div class="flex gap-2 mb-4">
-			<Input
-				type="search"
-				placeholder="Search users..."
-				bind:value={search}
-				onkeydown={(e) => e.key === "Enter" && handleSearch()}
-				class="max-w-sm"
-			/>
+		<div class="flex flex-wrap gap-4 mb-6">
+			<div class="flex-1 min-w-[200px]">
+				<Input
+					type="search"
+					placeholder="Search email or name..."
+					bind:value={search}
+					onkeydown={(e) => e.key === "Enter" && handleSearch()}
+				/>
+			</div>
+			
+			<select 
+				bind:value={selectedRole} 
+				onchange={handleSearch}
+				class="bg-background border rounded px-3 py-2 text-sm focus:ring-2 focus:ring-primary outline-none"
+			>
+				<option value="">All Roles</option>
+				<option value="admin">Admin</option>
+				<option value="user">User</option>
+				<option value="moderator">Moderator</option>
+			</select>
+
+			<select 
+				bind:value={statusFilter} 
+				onchange={handleSearch}
+				class="bg-background border rounded px-3 py-2 text-sm focus:ring-2 focus:ring-primary outline-none"
+			>
+				<option value="all">All Status</option>
+				<option value="active">Active Only</option>
+				<option value="inactive">Inactive Only</option>
+			</select>
+
 			<Button variant="secondary" onclick={handleSearch}>
 				<Search class="h-4 w-4 mr-2" />
-				Search
+				Filter
 			</Button>
+			
 			<Button variant="outline" onclick={loadUsers}>
 				<RefreshCw class="h-4 w-4 mr-2" />
 				Refresh
@@ -148,60 +186,77 @@
 				No users found
 			</div>
 		{:else}
-			<Table>
-				<TableHeader>
-					<TableRow>
-						<TableHead>Email</TableHead>
-						<TableHead>Name</TableHead>
-						<TableHead>Status</TableHead>
-						<TableHead>Created</TableHead>
-						<TableHead class="text-right">Actions</TableHead>
-					</TableRow>
-				</TableHeader>
-				<TableBody>
-					{#each users as user (user.id)}
-						<TableRow class={user.deletedAt ? "opacity-50" : ""}>
-							<TableCell>{user.email}</TableCell>
-							<TableCell>{user.name ?? "—"}</TableCell>
-							<TableCell>
-								{#if user.deletedAt}
-									<Badge variant="destructive">Deleted</Badge>
-								{:else if user.isActive}
-									<Badge variant="default">Active</Badge>
-								{:else}
-									<Badge variant="secondary">Inactive</Badge>
-								{/if}
-							</TableCell>
-							<TableCell>
-								{new Date(user.createdAt).toLocaleDateString()}
-							</TableCell>
-							<TableCell class="text-right">
-								{#if user.deletedAt}
+			<div class="overflow-x-auto">
+				<Table>
+					<TableHeader>
+						<TableRow>
+							<TableHead>User</TableHead>
+							<TableHead>Role</TableHead>
+							<TableHead>Status</TableHead>
+							<TableHead>Last Login</TableHead>
+							<TableHead class="text-right">Actions</TableHead>
+						</TableRow>
+					</TableHeader>
+					<TableBody>
+						{#each users as user (user.id)}
+							<TableRow class={user.deletedAt ? "opacity-50" : ""}>
+								<TableCell>
+									<div class="font-medium">{user.name ?? "—"}</div>
+									<div class="text-xs text-muted-foreground">{user.email}</div>
+								</TableCell>
+								<TableCell>
+									<Badge variant="outline" class="capitalize">{user.role}</Badge>
+								</TableCell>
+								<TableCell>
+									{#if user.deletedAt}
+										<Badge variant="destructive">Deleted</Badge>
+									{:else if user.isActive}
+										<Badge variant="default" class="bg-emerald-500 hover:bg-emerald-600">Active</Badge>
+									{:else}
+										<Badge variant="secondary">Inactive</Badge>
+									{/if}
+								</TableCell>
+								<TableCell class="text-xs">
+									{user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleString() : "Never"}
+								</TableCell>
+<TableCell class="text-right">
 									<PermissionGate permission="users:write">
 										<Button
 											variant="outline"
 											size="sm"
-											onclick={() => handleRestore(user.id)}
+											onclick={() => openEdit(user)}
 										>
-											Restore
+											Edit
 										</Button>
 									</PermissionGate>
-								{:else}
-									<PermissionGate permission="users:delete">
-										<Button
-											variant="destructive"
-											size="sm"
-											onclick={() => handleDelete(user.id)}
-										>
-											<Trash2 class="h-4 w-4" />
-										</Button>
-									</PermissionGate>
-								{/if}
-							</TableCell>
-						</TableRow>
-					{/each}
-				</TableBody>
-			</Table>
+
+									{#if user.deletedAt}
+										<PermissionGate permission="users:write">
+											<Button
+												variant="outline"
+												size="sm"
+												onclick={() => handleRestore(user.id)}
+											>
+												Restore
+											</Button>
+										</PermissionGate>
+									{:else}
+										<PermissionGate permission="users:delete">
+											<Button
+												variant="destructive"
+												size="sm"
+												onclick={() => handleDelete(user.id)}
+											>
+												<Trash2 class="h-4 w-4" />
+											</Button>
+										</PermissionGate>
+									{/if}
+								</TableCell>
+							</TableRow>
+						{/each}
+					</TableBody>
+				</Table>
+			</div>
 
 			<!-- Pagination -->
 			<div class="flex items-center justify-between mt-4">
@@ -233,3 +288,9 @@
 		{/if}
 	</Card.Content>
 </Card.Root>
+
+<UserEditDrawer 
+	bind:open={isDrawerOpen} 
+	user={selectedUser} 
+	onUpdated={loadUsers} 
+/>

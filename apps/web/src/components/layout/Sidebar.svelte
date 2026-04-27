@@ -12,16 +12,25 @@
 <script lang="ts">
 	import { cn } from "$lib/utils.js";
 	import Button from "$lib/components/ui/button/button.svelte";
-	import { ChevronLeft, ChevronRight, LayoutDashboard, Users, Settings, LogOut, Shield, ClipboardList } from "lucide-svelte";
+	import { ChevronLeft, ChevronRight, LayoutDashboard, Users, Settings, LogOut, Shield, ClipboardList, MousePointerClick, FileEdit } from "lucide-svelte";
 	import { authStore } from "$lib/stores/auth.svelte";
 	import { logout } from "$lib/api/auth";
-	import { get } from "svelte/store";
 	import * as m from "$lib/paraglide/messages.js";
 	import { isTauri } from "$lib/tauri";
 
 	let { class: className }: { class?: string } = $props();
 
 	let collapsed = $state(false);
+	let mobileOpen = $state(false);
+	
+	// Estado local del usuario para reactividad
+	let currentUser = $state(authStore.user);
+
+	// Sincronizar cuando authStore.user cambie
+	$effect(() => {
+		// Este effect se re-ejecuta cuando authStore.user cambia
+		currentUser = authStore.user;
+	});
 
 	// Cargar estado del sidebar desde localStorage
 	$effect(() => {
@@ -50,19 +59,23 @@
 	const allMenuItems: MenuItem[] = [
 		{ icon: LayoutDashboard, label: m.sidebar_dashboard(), href: "/dashboard" },
 		{ icon: Users, label: m.sidebar_users(), href: "/dashboard/users", permission: "users:read" },
-		{ icon: ClipboardList, label: m.sidebar_audit(), href: "/dashboard/audit", permission: "audit:read" },
+		
+		// Admin Section
+		{ icon: MousePointerClick, label: "Leads", href: "/admin/leads", permission: "admin:read" },
+		{ icon: FileEdit, label: "CMS Content", href: "/admin/content", permission: "admin:read" },
+		{ icon: Settings, label: "Settings", href: "/dashboard/settings", permission: "admin:read" },
+		{ icon: ClipboardList, label: "Audit Logs", href: "/admin/audit", permission: "audit:read" },
+		{ icon: Shield, label: "Security Control", href: "/admin/security", permission: "admin:read" },
+		
 		{ icon: Shield, label: m.sidebar_roles(), href: "/dashboard/roles", permission: "roles:read" },
-		{ icon: Settings, label: m.sidebar_settings(), href: "/dashboard/settings" },
 	];
 
-	// Filtrar items según permisos del usuario
+	// Filtrar items según permisos
 	const menuItems = $derived(
 		allMenuItems.filter(item => {
 			if (!item.permission) return true;
-			// Si auth no está inicializado, mostrar todos los items con permisos
-			const user = get(authStore.userStore);
-			if (!user) return true;
-			return authStore.hasPermission(item.permission);
+			if (!currentUser) return true;
+			return currentUser.permissions?.includes(item.permission) ?? false;
 		})
 	);
 	
@@ -79,6 +92,21 @@
 		}
 	}
 
+	// Listen for mobile toggle events
+	$effect(() => {
+		if (typeof document !== 'undefined') {
+			const handler = () => {
+				mobileOpen = !mobileOpen;
+			};
+			document.addEventListener('sidebar-mobile-toggle', handler);
+			return () => document.removeEventListener('sidebar-mobile-toggle', handler);
+		}
+	});
+
+	function closeMobile() {
+		mobileOpen = false;
+	}
+
 	async function handleLogout() {
 		try {
 			await logout();
@@ -91,9 +119,21 @@
 	}
 </script>
 
+<!-- Overlay para móvil -->
+{#if mobileOpen}
+	<!-- svelte-ignore a11y_click_events_have_key_events -->
+	<!-- svelte-ignore a11y_no_static_element_interactions -->
+	<div 
+		class="fixed inset-0 z-40 bg-background/80 backdrop-blur-sm lg:hidden"
+		onclick={closeMobile}
+	></div>
+{/if}
+
 <aside
 	class={cn(
-		"fixed left-0 top-0 z-40 h-screen border-r bg-sidebar transition-all duration-300",
+		"fixed left-0 top-0 z-50 h-screen border-r bg-sidebar transition-all duration-300",
+		"lg:translate-x-0", // Siempre visible en desktop
+		mobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0", // Mostrar/ocultar en móvil
 		collapsed ? "w-16" : "w-64",
 		className
 	)}
@@ -109,23 +149,28 @@
 					{/if}
 				</div>
 			{/if}
-			<Button variant="ghost" size="icon" onclick={toggleSidebar} class="ml-auto">
+			<Button variant="ghost" size="icon" onclick={toggleSidebar} class="ml-auto hidden lg:flex">
 				{#if collapsed}
 					<ChevronRight class="h-4 w-4" />
 				{:else}
 					<ChevronLeft class="h-4 w-4" />
 				{/if}
 			</Button>
+			<!-- Botón de cerrar para móvil -->
+			<Button variant="ghost" size="icon" onclick={closeMobile} class="ml-auto lg:hidden">
+				<ChevronLeft class="h-4 w-4" />
+			</Button>
 		</div>
 		
 		<!-- Navigation -->
-		<nav class="flex-1 space-y-1 p-2">
+		<nav class="flex-1 space-y-1 p-2 overflow-y-auto">
 			{#each menuItems as item}
 				{#if collapsed}
 					<a
 						href={item.href}
 						class="flex h-10 w-full items-center justify-center rounded-md hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors"
 						title={item.label}
+						onclick={closeMobile}
 					>
 						<item.icon class="h-5 w-5" />
 					</a>
@@ -133,6 +178,7 @@
 					<a
 						href={item.href}
 						class="flex h-9 w-full items-center gap-3 rounded-md px-3 py-2 text-sm hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors"
+						onclick={closeMobile}
 					>
 						<item.icon class="h-5 w-5" />
 						{item.label}

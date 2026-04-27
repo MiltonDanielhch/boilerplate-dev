@@ -9,8 +9,11 @@
 
 <script lang="ts">
 	import { authStore } from "$lib/stores/auth.svelte";
+	import { onMount } from "svelte";
 
-	authStore.initFromStorage();
+	onMount(() => {
+		authStore.initFromStorage();
+	});
 </script>
 
 <!-- Este componente no renderiza nada visible -->

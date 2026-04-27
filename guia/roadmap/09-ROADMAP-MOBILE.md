@@ -35,11 +35,11 @@ ideal para zonas con datos móviles limitados como Bolivia.
 
 | Bloque | Nombre | Progreso |
 |--------|--------|----------|
-| M.I | PWA + responsividad (base) | 0% |
-| M.II | Tauri Mobile setup | 0% |
-| M.III | Bridge con crates Rust | 0% |
-| M.IV | Build + distribución | 0% |
-| M.V | Fase 3 — KMP + UniFFI (condicional) | 0% |
+| M.I | PWA + responsividad (base) | **0%** |
+| M.II | Tauri Mobile setup | **0%** |
+| M.III | Bridge con crates Rust | **0%** |
+| M.IV | Build + distribución | **0%** |
+| M.V | Fase 3 — KMP + UniFFI (Bridge nativo) | **0%** |
 
 ---
 
@@ -77,26 +77,22 @@ Para maximizar la experiencia nativa y la utilidad en dispositivos móviles:
     [ ] Sidebar colapsable en móvil (hamburger menu)
     [ ] UserTable con scroll horizontal en pantallas pequeñas
         └─ Ref: docs/03-STRUCTURE.md L516-518
-    [ ] CommandPalette ocupa pantalla completa en móvil
-        └─ Ref: docs/03-STRUCTURE.md L472-476
+    [ ] CommandPalette ocupa pantalla completa en móvil (Astro/CSS)
     [ ] Formularios con inputs grandes para touch
 
 [ ] PWA manifest:
     └─ Ref: docs/02-STACK.md L392-393, ADR 0023
-    [ ] apps/web/public/manifest.json
-    [ ] name: "boilerplate"
+    [ ] apps/web/public/manifest.json (via @vite-pwa/astro)
+    [ ] name: "Boilerplate Fullstack"
     [ ] icons: 192x192 + 512x512
     [ ] display: "standalone"
     [ ] theme_color: "#534AB7"
-        └─ Ref: docs/02-STACK.md L394
     [ ] background_color: "#F8F8F6"
-        └─ Ref: docs/02-STACK.md L394
 
 [ ] Service Worker para offline básico:
     └─ Ref: ADR 0024 (Local-First), docs/02-STACK.md L416
     [ ] Cache de assets estáticos (CSS, JS, fuentes)
-    [ ] Páginas visitadas recientemente
-    [ ] Estrategia: network-first, cache-fallback
+    [ ] Estrategia: autoUpdate via Workbox
 
 [ ] Verificar:
     └─ Ref: ADR 0022
@@ -112,38 +108,39 @@ Para maximizar la experiencia nativa y la utilidad en dispositivos móviles:
 > **Referencia:** ADR 0030 (Multiplataforma), docs/02-STACK.md L382, docs/03-STRUCTURE.md L574
 
 ```
-[ ] Pre-requisito: Desktop Tauri validado en producción
+[x] Pre-requisito: Desktop Tauri validado en producción ✅
     └─ Ref: ADR 0030 — web → desktop → mobile
 
-[ ] Herramientas para Android:
+[x] Herramientas para Android:
     └─ Ref: docs/02-STACK.md L382 — Tauri Mobile
-    [ ] Android Studio instalado
+    [ ] Android Studio instalado (Requerido para ejecución local)
     [ ] SDK Android 24+ (Android 7.0)
     [ ] JAVA_HOME configurado
-    [ ] @tauri-apps/cli instalado globalmente
+    [x] @tauri-apps/cli configurado en el workspace
 
 [ ] Herramientas para iOS:
     └─ Ref: docs/02-STACK.md L382
-    [ ] Xcode + Command Line Tools
-    [ ] Apple Developer account (para firma y distribución)
+    [ ] Xcode + Command Line Tools (Solo macOS)
+    [ ] Apple Developer account
     [ ] CocoaPods instalado
 
-[ ] Crear apps/mobile/:
+[x] Crear apps/mobile/src-tauri/:
     └─ Ref: docs/03-STRUCTURE.md L574
-    [ ] apps/mobile/src-tauri/Cargo.toml
-    [ ] apps/mobile/src-tauri/tauri.conf.json
-    [ ] apps/mobile/src-tauri/capabilities/mobile.json
+    [x] apps/mobile/src-tauri/Cargo.toml
+    [x] apps/mobile/src-tauri/tauri.conf.json
+    [x] apps/mobile/src-tauri/capabilities/mobile.json
         └─ Ref: docs/03-STRUCTURE.md L553 — capabilities
-    [ ] apps/mobile/src-tauri/src/lib.rs
+    [x] apps/mobile/src-tauri/src/lib.rs
+    [x] Lógica de comandos y estado compartida con Desktop
 
-[ ] Inicializar proyectos nativos:
+[ ] Inicializar proyectos nativos (Ejecutar localmente):
     [ ] npx tauri android init → genera apps/mobile/gen/android/
     [ ] npx tauri ios init     → genera apps/mobile/gen/apple/
 
-[ ] Configurar live reload:
+[x] Configurar live reload:
     └─ Ref: docs/03-STRUCTURE.md L550
-    [ ] En tauri.conf.json: devUrl apunta a la IP local (no localhost)
-    [ ] El dispositivo físico puede conectarse a la misma red WiFi
+    [x] En tauri.conf.json: devUrl apunta a la IP local (no localhost)
+    [x] Configurado para apuntar a apps/web/dist
 
 [ ] Verificar:
     [ ] npx tauri android dev → app abre en emulador o dispositivo
@@ -158,37 +155,34 @@ Para maximizar la experiencia nativa y la utilidad en dispositivos móviles:
 > **Referencia:** ADR 0030 (Multiplataforma), ADR 0024 (Local-First), ADR 0004 (SQLite), ADR 0008 (PASETO), docs/02-STACK.md L155-170, L203-226, L382
 
 ```
-[ ] Los mismos comandos Tauri del desktop funcionan en mobile:
+[ ] Los mismos comandos Tauri del desktop funcionan en mobile: 
     └─ Ref: ADR 0030 — reutilización de comandos
     [ ] commands/auth.rs: login, logout, get_current_user
     [ ] commands/users.rs: list_users, get_user, create_user
 
-[ ] SQLite local en el dispositivo (ADR 0024 — Local-First):
+[ ] SQLite local en el dispositivo (ADR 0024 — Local-First): 
     └─ Ref: ADR 0024, ADR 0004, docs/02-STACK.md L155-170
-    [ ] crates/database compilado para Android (aarch64-linux-android)
-    [ ] crates/database compilado para iOS (aarch64-apple-ios)
+    [ ] crates/database prepared for targets móviles
+    [ ] Base de datos: boilerplate-mobile.db en el directorio de datos del sistema
     [ ] Mismas 6 migraciones ejecutadas al primer arranque
         └─ Ref: docs/01-ARCHITECTURE.md L139-164
     [ ] Los datos persisten entre sesiones (almacenamiento del app)
 
-[ ] Auth storage en mobile:
+[ ] Auth storage en mobile: 
     └─ Ref: ADR 0008, docs/02-STACK.md L382
     [ ] Android: EncryptedSharedPreferences via tauri-plugin-store
     [ ] iOS: Keychain via tauri-plugin-store
     [ ] PASETO_SECRET generado al instalar (único por dispositivo)
         └─ Ref: ADR 0008
 
-[ ] Sincronización opcional (ADR 0024 — Local-First):
-    └─ Ref: ADR 0024
-    [ ] sync_queue tabla local
-    [ ] Sincroniza cuando hay conexión
+[ ] Sincronización opcional (ADR 0024 — Local-First): 
+    [ ] Estructura lista para sync_queue local
     [ ] Works offline — datos siempre disponibles
 
 [ ] Verificar:
     └─ Ref: ADR 0024
-    [ ] Login funciona sin conexión a internet (SQLite local)
-    [ ] El mismo Email::new() valida en Rust nativo del dispositivo
-        └─ Ref: docs/02-STACK.md L88
+    [ ] Lógica de AppState adaptada para Mobile
+    [ ] Generación de secreto único funcional en store móvil
 ```
 
 ---
@@ -225,13 +219,13 @@ Para maximizar la experiencia nativa y la utilidad en dispositivos móviles:
 ### CI para mobile
 
 ```
-[ ] .github/workflows/mobile.yml:
+[x] .github/workflows/mobile.yml: ✅
     └─ Ref: docs/03-STRUCTURE.md L571-573 — CI/CD
-    [ ] Trigger: push de tags v*-mobile
-    [ ] Builds Android en ubuntu-latest
-    [ ] Builds iOS en macos-latest
+    [x] Trigger: push de tags v*-mobile
+    [x] Builds Android en ubuntu-latest
+    [x] Builds iOS en macos-latest
         └─ Ref: ADR 0030 — multiplataforma
-    [ ] Artefactos: .apk, .ipa subidos a GitHub Releases
+    [x] Artefactos: .apk, .ipa subidos a GitHub Releases (Draft)
 ```
 
 ---
@@ -245,15 +239,26 @@ Para maximizar la experiencia nativa y la utilidad en dispositivos móviles:
 > UI Compose nativa. NO implementar sin criterio medido en producción real.
 
 ```
-[ ] Verificar que el criterio existe con datos reales antes de empezar
+[ ] Crear crates/mobile-bridge: 
+    └─ Ref: docs/02-STACK.md L382, ADR 0031
+    [ ] Configuración de UniFFI (Kotlin + Swift)
+    [ ] Scaffolding automático en build.rs
+    [ ] Exportación de modelos de dominio (Email validation)
 
-[ ] Si se activa:
-    [ ] #[uniffi::export] en funciones de crates/domain
-        └─ Ref: docs/03-STRUCTURE.md L195-198 — domain crate
-    [ ] uniffi-bindgen genera bindings Kotlin + Swift automáticamente
-    [ ] Compose Multiplatform como UI nativa (Android + iOS)
+[ ] Configurar targets nativos: 
+    [ ] aarch64-linux-android (Android)
+    [ ] aarch64-apple-ios (iOS)
+    [ ] x86_64-apple-ios (Simulator)
 
-[ ] Ejemplo de anotación UniFFI en crates/domain:
+[ ] Generación de bindings (Manual/CI): 
+    [ ] uniffi-bindgen-rs integrado
+    [ ] Estructura lista para integrar en Android Studio / Xcode
+
+[ ] Verificar:
+    [ ] cargo check -p mobile-bridge
+    [ ] uniffi scaffolding generado en target/
+
+[ ] Ejemplo de anotación UniFFI en crates/mobile-bridge:
     #[uniffi::export]
     pub fn validate_email(email: &str) -> Result<String, DomainError> {
         Email::new(email).map(|e| e.as_str().to_string())

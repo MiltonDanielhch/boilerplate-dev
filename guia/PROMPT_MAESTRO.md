@@ -8,7 +8,7 @@
 |---------|-----------|-------------|
 | **Prompt Maestro** | `guia/PROMPT_MAESTRO.md` | Este archivo — contexto global del proyecto |
 | **Roadmap Master** | `guia/roadmap/01-ROADMAP-MASTER.md` | Índice de todas las fases y orden de ejecución |
-| **Roadmap Actual** | `guia/roadmap/02-ROADMAP-GENESIS.md` | ← **FASE ACTIVA** — arranque del workspace |
+| **Roadmap Actual** | `guia/roadmap/09-ROADMAP-MOBILE.md` | ← **FASE ACTIVA** — Tauri Mobile + KMP |
 | **Stack Tecnológico** | `guia/docs/02-STACK.md` | Versiones de crates y herramientas |
 | **Arquitectura** | `guia/docs/01-ARCHITECTURE.md` | Flujos y capas hexagonales |
 | **Estructura** | `guia/docs/03-STRUCTURE.md` | Árbol de directorios del monorepo |
@@ -33,14 +33,14 @@
 | ✅ **Auth Fullstack** | `05-ROADMAP-AUTH-FULLSTACK.md` | **COMPLETADO** | 100% | $5 |
 | ✅ **Landing** | `06-ROADMAP-LANDING.md` | **COMPLETADO** | 90% | $5 |
 | ✅ **Infra** | `07-ROADMAP-INFRA.md` | **COMPLETADO** | 100% | $5 |
-| 🔄 **Desktop** | `08-ROADMAP-TAURI-DESKTOP.md` | **25%** | 25% | $5 |
-| ⏳ **Mobile** | `09-ROADMAP-MOBILE.md` | Pendiente | 0% | $5 |
-| ⏳ **Admin** | `80-ROADMAP-ADMIN.md` | Post-MVP | 0% | $5 |
+| ✅ **Desktop** | `08-ROADMAP-TAURI-DESKTOP.md` | **COMPLETADO** | 100% | $5 |
+| ✅ **Mobile** | `09-ROADMAP-MOBILE.md` | **EN MARCHA** | 0% | $5 |
+| ✅ **Admin** | `80-ROADMAP-ADMIN.md` | **COMPLETADO** | 100% | $5 |
 | ⏳ **Fase 2** | `50-ROADMAP-FASE2.md` | Post-MVP | 0% | $10-20 |
 | ⏳ **Fase 3** | `60-ROADMAP-FASE3.md` | Post-MVP | 0% | No $5 |
 | ⏳ **Futura** | `70-ROADMAP-FUTURA.md` | Post-MVP | 0% | $40-500 |
 
-**MVP COMPLETO - Desktop Tauri 2.0 EN DESARROLLO** 🎉
+**MVP COMPLETO - Web + Desktop + Admin OK - Mobile EN DESARROLLO** 🎉
 
 **Leyenda:** ✅ Completado | 🔄 Activo | ⏳ Pendiente | 🟡 Opcional
 
@@ -63,8 +63,8 @@
 - **Manejo de errores**: DomainError → AppError → IntoResponse HTTP
 - **Landing page**: captura de leads (entidad Lead separada de User)
 - **Sintonía CLI**: scaffolding (Fase 2 — después de 3 módulos a mano)
-- **Tauri 2.0**: Desktop (Fase 1 — **EN DESARROLLO**)
-- **Tauri Mobile + KMP**: (Fase 3 — después del Desktop validado)
+- **Tauri 2.0**: Desktop (Fase 1 — **COMPLETADO**)
+- **Tauri Mobile + KMP**: (Fase 3 — **EN MARCHA**)
 
 ## Tu Misión
 
@@ -79,7 +79,7 @@
 
 **Proyecto**: boilerplate  
 **Arquitectura**: Monorepo Rust + Hexagonal (Fronteras por Cargo.toml)  
-**Fase actual**: `Infra COMPLETA` —listed for deploy
+**Fase actual**: `Desktop COMPLETO` — iniciando Mobile (Tauri Mobile)
 
 ### ✅ Estado Actual del Backend (Completado)
 
@@ -183,21 +183,21 @@
 - ✅ Logout completo con revocación de tokens
 - [ ] Tests E2E (post-MVP)
 
-**Landing Page (ACTIVA 86%)**
+**Landing Page (COMPLETADA 100%)**
 - ✅ L.1 Dominio + DB (entidad Lead)
 - ✅ L.2 Endpoint backend (POST /api/v1/leads)
 - ✅ L.3 Layout + estructura (Astro)
 - ✅ L.4 Contenido y secciones (Hero, Features, CTA)
 - ✅ L.5 Formulario de leads (Svelte + validación + honeypot)
 - ✅ L.6 SEO + performance (sitemap, Open Graph, client:visible)
-- [ ] L.7 Tests + deploy (opcional)
-- ✅ L.1 Dominio + DB (entidad Lead)
-- ✅ L.2 Endpoint backend (POST /api/v1/leads)
-- [ ] L.3 Layout + estructura (Astro)
-- [ ] L.4 Contenido y secciones (Hero, Features, CTA)
-- [ ] L.5 Formulario de leads (Svelte + validación)
-- [ ] L.6 SEO + performance (meta tags, optimización)
-- [ ] L.7 Tests + deploy (Playwright)
+- ✅ L.7 Tests + deploy (Playwright / manual)
+
+**Admin Dashboard (COMPLETADO 100%)**
+- ✅ AD.1-2 User Management (Impersonation, Roles, CRUD)
+- ✅ AD.3 Content Management (CMS Blocks)
+- ✅ AD.4 Analytics (Charts, KPIs, Growth trends)
+- ✅ AD.5 System Settings (Global Config UI, Feature Flags)
+- ✅ AD.6 Security & Audit (Filtered Logs, Session Revocation)
 
 ### Stack Backend
 
@@ -498,16 +498,16 @@ Proyecto nuevo — empezar desde Génesis
 
 ## Cómo proseguir desde esta sesión
 
-**Último avance:** Desktop Tauri 2.0 EN DESARROLLO!
+**Último avance:** Admin Dashboard COMPLETADO al 100%. Iniciando Mobile.
 
-**MVP COMPLETO - WEB + DESKTOP EN MARCHA**
+**MVP COMPLETO - WEB + DESKTOP + ADMIN OK - INICIANDO MOBILE**
 
 **Estado actual:**
-- D.I Setup inicial: EN PROGRESO (preparando workspace)
+- M.I Setup Mobile: INICIANDO (Preparando responsividad, PWA y Tauri Mobile)
 
 **Comandos para continuar:**
 ```bash
-# Iniciar desarrollo frontend
+# Iniciar desarrollo frontend (móvil responsivo)
 cd apps/web && pnpm dev
 
 # Backend en otra terminal
@@ -517,4 +517,5 @@ cd apps/api && cargo run
 **URLs de prueba:**
 - Landing: http://localhost:4321/
 - Dashboard: http://localhost:4321/dashboard
+- Admin Dashboard: http://localhost:4321/admin
 - Login: http://localhost:4321/login

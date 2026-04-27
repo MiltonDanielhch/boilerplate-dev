@@ -132,8 +132,31 @@ impl UserRepository for CachedUserRepository {
         self.inner.get_permissions(user_id).await
     }
 
-    async fn list(&self, limit: i64, offset: i64) -> Result<Vec<User>, DomainError> {
-        self.inner.list(limit, offset).await
+    async fn has_role(&self, user_id: &UserId, role: &str) -> Result<bool, DomainError> {
+        self.inner.has_role(user_id, role).await
+    }
+
+    async fn assign_role(&self, user_id: &UserId, role_name: &str) -> Result<(), DomainError> {
+        self.inner.assign_role(user_id, role_name).await
+    }
+
+    async fn remove_role(&self, user_id: &UserId, role_name: &str) -> Result<(), DomainError> {
+        self.inner.remove_role(user_id, role_name).await
+    }
+
+    async fn list(
+        &self, 
+        limit: i64, 
+        offset: i64,
+        search: Option<String>,
+        role: Option<String>,
+        is_active: Option<bool>
+    ) -> Result<Vec<User>, DomainError> {
+        self.inner.list(limit, offset, search, role, is_active).await
+    }
+
+    async fn get_counts_by_date(&self, days: i64) -> Result<Vec<(String, i64)>, DomainError> {
+        self.inner.get_counts_by_date(days).await
     }
 }
 

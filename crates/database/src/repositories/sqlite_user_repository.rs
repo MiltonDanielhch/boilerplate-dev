@@ -41,6 +41,13 @@ impl SqliteUserRepository {
 
         // Construir User manualmente (no usamos User::new porque ya existe)
         // Usamos serde o manual construction
+        let created_by = match row.created_by {
+            Some(uuid_str) => Some(UserId::parse(&uuid_str).map_err(|_| DomainError::Internal(
+                format!("created_by UUID corrupto en DB: {}", uuid_str)
+            ))?),
+            None => None,
+        };
+
         Ok(User {
             id,
             email,
@@ -48,6 +55,8 @@ impl SqliteUserRepository {
             name: row.name,
             is_active: row.is_active,
             email_verified_at: row.email_verified_at,
+            last_login_at: row.last_login_at,
+            created_by,
             created_at: row.created_at,
             updated_at: row.updated_at,
             deleted_at: row.deleted_at,
@@ -60,7 +69,8 @@ impl UserRepository for SqliteUserRepository {
         let row = sqlx::query_as::<_, UserRow>(
             r#"
             SELECT id, email, password_hash, name, is_active,
-                   email_verified_at, created_at, updated_at, deleted_at
+                   email_verified_at, last_login_at, created_by,
+                   created_at, updated_at, deleted_at
             FROM users
             WHERE id = ?
             "#
@@ -81,7 +91,8 @@ impl UserRepository for SqliteUserRepository {
         let row = sqlx::query_as::<_, UserRow>(
             r#"
             SELECT id, email, password_hash, name, is_active,
-                   email_verified_at, created_at, updated_at, deleted_at
+                   email_verified_at, last_login_at, created_by,
+                   created_at, updated_at, deleted_at
             FROM users
             WHERE email = ?
               AND deleted_at IS NULL
@@ -102,14 +113,17 @@ impl UserRepository for SqliteUserRepository {
         sqlx::query(
             r#"
             INSERT INTO users (id, email, password_hash, name, is_active,
-                             email_verified_at, created_at, updated_at, deleted_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                             email_verified_at, last_login_at, created_by,
+                             created_at, updated_at, deleted_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(id) DO UPDATE SET
                 email = excluded.email,
                 password_hash = excluded.password_hash,
                 name = excluded.name,
                 is_active = excluded.is_active,
                 email_verified_at = excluded.email_verified_at,
+                last_login_at = excluded.last_login_at,
+                created_by = excluded.created_by,
                 updated_at = excluded.updated_at,
                 deleted_at = excluded.deleted_at
             "#
@@ -120,6 +134,8 @@ impl UserRepository for SqliteUserRepository {
         .bind(&user.name)
         .bind(user.is_active)
         .bind(user.email_verified_at)
+        .bind(user.last_login_at)
+        .bind(user.created_by.as_ref().map(|id| id.to_string()))
         .bind(user.created_at)
         .bind(user.updated_at)
         .bind(user.deleted_at)
@@ -214,26 +230,157 @@ impl UserRepository for SqliteUserRepository {
         Ok(permissions)
     }
 
-    async fn list(&self, limit: i64, offset: i64) -> Result<Vec<User>, DomainError> {
-        let rows = sqlx::query_as::<_, UserRow>(
+    async fn has_role(&self, user_id: &UserId, role: &str) -> Result<bool, DomainError> {
+        let count: i64 = sqlx::query_scalar(
             r#"
-            SELECT id, email, password_hash, name, is_active,
-                   email_verified_at, created_at, updated_at, deleted_at
-            FROM users
-            WHERE deleted_at IS NULL
-            ORDER BY created_at DESC
-            LIMIT ? OFFSET ?
+            SELECT COUNT(*) as count
+            FROM user_roles ur
+            JOIN roles r ON r.id = ur.role_id AND r.deleted_at IS NULL
+            WHERE ur.user_id = ?
+              AND r.name = ?
             "#
         )
-        .bind(limit)
-        .bind(offset)
-        .fetch_all(&self.pool)
+        .bind(user_id.to_string())
+        .bind(role)
+        .fetch_one(&self.pool)
         .await
         .map_err(|e| DomainError::Database(e.to_string()))?;
+
+        Ok(count > 0)
+    }
+
+    async fn assign_role(&self, user_id: &UserId, role_name: &str) -> Result<(), DomainError> {
+        // Buscar el ID del rol por nombre
+        let role_id: String = sqlx::query_scalar("SELECT id FROM roles WHERE name = ? AND deleted_at IS NULL")
+            .bind(role_name)
+            .fetch_optional(&self.pool)
+            .await
+            .map_err(|e| DomainError::Database(e.to_string()))?
+            .ok_or_else(|| DomainError::Internal(format!("Role '{}' not found", role_name)))?;
+
+        sqlx::query("INSERT OR IGNORE INTO user_roles (user_id, role_id) VALUES (?, ?)")
+            .bind(user_id.to_string())
+            .bind(role_id)
+            .execute(&self.pool)
+            .await
+            .map_err(|e| DomainError::Database(e.to_string()))?;
+
+        Ok(())
+    }
+
+    async fn remove_role(&self, user_id: &UserId, role_name: &str) -> Result<(), DomainError> {
+        sqlx::query(
+            r#"
+            DELETE FROM user_roles 
+            WHERE user_id = ? 
+              AND role_id IN (SELECT id FROM roles WHERE name = ?)
+            "#
+        )
+        .bind(user_id.to_string())
+        .bind(role_name)
+        .execute(&self.pool)
+        .await
+        .map_err(|e| DomainError::Database(e.to_string()))?;
+
+        Ok(())
+    }
+
+    async fn list(
+        &self, 
+        limit: i64, 
+        offset: i64,
+        search: Option<String>,
+        role: Option<String>,
+        is_active: Option<bool>
+    ) -> Result<Vec<User>, DomainError> {
+        let mut query = String::from(
+            r#"
+            SELECT DISTINCT u.id, u.email, u.password_hash, u.name, u.is_active,
+                   u.email_verified_at, u.last_login_at, u.created_by,
+                   u.created_at, u.updated_at, u.deleted_at
+            FROM users u
+            "#
+        );
+
+        if role.is_some() {
+            query.push_str("JOIN user_roles ur ON ur.user_id = u.id ");
+            query.push_str("JOIN roles r ON r.id = ur.role_id ");
+        }
+
+        query.push_str("WHERE u.deleted_at IS NULL ");
+
+        if let Some(s) = &search {
+            if !s.is_empty() {
+                query.push_str("AND (u.email LIKE ? OR u.name LIKE ?) ");
+            }
+        }
+
+        if let Some(r) = &role {
+            if !r.is_empty() {
+                query.push_str("AND r.name = ? ");
+            }
+        }
+
+        if let Some(active) = is_active {
+            if active {
+                query.push_str("AND u.is_active = TRUE ");
+            } else {
+                query.push_str("AND u.is_active = FALSE ");
+            }
+        }
+
+        query.push_str("ORDER BY u.created_at DESC LIMIT ? OFFSET ?");
+
+        let mut sql_query = sqlx::query_as::<_, UserRow>(&query);
+
+        if let Some(s) = search {
+            if !s.is_empty() {
+                let pattern = format!("%{}%", s);
+                sql_query = sql_query.bind(pattern.clone()).bind(pattern);
+            }
+        }
+
+        if let Some(r) = role {
+            if !r.is_empty() {
+                sql_query = sql_query.bind(r);
+            }
+        }
+
+        sql_query = sql_query.bind(limit).bind(offset);
+
+        let rows = sql_query
+            .fetch_all(&self.pool)
+            .await
+            .map_err(|e| DomainError::Database(e.to_string()))?;
 
         rows.into_iter()
             .map(|r| self.row_to_entity(r))
             .collect()
+    }
+
+    async fn get_counts_by_date(&self, days: i64) -> Result<Vec<(String, i64)>, DomainError> {
+        let rows = sqlx::query_as::<_, (String, i64)>(
+            r#"
+            WITH RECURSIVE dates(date) AS (
+                SELECT DATE('now', '-' || (? - 1) || ' days')
+                UNION ALL
+                SELECT DATE(date, '+1 day') FROM dates WHERE date < DATE('now')
+            )
+            SELECT 
+                d.date,
+                COUNT(u.id) as count
+            FROM dates d
+            LEFT JOIN users u ON DATE(u.created_at) = d.date AND u.deleted_at IS NULL
+            GROUP BY d.date
+            ORDER BY d.date ASC
+            "#
+        )
+        .bind(days)
+        .fetch_all(&self.pool)
+        .await
+        .map_err(|e| DomainError::Database(e.to_string()))?;
+
+        Ok(rows)
     }
 }
 

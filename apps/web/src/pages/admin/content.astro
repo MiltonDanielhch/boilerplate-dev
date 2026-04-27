@@ -1,0 +1,20 @@
+---
+// Ubicación: `apps/web/src/pages/admin/content.astro`
+// Descripción: Panel de gestión de contenido dinámico (CMS).
+
+import AdminLayout from "../../layouts/AdminLayout.astro";
+import ContentManager from "../../components/admin/ContentManager.svelte";
+---
+
+<AdminLayout title="Content Management">
+	<div class="space-y-6">
+		<div>
+			<h1 class="text-3xl font-extrabold tracking-tight text-white">CMS / Content Blocks</h1>
+			<p class="text-slate-400 mt-2">
+				Edit dynamic text and configuration blocks for the landing page and app.
+			</p>
+		</div>
+
+		<ContentManager client:load />
+	</div>
+</AdminLayout>

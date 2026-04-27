@@ -148,6 +148,24 @@ impl SessionRepository for SqliteSessionRepository {
 
         Ok(())
     }
+
+    async fn list_all(&self, limit: i64, offset: i64) -> Result<Vec<Session>, DomainError> {
+        let rows = sqlx::query_as::<_, SessionRow>(
+            r#"
+            SELECT * FROM sessions 
+            WHERE is_revoked = FALSE AND expires_at > datetime('now')
+            ORDER BY last_activity_at DESC
+            LIMIT ?1 OFFSET ?2
+            "#
+        )
+        .bind(limit)
+        .bind(offset)
+        .fetch_all(&*self.pool)
+        .await
+        .map_err(|e| DomainError::Database(e.to_string()))?;
+
+        Ok(rows.into_iter().map(Into::into).collect())
+    }
 }
 
 /// Estructura intermedia para SQLx

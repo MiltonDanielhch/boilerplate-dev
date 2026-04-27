@@ -7,8 +7,8 @@
 
 use crate::state::{AppConfig, AppState};
 use database::repositories::{
-    CachedUserRepository, SqliteAuditRepository, SqliteLeadRepository, SqliteSessionRepository,
-    SqliteUserRepository,
+    CachedUserRepository, SqliteAuditRepository, SqliteContentRepository, SqliteLeadRepository, SqliteSessionRepository,
+    SqliteSettingsRepository, SqliteUserRepository,
 };
 use sqlx::SqlitePool;
 use std::sync::Arc;
@@ -85,7 +85,9 @@ pub fn build_state(pool: SqlitePool, config: AppConfig) -> AppState {
     let cached_user_repo = CachedUserRepository::new(user_repo);
     let session_repo = SqliteSessionRepository::new(Arc::new(pool.clone()));
     let audit_repo = SqliteAuditRepository::new(pool.clone());
-    let lead_repo = SqliteLeadRepository::new(Arc::new(pool));
+    let lead_repo = SqliteLeadRepository::new(Arc::new(pool.clone()));
+    let content_repo = SqliteContentRepository::new(Arc::new(pool.clone()));
+    let settings_repo = SqliteSettingsRepository::new(Arc::new(pool));
 
     let paseto = Arc::new(PasetoService::new(&config.paseto_secret));
 
@@ -97,6 +99,8 @@ pub fn build_state(pool: SqlitePool, config: AppConfig) -> AppState {
         session_repo,
         audit_repo,
         lead_repo,
+        content_repo,
+        settings_repo,
         paseto,
     )
 }
