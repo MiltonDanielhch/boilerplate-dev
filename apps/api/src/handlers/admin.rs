@@ -52,8 +52,18 @@ pub async fn admin_me(
 /// GET /api/v1/admin/stats
 pub async fn stats(
     State(state): State<AppState>,
-    _claims: AuthClaims,
+    claims: AuthClaims,
 ) -> Result<Json<AdminStats>, ApiError> {
+    let user_id = UserId::parse(&claims.user_id)
+        .map_err(|_| ApiError::Internal("Invalid user_id in token".to_string()))?;
+    
+    // Verificar permiso admin:read
+    let permissions = state.user_repo.get_permissions(&user_id).await
+        .map_err(|e| ApiError::Internal(e.to_string()))?;
+    if !permissions.contains(&"admin:read".to_string()) {
+        return Err(ApiError::Forbidden("Missing admin:read permission".to_string()));
+    }
+    
     let use_case = GetAdminStatsUseCase::new(state.user_repo, state.lead_repo);
     let stats = use_case.execute().await?;
     Ok(Json(stats))
@@ -68,8 +78,18 @@ pub struct AnalyticsQuery {
 pub async fn analytics(
     State(state): State<AppState>,
     axum::extract::Query(query): axum::extract::Query<AnalyticsQuery>,
-    _claims: AuthClaims,
+    claims: AuthClaims,
 ) -> Result<Json<AdminAnalytics>, ApiError> {
+    let user_id = UserId::parse(&claims.user_id)
+        .map_err(|_| ApiError::Internal("Invalid user_id in token".to_string()))?;
+    
+    // Verificar permiso admin:read
+    let permissions = state.user_repo.get_permissions(&user_id).await
+        .map_err(|e| ApiError::Internal(e.to_string()))?;
+    if !permissions.contains(&"admin:read".to_string()) {
+        return Err(ApiError::Forbidden("Missing admin:read permission".to_string()));
+    }
+    
     let days = query.days.unwrap_or(30);
     let use_case = GetAdminAnalyticsUseCase::new(state.user_repo, state.lead_repo);
     let data = use_case.execute(days).await?;

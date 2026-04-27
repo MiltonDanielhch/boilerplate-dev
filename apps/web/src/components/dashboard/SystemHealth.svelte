@@ -3,6 +3,7 @@
 	import { api } from "$lib/api/client";
 	import * as Card from "$lib/components/ui/card/index.js";
 	import { Server, Database, Clock, CheckCircle, XCircle, Loader } from "lucide-svelte";
+	import { isTauri } from "$lib/tauri";
 
 	interface HealthStatus {
 		status: string;
@@ -17,6 +18,14 @@
 	async function checkHealth() {
 		dbStatus = "checking";
 		apiStatus = "checking";
+
+		// En Tauri, asumimos que todo está bien
+		if (isTauri()) {
+			dbStatus = "ok";
+			apiStatus = "ok";
+			lastCheck = new Date().toLocaleTimeString();
+			return;
+		}
 
 		try {
 			const response = await api.get<HealthStatus>("/health");

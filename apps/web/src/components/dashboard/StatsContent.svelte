@@ -11,6 +11,7 @@
 	import { onMount } from "svelte";
 	import KpiCard from "./KpiCard.svelte";
 	import { listUsers } from "$lib/api/users";
+	import { isTauri } from "$lib/tauri";
 
 	let usersTotal = $state<number | null>(null);
 	let usersLoading = $state(true);
@@ -21,6 +22,13 @@
 	let healthError = $state<Error | null>(null);
 
 	async function fetchUsers() {
+		// En Tauri, no hay API HTTP
+		if (isTauri()) {
+			usersTotal = 1;
+			usersLoading = false;
+			return;
+		}
+		
 		try {
 			usersLoading = true;
 			const result = await listUsers({ limit: 1, offset: 0 });
@@ -37,6 +45,13 @@
 	}
 
 	async function fetchHealth() {
+		// En Tauri, asumimos que está bien
+		if (isTauri()) {
+			healthData = { status: "ok" };
+			healthLoading = false;
+			return;
+		}
+		
 		try {
 			healthLoading = true;
 			const response = await fetch("http://localhost:3000/health");

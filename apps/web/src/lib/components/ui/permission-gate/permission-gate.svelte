@@ -4,16 +4,21 @@
 	interface Props {
 		permission: string;
 		children?: import("svelte").Snippet;
+		fallback?: import("svelte").Snippet;
 	}
 
-	let { permission, children }: Props = $props();
+	let { permission, children, fallback }: Props = $props();
 
 	const allowed = $derived.by(() => {
 		const user = authStore.user;
-		return user?.permissions?.includes(permission) ?? false;
+		// Si no hay usuario cargado, no mostrar nada (evita flash de contenido)
+		if (!user) return false;
+		return user.permissions?.includes(permission) ?? false;
 	});
 </script>
 
 {#if allowed}
 	{@render children?.()}
+{:else if fallback}
+	{@render fallback?.()}
 {/if}

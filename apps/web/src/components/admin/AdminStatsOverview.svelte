@@ -3,6 +3,7 @@
 	import * as Card from "$lib/components/ui/card/index.js";
 	import { Users, MousePointerClick, Activity, UserCheck } from "lucide-svelte";
 	import api from "$lib/api/axios";
+	import { isTauri } from "$lib/tauri";
 
 	interface Stats {
 		total_users: number;
@@ -15,6 +16,12 @@
 	let loading = $state(true);
 
 	async function loadStats() {
+		// No cargar en Tauri (no hay servidor API)
+		if (isTauri()) {
+			loading = false;
+			return;
+		}
+		
 		try {
 			const res = await api.get("/admin/stats");
 			stats = res.data;

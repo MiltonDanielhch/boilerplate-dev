@@ -51,6 +51,9 @@ async function attemptTokenRefresh(): Promise<boolean> {
 	if (typeof window === "undefined") return false;
 
 	const refreshToken = localStorage.getItem("refresh_token");
+	const currentUser = localStorage.getItem("user");
+	console.log("[Auth] Refresh attempt - Token:", refreshToken ? "present" : "missing", "- User:", currentUser ? "present" : "missing");
+	
 	if (!refreshToken) {
 		console.warn("[Auth] No refresh token found");
 		return false;

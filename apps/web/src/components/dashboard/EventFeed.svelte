@@ -5,6 +5,7 @@
 	import { formatDistanceToNow } from "date-fns";
 	import { es } from "date-fns/locale";
 	import { Activity, Clock, User, LogIn } from "lucide-svelte";
+	import { isTauri } from "$lib/tauri";
 
 	interface AuditEntry {
 		timestamp: string;
@@ -19,6 +20,14 @@
 
 	async function fetchRecentActivity() {
 		loading = true;
+		
+		// En Tauri, no hay API HTTP
+		if (isTauri()) {
+			events = [];
+			loading = false;
+			return;
+		}
+		
 		try {
 			const response = await api.get<{ recent: AuditEntry[] }>("/audit/recent");
 			events = response.recent || [];

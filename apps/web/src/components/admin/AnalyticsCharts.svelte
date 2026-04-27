@@ -4,6 +4,7 @@
 	import * as Card from "$lib/components/ui/card/index.js";
 	import { RefreshCw } from "lucide-svelte";
 	import api from "$lib/api/axios";
+	import { isTauri } from "$lib/tauri";
 
 	Chart.register(...registerables);
 
@@ -16,6 +17,12 @@
 	let days = $state(30);
 
 	async function loadAnalytics() {
+		// No cargar en Tauri (no hay servidor API)
+		if (isTauri()) {
+			loading = false;
+			return;
+		}
+		
 		loading = true;
 		try {
 			const res = await api.get(`/admin/analytics?days=${days}`);

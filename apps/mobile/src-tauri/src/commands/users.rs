@@ -22,7 +22,7 @@ pub async fn list_users(
     let page_num = page.unwrap_or(1).max(1);
     let offset = (page_num - 1) * limit;
 
-    let users = state.user_repo.list(limit, offset).await
+    let users = state.user_repo.list(limit, offset, None, None, None).await
         .map_err(|e| format!("Error listing users: {}", e))?;
 
     let users_json: Vec<serde_json::Value> = users.into_iter().map(|u| {

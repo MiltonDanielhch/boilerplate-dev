@@ -41,15 +41,21 @@ pub async fn login(
 
     // Guardar tokens en el store local
     if let Ok(store) = app_handle.store("auth.bin") {
-        store.set("access_token", serde_json::json!(output.access_token));
-        store.set("refresh_token", serde_json::json!(output.refresh_token));
-        let _ = store.save(); // Ignorar error de guardado si ocurre
+        store.set("access_token", serde_json::json!(output.access_token.clone()));
+        store.set("refresh_token", serde_json::json!(output.refresh_token.clone()));
+        store.set("user_id", serde_json::json!(output.user.id.to_string()));
+        let _ = store.save();
     }
 
     Ok(serde_json::json!({
-        "user_id": output.user.id.to_string(),
-        "email": output.user.email.to_string(),
+        "user": {
+            "id": output.user.id.to_string(),
+            "email": output.user.email.to_string(),
+            "name": output.user.name,
+            "is_active": output.user.is_active,
+        },
         "access_token": output.access_token,
+        "refresh_token": output.refresh_token,
     }))
 }
 
@@ -72,15 +78,19 @@ pub async fn get_current_user(app_handle: tauri::AppHandle, state: State<'_, cra
     if let Ok(store) = app_handle.store("auth.bin") {
         if let Some(token_val) = store.get("access_token") {
             if let Some(token_str) = token_val.as_str() {
-                // Verificar si el token es válido
                 if let Ok(claims) = state.paseto.verify(token_str) {
                     if let Ok(user_id) = domain::value_objects::UserId::parse(&claims.sub) {
                         if let Ok(Some(user)) = state.user_repo.find_by_id(&user_id).await {
+                            // Obtener permisos
+                            let permissions = state.user_repo.get_permissions(&user_id).await
+                                .unwrap_or_default();
+                            
                             return Ok(Some(serde_json::json!({
                                 "id": user.id.to_string(),
                                 "email": user.email.to_string(),
                                 "name": user.name,
                                 "is_active": user.is_active,
+                                "permissions": permissions,
                             })));
                         }
                     }

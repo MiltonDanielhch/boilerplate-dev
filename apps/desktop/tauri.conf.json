@@ -5,8 +5,8 @@
   "identifier": "com.laboratorio3030.boilerplate",
   "build": {
     "devUrl": "http://localhost:4321",
-    "beforeDevCommand": "cd ../web && pnpm dev",
-    "beforeBuildCommand": "cd ../web && pnpm build",
+    "beforeDevCommand": "pnpm --filter apps-web dev",
+    "beforeBuildCommand": "pnpm --filter apps-web build",
     "frontendDist": "../../apps/web/dist"
   },
   "app": {
