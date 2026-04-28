@@ -9,6 +9,8 @@
 
 <script lang="ts">
 	import { onMount } from "svelte";
+	import { authStore } from "$lib/stores/auth.svelte";
+	import * as m from "$lib/paraglide/messages.js";
 	import { Button } from "$lib/components/ui/button/index.js";
 	import { Input } from "$lib/components/ui/input/index.js";
 	import Table from "$lib/components/ui/table/table.svelte";
@@ -17,13 +19,12 @@
 	import TableHead from "$lib/components/ui/table/table-head.svelte";
 	import TableHeader from "$lib/components/ui/table/table-header.svelte";
 	import TableRow from "$lib/components/ui/table/table-row.svelte";
-	import * as Card from "$lib/components/ui/card/index.js";
 	import { Badge } from "$lib/components/ui/badge/index.js";
-	import { ChevronLeft, ChevronRight, Search, Trash2, RefreshCw, Plus } from "lucide-svelte";
+	import * as Card from "$lib/components/ui/card/index.js";
+	import { ChevronLeft, ChevronRight, Search, Trash2, RefreshCw } from "lucide-svelte";
 	import { listUsers, softDeleteUser, restoreUser } from "$lib/api/users";
 	import { PermissionGate } from "$lib/components/ui/permission-gate";
 	import UserEditDrawer from "./UserEditDrawer.svelte";
-	import UserForm from "./UserForm.svelte";
 	import type { User } from "$lib/types/user";
 
 	// Estado
@@ -42,8 +43,6 @@
 	let selectedUser = $state<User | null>(null);
 	let isDrawerOpen = $state(false);
 	
-	// Dialog for create user
-	let isCreateDialogOpen = $state(false);
 
 	function openEdit(user: User) {
 		selectedUser = user;
@@ -126,12 +125,7 @@
 					Manage user accounts and permissions
 				</Card.Description>
 			</div>
-			<PermissionGate permission="users:write">
-				<Button onclick={() => isCreateDialogOpen = true}>
-					<Plus class="h-4 w-4 mr-2" />
-					Crear Usuario
-				</Button>
-			</PermissionGate>
+			<!-- Botón movido a users.astro -->
 		</div>
 	</Card.Header>
 	<Card.Content>
@@ -140,7 +134,7 @@
 			<div class="flex-1 min-w-[200px]">
 				<Input
 					type="search"
-					placeholder="Search email or name..."
+					placeholder={m.search_placeholder_users()}
 					bind:value={search}
 					onkeydown={(e) => e.key === "Enter" && handleSearch()}
 				/>
@@ -151,10 +145,10 @@
 				onchange={handleSearch}
 				class="bg-background border rounded px-3 py-2 text-sm focus:ring-2 focus:ring-primary outline-none"
 			>
-				<option value="">All Roles</option>
-				<option value="admin">Admin</option>
-				<option value="user">User</option>
-				<option value="moderator">Moderator</option>
+				<option value="">{m.filter_all_roles()}</option>
+				<option value="admin">{m.role_admin()}</option>
+				<option value="user">{m.role_user()}</option>
+				<option value="moderator">{m.role_moderator()}</option>
 			</select>
 
 			<select 
@@ -162,32 +156,32 @@
 				onchange={handleSearch}
 				class="bg-background border rounded px-3 py-2 text-sm focus:ring-2 focus:ring-primary outline-none"
 			>
-				<option value="all">All Status</option>
-				<option value="active">Active Only</option>
-				<option value="inactive">Inactive Only</option>
+				<option value="all">{m.filter_all_status()}</option>
+				<option value="active">{m.filter_active_only()}</option>
+				<option value="inactive">{m.filter_inactive_only()}</option>
 			</select>
 
 			<Button variant="secondary" onclick={handleSearch}>
 				<Search class="h-4 w-4 mr-2" />
-				Filter
+				{m.action_filter()}
 			</Button>
 			
 			<Button variant="outline" onclick={loadUsers}>
 				<RefreshCw class="h-4 w-4 mr-2" />
-				Refresh
+				{m.action_refresh()}
 			</Button>
 		</div>
 
 		{#if loading}
-			<div class="py-8 text-center text-muted-foreground">Loading...</div>
+			<div class="py-8 text-center text-muted-foreground">{m.loading()}</div>
 		{:else if error}
 			<div class="py-8 text-center">
 				{#if error.includes("401")}
 					<div class="text-amber-600 bg-amber-50 p-4 rounded">
-						<p class="font-medium">Authentication required</p>
-						<p class="text-sm mt-1">Please log in to view users</p>
+						<p class="font-medium">{m.notification_error()}</p>
+						<p class="text-sm mt-1">{m.error_generic()}</p>
 						<a href="/login" class="inline-block mt-3 px-4 py-2 bg-primary text-primary-foreground rounded hover:bg-primary/90">
-							Go to Login
+							{m.login_title()}
 						</a>
 					</div>
 				{:else}
@@ -198,18 +192,18 @@
 			</div>
 		{:else if users.length === 0}
 			<div class="py-8 text-center text-muted-foreground">
-				No users found
+				{m.no_results()}
 			</div>
 		{:else}
 			<div class="overflow-x-auto">
 				<Table>
 					<TableHeader>
 						<TableRow>
-							<TableHead>User</TableHead>
-							<TableHead>Role</TableHead>
-							<TableHead>Status</TableHead>
-							<TableHead>Last Login</TableHead>
-							<TableHead class="text-right">Actions</TableHead>
+							<TableHead>{m.table_user()}</TableHead>
+							<TableHead>{m.table_role()}</TableHead>
+							<TableHead>{m.table_status()}</TableHead>
+							<TableHead>{m.table_last_login()}</TableHead>
+							<TableHead class="text-right">{m.table_actions()}</TableHead>
 						</TableRow>
 					</TableHeader>
 					<TableBody>
@@ -224,15 +218,15 @@
 								</TableCell>
 								<TableCell>
 									{#if user.deletedAt}
-										<Badge variant="destructive">Deleted</Badge>
+										<Badge variant="destructive">{m.status_deleted()}</Badge>
 									{:else if user.isActive}
-										<Badge variant="default" class="bg-emerald-500 hover:bg-emerald-600">Active</Badge>
+										<Badge variant="default" class="bg-emerald-500 hover:bg-emerald-600">{m.status_active()}</Badge>
 									{:else}
-										<Badge variant="secondary">Inactive</Badge>
+										<Badge variant="secondary">{m.status_inactive()}</Badge>
 									{/if}
 								</TableCell>
 								<TableCell class="text-xs">
-									{user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleString() : "Never"}
+									{user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleString() : "—"}
 								</TableCell>
 <TableCell class="text-right">
 									<PermissionGate permission="users:write">
@@ -241,7 +235,7 @@
 											size="sm"
 											onclick={() => openEdit(user)}
 										>
-											Edit
+											{m.action_edit()}
 										</Button>
 									</PermissionGate>
 
@@ -252,7 +246,7 @@
 												size="sm"
 												onclick={() => handleRestore(user.id)}
 											>
-												Restore
+												{m.action_restore()}
 											</Button>
 										</PermissionGate>
 									{:else}
@@ -276,7 +270,7 @@
 			<!-- Pagination -->
 			<div class="flex items-center justify-between mt-4">
 				<div class="text-sm text-muted-foreground">
-					Showing {users.length} of {total} users
+					{m.pagination_showing({ count: users.length, total })}
 				</div>
 				<div class="flex gap-2">
 					<Button
@@ -288,7 +282,7 @@
 						<ChevronLeft class="h-4 w-4" />
 					</Button>
 					<span class="px-4 py-2 text-sm">
-						Page {page} of {totalPages}
+						{m.pagination_page({ current: page, total: totalPages })}
 					</span>
 					<Button
 						variant="outline"
@@ -308,9 +302,4 @@
 	bind:open={isDrawerOpen} 
 	user={selectedUser} 
 	onUpdated={loadUsers} 
-/>
-
-<UserForm 
-	bind:open={isCreateDialogOpen} 
-	onSuccess={loadUsers} 
 />

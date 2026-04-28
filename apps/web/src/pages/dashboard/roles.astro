@@ -9,28 +9,29 @@
 import DashboardLayout from "../../layouts/DashboardLayout.astro";
 import * as Card from "$lib/components/ui/card/index.js";
 import { Button } from "$lib/components/ui/button/index.js";
+import * as m from "$lib/paraglide/messages.js";
 ---
 
-<DashboardLayout title="Roles - Dashboard">
+<DashboardLayout title={`${m.roles_title()} - Dashboard`}>
 	<div class="space-y-6">
 		<div>
-			<h1 class="text-3xl font-bold tracking-tight">Roles</h1>
+			<h1 class="text-3xl font-bold tracking-tight">{m.roles_title()}</h1>
 			<p class="text-muted-foreground mt-2">
-				Manage roles and permissions
+				{m.roles_description()}
 			</p>
 		</div>
 
 		<!-- Admin Role -->
 		<Card.Root>
 			<Card.Header>
-				<Card.Title>Admin</Card.Title>
+				<Card.Title>{m.role_admin()}</Card.Title>
 				<Card.Description>
-					Full access to all features and settings
+					{m.roles_admin_desc()}
 				</Card.Description>
 			</Card.Header>
 			<Card.Content>
 				<div class="space-y-2">
-					<p class="text-sm"><span class="font-medium">Permissions:</span> All</p>
+					<p class="text-sm"><span class="font-medium">{m.label_permissions()}:</span> {m.permissions_all()}</p>
 				</div>
 			</Card.Content>
 		</Card.Root>
@@ -38,9 +39,9 @@ import { Button } from "$lib/components/ui/button/index.js";
 		<!-- Moderator Role -->
 		<Card.Root>
 			<Card.Header>
-				<Card.Title>Moderator</Card.Title>
+				<Card.Title>{m.role_moderator()}</Card.Title>
 				<Card.Description>
-					Can manage users and content
+					{m.roles_moderator_desc()}
 				</Card.Description>
 			</Card.Header>
 		</Card.Root>
@@ -48,9 +49,9 @@ import { Button } from "$lib/components/ui/button/index.js";
 		<!-- User Role -->
 		<Card.Root>
 			<Card.Header>
-				<Card.Title>User</Card.Title>
+				<Card.Title>{m.role_user()}</Card.Title>
 				<Card.Description>
-					Basic access to the application
+					{m.roles_user_desc()}
 				</Card.Description>
 			</Card.Header>
 		</Card.Root>

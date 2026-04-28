@@ -14,6 +14,7 @@ import { PermissionGate } from "$lib/components/ui/permission-gate";
 import * as Card from "$lib/components/ui/card/index.js";
 import { Button } from "$lib/components/ui/button/index.js";
 import { Plus, Users, ClipboardList, Settings, Shield } from "lucide-svelte";
+import * as m from "$lib/paraglide/messages.js";
 ---
 
 <DashboardLayout title="Dashboard">
@@ -21,19 +22,14 @@ import { Plus, Users, ClipboardList, Settings, Shield } from "lucide-svelte";
 		<!-- Header -->
 		<div class="flex items-center justify-between">
 			<div>
-				<h1 class="text-3xl font-bold tracking-tight">Dashboard</h1>
+				<h1 class="text-3xl font-bold tracking-tight">{m.dashboard_title()}</h1>
 				<p class="text-muted-foreground mt-2">
-					Overview of your system and recent activity
+					{m.dashboard_overview()}
 				</p>
 			</div>
 			<div class="flex gap-2">
-				<PermissionGate permission="users:write" client:load>
-					<Button client:load>
-						<Plus class="h-4 w-4 mr-2" />
-						Add User
-					</Button>
-				</PermissionGate>
-			</div>
+			<!-- Actions removed - use sidebar navigation instead -->
+		</div>
 		</div>
 
 		<!-- Stats Overview (para todos) -->
@@ -46,10 +42,10 @@ import { Plus, Users, ClipboardList, Settings, Shield } from "lucide-svelte";
 				<Card.Header>
 					<Card.Title class="flex items-center gap-2">
 						<ClipboardList class="h-5 w-5" />
-						Recent Activity
+						{m.activity_recent()}
 					</Card.Title>
 					<Card.Description>
-						Latest actions and events from the system
+						{m.activity_description()}
 					</Card.Description>
 				</Card.Header>
 				<Card.Content>
@@ -62,10 +58,10 @@ import { Plus, Users, ClipboardList, Settings, Shield } from "lucide-svelte";
 				<Card.Header>
 					<Card.Title class="flex items-center gap-2">
 						<Settings class="h-5 w-5" />
-						System Health
+						{m.system_health()}
 					</Card.Title>
 					<Card.Description>
-						API, Database, and Services status
+						{m.system_status()}
 					</Card.Description>
 				</Card.Header>
 				<Card.Content>
@@ -77,9 +73,9 @@ import { Plus, Users, ClipboardList, Settings, Shield } from "lucide-svelte";
 		<!-- Quick Actions (para todos) -->
 		<Card.Root>
 			<Card.Header>
-				<Card.Title>Quick Actions</Card.Title>
+				<Card.Title>{m.quick_actions()}</Card.Title>
 				<Card.Description>
-					Common tasks and shortcuts
+					{m.quick_actions_description()}
 				</Card.Description>
 			</Card.Header>
 			<Card.Content>
@@ -87,13 +83,13 @@ import { Plus, Users, ClipboardList, Settings, Shield } from "lucide-svelte";
 					<PermissionGate permission="users:read" client:load>
 						<Button variant="outline" href="/dashboard/users" client:load>
 							<Users class="h-4 w-4 mr-2" />
-							Manage Users
+							{m.users_manage()}
 						</Button>
 					</PermissionGate>
 					<PermissionGate permission="audit:read" client:load>
 						<Button variant="outline" href="/dashboard/audit" client:load>
 							<ClipboardList class="h-4 w-4 mr-2" />
-							View Audit Logs
+							{m.audit_view()}
 						</Button>
 					</PermissionGate>
 					<Button variant="outline" href="/dashboard/roles" client:load>
@@ -102,7 +98,7 @@ import { Plus, Users, ClipboardList, Settings, Shield } from "lucide-svelte";
 					</Button>
 					<Button variant="outline" href="/dashboard/settings" client:load>
 						<Settings class="h-4 w-4 mr-2" />
-						Settings
+						{m.sidebar_settings()}
 					</Button>
 				</div>
 			</Card.Content>

@@ -1,17 +1,19 @@
 ---
 // Ubicación: `apps/web/src/pages/admin/leads.astro`
 // Descripción: Panel de gestión de leads capturados.
+// ADR: 0023 (i18n)
 
 import AdminLayout from "../../layouts/AdminLayout.astro";
 import LeadTable from "../../components/admin/LeadTable.svelte";
+import * as m from "$lib/paraglide/messages.js";
 ---
 
-<AdminLayout title="Lead Management">
+<AdminLayout title={m.sidebar_leads()}>
 	<div class="space-y-6">
 		<div>
-			<h1 class="text-3xl font-extrabold tracking-tight">Leads & Prospects</h1>
+			<h1 class="text-3xl font-extrabold tracking-tight">{m.admin_leads_title()}</h1>
 			<p class="text-slate-400 mt-2">
-				Manage and track interested customers from your landing page.
+				{m.admin_leads_desc()}
 			</p>
 		</div>
 

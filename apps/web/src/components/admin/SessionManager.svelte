@@ -11,6 +11,7 @@
 	import TableRow from "$lib/components/ui/table/table-row.svelte";
 	import { Shield, User, Globe, LogOut, RefreshCw, Smartphone, Laptop } from "lucide-svelte";
 	import api from "$lib/api/axios";
+	import * as m from "$lib/paraglide/messages.js";
 
 	interface Session {
 		id: string;
@@ -38,7 +39,7 @@
 	}
 
 	async function handleRevoke(id: string) {
-		if (!confirm("Are you sure you want to revoke this session? The user will be logged out immediately.")) return;
+		if (!confirm("¿Estás seguro de revocar esta sesión? El usuario será desconectado inmediatamente.")) return;
 		
 		revoking = id;
 		try {
@@ -63,13 +64,13 @@
 	<div class="grid gap-4 md:grid-cols-3">
 		<Card.Root class="bg-slate-900 border-slate-800">
 			<Card.Header class="pb-2">
-				<Card.Title class="text-xs font-medium text-slate-400 uppercase tracking-wider">Active Sessions</Card.Title>
+				<Card.Title class="text-xs font-medium text-slate-400 uppercase tracking-wider">{m.security_active_sessions()}</Card.Title>
 			</Card.Header>
 			<Card.Content>
 				<div class="text-2xl font-bold">{sessions.length}</div>
 				<p class="text-[10px] text-green-500 mt-1 flex items-center gap-1">
 					<span class="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse"></span>
-					System-wide activity
+					{m.security_system_wide()}
 				</p>
 			</Card.Content>
 		</Card.Root>
@@ -79,27 +80,27 @@
 		<Card.Header>
 			<div class="flex items-center justify-between">
 				<div>
-					<Card.Title>Session Management</Card.Title>
-					<Card.Description>Review and terminate active user sessions</Card.Description>
+					<Card.Title>{m.security_session_management()}</Card.Title>
+					<Card.Description>{m.security_session_desc()}</Card.Description>
 				</div>
 				<Button variant="outline" size="sm" onclick={loadSessions}>
 					<RefreshCw class="h-4 w-4 mr-2" />
-					Refresh
+					{m.action_refresh()}
 				</Button>
 			</div>
 		</Card.Header>
 		<Card.Content>
 			{#if loading}
-				<div class="py-12 text-center text-slate-500">Loading active sessions...</div>
+				<div class="py-12 text-center text-slate-500">{m.security_loading_sessions()}</div>
 			{:else}
 				<Table>
 					<TableHeader>
 						<TableRow class="border-slate-800 hover:bg-slate-900/50">
-							<TableHead class="text-slate-400">Device / IP</TableHead>
-							<TableHead class="text-slate-400">User ID</TableHead>
-							<TableHead class="text-slate-400">Last Activity</TableHead>
-							<TableHead class="text-slate-400">Expires</TableHead>
-							<TableHead class="text-right text-slate-400">Actions</TableHead>
+							<TableHead class="text-slate-400">{m.security_device_ip()}</TableHead>
+							<TableHead class="text-slate-400">{m.security_user_id()}</TableHead>
+							<TableHead class="text-slate-400">{m.security_last_activity()}</TableHead>
+							<TableHead class="text-slate-400">{m.security_expires()}</TableHead>
+							<TableHead class="text-right text-slate-400">{m.table_actions()}</TableHead>
 						</TableRow>
 					</TableHeader>
 					<TableBody>
@@ -113,9 +114,9 @@
 											<Laptop class="h-4 w-4 text-slate-500" />
 										{/if}
 										<div class="flex flex-col">
-											<span class="text-xs font-mono text-slate-300">{session.ip_address ?? "Unknown"}</span>
+											<span class="text-xs font-mono text-slate-300">{session.ip_address ?? m.security_unknown()}</span>
 											<span class="text-[10px] text-slate-600 truncate max-w-[200px]" title={session.user_agent}>
-												{session.user_agent ?? "No agent info"}
+												{session.user_agent ?? m.security_no_agent()}
 											</span>
 										</div>
 									</div>

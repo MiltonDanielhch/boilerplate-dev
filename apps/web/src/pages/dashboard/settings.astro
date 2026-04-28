@@ -5,12 +5,13 @@
 //              - Profile: settings personales del usuario
 //              - System: configuración global (solo admins)
 //
-// ADRs relacionados: 0022 (Frontend), 0006 (RBAC)
+// ADRs relacionados: 0022 (Frontend), 0006 (RBAC), 0023 (i18n)
 
 import DashboardLayout from "../../layouts/DashboardLayout.astro";
 import SettingsTabs from "../../components/dashboard/SettingsTabs.svelte";
+import * as m from "$lib/paraglide/messages.js";
 ---
 
-<DashboardLayout title="Settings">
+<DashboardLayout title={m.settings_title()}>
 	<SettingsTabs client:only="svelte" />
 </DashboardLayout>

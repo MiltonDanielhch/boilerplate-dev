@@ -11,6 +11,7 @@
 	import TableRow from "$lib/components/ui/table/table-row.svelte";
 	import { Shield, User, Clock, Search, RefreshCw, Eye } from "lucide-svelte";
 	import api from "$lib/api/axios";
+	import * as m from "$lib/paraglide/messages.js";
 
 	interface AuditEntry {
 		id: string;
@@ -56,12 +57,12 @@
 	<Card.Header>
 		<div class="flex items-center justify-between">
 			<div>
-				<Card.Title>Action Log</Card.Title>
-				<Card.Description>Immutable record of system events</Card.Description>
+				<Card.Title>{m.security_action_log()}</Card.Title>
+				<Card.Description>{m.security_immutable()}</Card.Description>
 			</div>
 			<Button variant="outline" size="sm" onclick={loadLogs}>
 				<RefreshCw class="h-4 w-4 mr-2" />
-				Refresh
+				{m.action_refresh()}
 			</Button>
 		</div>
 	</Card.Header>
@@ -72,28 +73,28 @@
 				onchange={loadLogs}
 				class="bg-slate-950 border-slate-800 text-sm rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-primary"
 			>
-				<option value="all">All Resources</option>
-				<option value="users">Users</option>
-				<option value="leads">Leads</option>
-				<option value="auth">Authentication</option>
-				<option value="content">Content Blocks</option>
+				<option value="all">{m.security_all_resources()}</option>
+				<option value="users">{m.sidebar_users()}</option>
+				<option value="leads">{m.sidebar_leads()}</option>
+				<option value="auth">{m.audit_title()}</option>
+				<option value="content">{m.sidebar_cms()}</option>
 			</select>
 		</div>
 
 		{#if loading}
-			<div class="py-12 text-center text-slate-500 animate-pulse">Loading security logs...</div>
+			<div class="py-12 text-center text-slate-500 animate-pulse">{m.security_loading()}</div>
 		{:else if logs.length === 0}
-			<div class="py-12 text-center text-slate-500">No logs found.</div>
+			<div class="py-12 text-center text-slate-500">{m.security_no_logs()}</div>
 		{:else}
 			<Table>
 				<TableHeader>
 					<TableRow class="border-slate-800 hover:bg-slate-900/50">
-						<TableHead class="text-slate-400">Timestamp</TableHead>
-						<TableHead class="text-slate-400">Actor</TableHead>
-						<TableHead class="text-slate-400">Action</TableHead>
-						<TableHead class="text-slate-400">Resource</TableHead>
-						<TableHead class="text-slate-400">IP Address</TableHead>
-						<TableHead class="text-right text-slate-400">Details</TableHead>
+						<TableHead class="text-slate-400">{m.table_timestamp()}</TableHead>
+						<TableHead class="text-slate-400">{m.table_actor()}</TableHead>
+						<TableHead class="text-slate-400">{m.table_action()}</TableHead>
+						<TableHead class="text-slate-400">{m.table_resource()}</TableHead>
+						<TableHead class="text-slate-400">{m.table_ip_address()}</TableHead>
+						<TableHead class="text-right text-slate-400">{m.table_details()}</TableHead>
 					</TableRow>
 				</TableHeader>
 				<TableBody>
@@ -105,7 +106,7 @@
 							<TableCell>
 								<div class="flex items-center gap-2">
 									<User class="h-3 w-3 text-slate-400" />
-									<span class="text-xs text-slate-300">{log.user_id?.slice(0,8) ?? "System"}</span>
+									<span class="text-xs text-slate-300">{log.user_id?.slice(0,8) ?? m.system_label()}</span>
 								</div>
 							</TableCell>
 							<TableCell>
@@ -120,7 +121,7 @@
 								{/if}
 							</TableCell>
 							<TableCell class="text-xs text-slate-500 font-mono">
-								{log.ip_address ?? "N/A"}
+								{log.ip_address ?? m.not_available()}
 							</TableCell>
 							<TableCell class="text-right">
 								<Button variant="ghost" size="icon" class="h-8 w-8 text-slate-400">

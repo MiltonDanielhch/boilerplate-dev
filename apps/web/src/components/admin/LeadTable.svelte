@@ -12,6 +12,7 @@
 	import TableRow from "$lib/components/ui/table/table-row.svelte";
 	import { Search, RefreshCw, Mail, Calendar, User, Tag } from "lucide-svelte";
 	import api from "$lib/api/axios";
+	import * as m from "$lib/paraglide/messages.js";
 
 	interface Lead {
 		id: string;
@@ -64,14 +65,14 @@
 
 <Card.Root class="bg-slate-900 border-slate-800">
 	<Card.Header>
-		<Card.Title>Landing Page Leads</Card.Title>
-		<Card.Description>Recent interests from potential customers</Card.Description>
+		<Card.Title>{m.leads_card_title()}</Card.Title>
+		<Card.Description>{m.leads_card_desc()}</Card.Description>
 	</Card.Header>
 	<Card.Content>
 		<div class="flex flex-wrap gap-4 mb-6">
 			<div class="flex-1 min-w-[200px]">
 				<Input 
-					placeholder="Search leads..." 
+					placeholder={m.leads_search_placeholder()} 
 					bind:value={search} 
 					onkeydown={(e) => e.key === "Enter" && loadLeads()}
 					class="bg-slate-950 border-slate-800"
@@ -83,37 +84,37 @@
 				onchange={loadLeads}
 				class="bg-slate-950 border-slate-800 text-sm rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-primary"
 			>
-				<option value="all">All Status</option>
-				<option value="new">New</option>
-				<option value="contacted">Contacted</option>
-				<option value="qualified">Qualified</option>
-				<option value="converted">Converted</option>
-				<option value="archived">Archived</option>
+				<option value="all">{m.filter_all_status()}</option>
+				<option value="new">{m.leads_status_new()}</option>
+				<option value="contacted">{m.leads_status_contacted()}</option>
+				<option value="qualified">{m.leads_status_qualified()}</option>
+				<option value="converted">{m.leads_status_converted()}</option>
+				<option value="archived">{m.leads_status_archived()}</option>
 			</select>
 
 			<Button variant="secondary" onclick={loadLeads}>
 				<Search class="h-4 w-4 mr-2" />
-				Filter
+				{m.action_filter()}
 			</Button>
 			
 			<Button variant="outline" onclick={loadLeads}>
 				<RefreshCw class="h-4 w-4 mr-2" />
-				Refresh
+				{m.action_refresh()}
 			</Button>
 		</div>
 
 		{#if loading}
-			<div class="py-12 text-center text-slate-500">Loading leads...</div>
+			<div class="py-12 text-center text-slate-500">{m.leads_loading()}</div>
 		{:else if leads.length === 0}
-			<div class="py-12 text-center text-slate-500">No leads found.</div>
+			<div class="py-12 text-center text-slate-500">{m.leads_empty()}</div>
 		{:else}
 			<Table>
 				<TableHeader>
 					<TableRow class="border-slate-800 hover:bg-slate-900/50">
-						<TableHead class="text-slate-400">Lead Info</TableHead>
-						<TableHead class="text-slate-400">Status</TableHead>
-						<TableHead class="text-slate-400">Captured At</TableHead>
-						<TableHead class="text-right text-slate-400">Actions</TableHead>
+						<TableHead class="text-slate-400">{m.leads_table_info()}</TableHead>
+						<TableHead class="text-slate-400">{m.table_status()}</TableHead>
+						<TableHead class="text-slate-400">{m.leads_table_captured()}</TableHead>
+						<TableHead class="text-right text-slate-400">{m.table_actions()}</TableHead>
 					</TableRow>
 				</TableHeader>
 				<TableBody>

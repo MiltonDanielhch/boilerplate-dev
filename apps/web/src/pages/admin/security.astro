@@ -1,17 +1,19 @@
 ---
 // Ubicación: `apps/web/src/pages/admin/security.astro`
 // Descripción: Panel de seguridad y gestión de sesiones.
+// ADR: 0023 (i18n)
 
 import AdminLayout from "../../layouts/AdminLayout.astro";
 import SessionManager from "../../components/admin/SessionManager.svelte";
+import * as m from "$lib/paraglide/messages.js";
 ---
 
-<AdminLayout title="System Security">
+<AdminLayout title={m.sidebar_security()}>
 	<div class="space-y-6">
 		<div>
-			<h1 class="text-3xl font-extrabold tracking-tight text-white">System Security</h1>
+			<h1 class="text-3xl font-extrabold tracking-tight text-white">{m.admin_security_title()}</h1>
 			<p class="text-slate-400 mt-2">
-				Monitor active sessions, revoke access, and review security health.
+				{m.admin_security_desc()}
 			</p>
 		</div>
 

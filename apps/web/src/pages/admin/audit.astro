@@ -4,14 +4,15 @@
 
 import AdminLayout from "../../layouts/AdminLayout.astro";
 import AuditLogTable from "../../components/admin/AuditLogTable.svelte";
+import * as m from "$lib/paraglide/messages.js";
 ---
 
-<AdminLayout title="Security Audit">
+<AdminLayout title={m.security_audit_title()}>
 	<div class="space-y-6">
 		<div>
-			<h1 class="text-3xl font-extrabold tracking-tight text-white">Security Audit Logs</h1>
+			<h1 class="text-3xl font-extrabold tracking-tight text-white">{m.security_audit_title()}</h1>
 			<p class="text-slate-400 mt-2">
-				Track all administrative and system actions for compliance and security.
+				{m.security_audit_desc()}
 			</p>
 		</div>
 

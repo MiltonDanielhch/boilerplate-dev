@@ -556,6 +556,163 @@ cd apps/web && head -5 src/layouts/BaseLayout.astro | grep -c "Ubicación:"
 
 ---
 
+## Bloque FE.VII — i18n Completo (Traducciones Paraglide)
+
+> **Referencia:** ADR 0023 (i18n), `messages/es.json`, `messages/en.json`
+
+### 1. Compilar mensajes de Paraglide
+
+```bash
+cd apps/web
+pnpm paraglide-js compile --project ./project.inlang --outdir ./src/lib/paraglide
+```
+**Esperado:** `✔ [paraglide-js] Successfully compiled inlang project.`  
+**Ref:** ADR 0023, Linter debe mostrar 0 errores en `messages/*.json`
+
+### 2. Verificar idioma por defecto (español)
+
+```bash
+# Abrir en browser incógnito (sin cookies)
+# Ir a http://localhost:4321/login
+# Esperado: Título "Iniciar Sesión", botón "Ingresar"
+# └─ Ref: messages/es.json, src/pages/login.astro
+```
+
+### 3. Verificar traducciones en Dashboard
+
+```bash
+# Con sesión iniciada, ir a http://localhost:4321/dashboard
+# Esperado:
+#   - "Usuarios" (no "Users")
+#   - "Roles" (no "Roles" en inglés)
+#   - "Configuración" (no "Settings")
+# └─ Ref: messages/es.json, sidebar translations
+```
+
+### 4. Verificar traducciones en Users
+
+```bash
+# Ir a http://localhost:4321/dashboard/users
+# Esperado:
+#   - "Usuarios" (título)
+#   - "Gestiona cuentas de usuario, roles y permisos" (descripción)
+#   - "Buscar correo o nombre..." (placeholder)
+#   - "Todos los Roles" (filtro)
+#   - "Refrescar" (botón)
+#   - "Mostrando X de Y usuarios" (paginación)
+# └─ Ref: messages/es.json, UserTable.svelte
+```
+
+### 5. Verificar traducciones en Roles
+
+```bash
+# Ir a http://localhost:4321/dashboard/roles
+# Esperado:
+#   - "Roles" (título)
+#   - "Gestiona roles y permisos" (descripción)
+#   - "Administrador" (no "Admin")
+#   - "Acceso completo a todas las funciones y configuraciones"
+#   - "Moderador" / "Puede gestionar usuarios y contenido"
+#   - "Usuario" / "Acceso básico a la aplicación"
+#   - "Permisos: Todos"
+# └─ Ref: messages/es.json, roles.astro
+```
+
+### 6. Verificar traducciones en Audit (Dashboard)
+
+```bash
+# Ir a http://localhost:4321/dashboard/audit
+# Esperado:
+#   - "Registro de Auditoría" (título)
+#   - "Registro de auditoría del sistema" (descripción)
+#   - "Fecha/Hora", "Actor", "Acción", "Recurso", "IP", "Detalles" (tabla)
+#   - "Refrescar" (botón)
+# └─ Ref: messages/es.json, AuditLogTable.svelte
+```
+
+### 7. Verificar traducciones en Admin > Leads
+
+```bash
+# Ir a http://localhost:4321/admin/leads
+# Esperado:
+#   - "Leads y Prospectos" (título)
+#   - "Gestiona y rastrea clientes interesados..." (descripción)
+#   - "Buscar leads..." (placeholder)
+#   - "Todos los Estados" (filtro)
+#   - "No hay leads encontrados" (estado vacío)
+# └─ Ref: messages/es.json, LeadTable.svelte
+```
+
+### 8. Verificar traducciones en Admin > Security Audit
+
+```bash
+# Ir a http://localhost:4321/admin/audit
+# Esperado:
+#   - "Registros de Auditoría de Seguridad" (título)
+#   - "Rastrea todas las acciones administrativas..." (descripción)
+#   - "Registro de Acciones" / "Registro inmutable de eventos del sistema"
+#   - "Todos los Recursos" (filtro)
+#   - "No se encontraron registros" (estado vacío)
+# └─ Ref: messages/es.json, AuditLogTable.svelte
+```
+
+### 9. Verificar traducciones en Admin > System Security
+
+```bash
+# Ir a http://localhost:4321/admin/security
+# Esperado:
+#   - "Seguridad del Sistema" (título)
+#   - "Monitorea sesiones activas, revoca acceso..." (descripción)
+#   - "Sesiones Activas" / "Actividad en todo el sistema"
+#   - "Gestión de Sesiones" / "Revisa y termina sesiones de usuario activas"
+#   - "Dispositivo / IP", "ID de Usuario", "Última Actividad", "Expira"
+#   - "Refrescar" (botón)
+# └─ Ref: messages/es.json, SessionManager.svelte
+```
+
+### 10. Verificar cambio de idioma a inglés
+
+```bash
+# En la UI, hacer click en el selector de idioma (ES → EN)
+# Esperado: La página recarga y muestra textos en inglés
+# Verificar:
+#   - "Users" (no "Usuarios")
+#   - "Roles" (mismo en inglés)
+#   - "Settings" (no "Configuración")
+#   - "Security Control" (no "Seguridad del Sistema")
+# └─ Ref: LanguageSelector.svelte, middleware.ts
+```
+
+### 11. Verificar persistencia de idioma
+
+```bash
+# 1. Cambiar a "English" en el selector
+# 2. Recargar la página (F5)
+# Esperado: El idioma persiste en inglés
+# 3. Verificar localStorage:
+#    Abrir DevTools → Console → ejecutar:
+localStorage.getItem('locale')
+#    Esperado: "en"
+# 4. Verificar cookie:
+document.cookie.match(/locale=([^;]+)/)?.[1]
+#    Esperado: "en"
+# └─ Ref: LanguageSelector.svelte línea 49-52
+```
+
+### 12. Verificar SSR + Cliente sincronizados
+
+```bash
+# Abrir DevTools → Network → Filtrar "Document"
+# Recargar http://localhost:4321/dashboard
+# Verificar respuesta HTML del primer request:
+#   - No debe haber "flash" de contenido en inglés antes del español
+#   - El HTML SSR debe tener textos en español desde el inicio
+# Esperado: SSR y cliente usan el mismo idioma (cookie + localStorage)
+# └─ Ref: middleware.ts, LanguageSelector.svelte $effect
+```
+
+---
+
 ## Bloque L.1-L.7 — Landing Page
 
 > **Referencia:** ADR 0029 (Landing), ADR 0009 (Rate Limit), docs/02-STACK.md L368-400

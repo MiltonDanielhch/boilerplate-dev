@@ -5,6 +5,7 @@
 	import { Label } from "$lib/components/ui/label/index.js";
 	import SettingsManager from "../admin/SettingsManager.svelte";
 	import { authStore } from "$lib/stores/auth.svelte";
+	import * as m from "$lib/paraglide/messages.js";
 
 	let activeTab = $state<'profile' | 'system'>('profile');
 
@@ -18,9 +19,9 @@
 <div class="space-y-6">
 	<!-- Header -->
 	<div>
-		<h1 class="text-3xl font-bold tracking-tight">Settings</h1>
+		<h1 class="text-3xl font-bold tracking-tight">{m.settings_title()}</h1>
 		<p class="text-muted-foreground mt-2">
-			Manage your account and system configuration
+			{m.settings_manage()}
 		</p>
 	</div>
 
@@ -32,7 +33,7 @@
 				{activeTab === 'profile' ? 'text-white' : 'text-slate-400 hover:text-white'}"
 			onclick={() => switchTab('profile')}
 		>
-			Profile
+			{m.settings_tab_profile()}
 			{#if activeTab === 'profile'}
 				<span class="absolute bottom-0 left-0 right-0 h-0.5 bg-primary"></span>
 			{/if}
@@ -45,7 +46,7 @@
 					{activeTab === 'system' ? 'text-white' : 'text-slate-400 hover:text-white'}"
 				onclick={() => switchTab('system')}
 			>
-				System
+				{m.settings_tab_system()}
 				{#if activeTab === 'system'}
 					<span class="absolute bottom-0 left-0 right-0 h-0.5 bg-primary"></span>
 				{/if}
@@ -57,50 +58,50 @@
 	{#if activeTab === 'profile'}
 		<Card.Root>
 			<Card.Header>
-				<Card.Title>Profile Information</Card.Title>
+				<Card.Title>{m.settings_profile_info()}</Card.Title>
 				<Card.Description>
-					Update your personal information and profile details
+					{m.settings_profile_desc()}
 				</Card.Description>
 			</Card.Header>
 			<Card.Content>
 				<form class="space-y-4">
 					<div class="grid gap-2">
-						<Label for="name">Name</Label>
-						<Input id="name" type="text" placeholder="Your name" value={authStore.user?.name ?? ''} />
+						<Label for="name">{m.label_name()}</Label>
+						<Input id="name" type="text" value={authStore.user?.name ?? ''} />
 					</div>
 					<div class="grid gap-2">
-						<Label for="email">Email</Label>
-						<Input id="email" type="email" placeholder="your@email.com" value={authStore.user?.email ?? ''} />
+						<Label for="email">{m.label_email()}</Label>
+						<Input id="email" type="email" value={authStore.user?.email ?? ''} />
 					</div>
 				</form>
 			</Card.Content>
 			<Card.Footer>
-				<Button>Save Changes</Button>
+				<Button>{m.settings_save_changes()}</Button>
 			</Card.Footer>
 		</Card.Root>
 
 		<Card.Root>
 			<Card.Header>
-				<Card.Title>Security</Card.Title>
+				<Card.Title>{m.settings_security()}</Card.Title>
 				<Card.Description>
-					Update your security preferences
+					{m.settings_security_desc()}
 				</Card.Description>
 			</Card.Header>
 			<Card.Content>
 				<div class="space-y-4">
 					<div class="flex items-center justify-between">
 						<div>
-							<p class="font-medium">Two-Factor Authentication</p>
-							<p class="text-sm text-muted-foreground">Add an extra layer of security</p>
+							<p class="font-medium">{m.settings_2fa()}</p>
+							<p class="text-sm text-muted-foreground">{m.settings_2fa_desc()}</p>
 						</div>
-						<Button variant="outline" size="sm">Enable</Button>
+						<Button variant="outline" size="sm">{m.settings_enable()}</Button>
 					</div>
 					<div class="flex items-center justify-between">
 						<div>
-							<p class="font-medium">Change Password</p>
-							<p class="text-sm text-muted-foreground">Update your account password</p>
+							<p class="font-medium">{m.settings_change_password()}</p>
+							<p class="text-sm text-muted-foreground">{m.settings_change_password_desc()}</p>
 						</div>
-						<Button variant="outline" size="sm">Change</Button>
+						<Button variant="outline" size="sm">{m.settings_change()}</Button>
 					</div>
 				</div>
 			</Card.Content>
@@ -111,9 +112,9 @@
 	{#if activeTab === 'system' && isAdmin}
 		<Card.Root class="bg-slate-900 border-slate-800">
 			<Card.Header>
-				<Card.Title>System Configuration</Card.Title>
+				<Card.Title>{m.settings_system_config()}</Card.Title>
 				<Card.Description>
-					Configure global application parameters, features, and maintenance
+					{m.settings_system_desc()}
 				</Card.Description>
 			</Card.Header>
 			<Card.Content>

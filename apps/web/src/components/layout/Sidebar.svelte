@@ -17,6 +17,7 @@
 	import { logout } from "$lib/api/auth";
 	import * as m from "$lib/paraglide/messages.js";
 	import { isTauri } from "$lib/tauri";
+	import LanguageSelector from "./LanguageSelector.svelte";
 
 	let { class: className }: { class?: string } = $props();
 
@@ -61,11 +62,11 @@
 		{ icon: Users, label: m.sidebar_users(), href: "/dashboard/users", permission: "users:read" },
 		
 		// Admin Section
-		{ icon: MousePointerClick, label: "Leads", href: "/admin/leads", permission: "admin:read" },
-		{ icon: FileEdit, label: "CMS Content", href: "/admin/content", permission: "admin:read" },
-		{ icon: Settings, label: "Settings", href: "/dashboard/settings", permission: "admin:read" },
-		{ icon: ClipboardList, label: "Audit Logs", href: "/admin/audit", permission: "audit:read" },
-		{ icon: Shield, label: "Security Control", href: "/admin/security", permission: "admin:read" },
+		{ icon: MousePointerClick, label: m.sidebar_leads(), href: "/admin/leads", permission: "admin:read" },
+		{ icon: FileEdit, label: m.sidebar_cms(), href: "/admin/content", permission: "admin:read" },
+		{ icon: Settings, label: m.sidebar_settings(), href: "/dashboard/settings", permission: "admin:read" },
+		{ icon: ClipboardList, label: m.sidebar_audit(), href: "/admin/audit", permission: "audit:read" },
+		{ icon: Shield, label: m.sidebar_security(), href: "/admin/security", permission: "admin:read" },
 		
 		{ icon: Shield, label: m.sidebar_roles(), href: "/dashboard/roles", permission: "roles:read" },
 	];
@@ -140,24 +141,32 @@
 >
 	<div class="flex h-full flex-col">
 		<!-- Header -->
-		<div class="flex h-16 items-center justify-between border-b px-4">
+		<div class="flex h-16 items-center justify-between border-b px-4 gap-2">
 			{#if !collapsed}
-				<div class="flex flex-col">
-					<span class="font-semibold text-sidebar-foreground">🚀 Boilerplate</span>
+				<div class="flex flex-col min-w-0 flex-1">
+					<span class="font-semibold text-sidebar-foreground truncate">🚀 {m.app_name()}</span>
 					{#if isTauri()}
-						<span class="text-[10px] font-bold uppercase tracking-wider text-primary">Desktop Mode</span>
+						<span class="text-[10px] font-bold uppercase tracking-wider text-primary">{m.desktop_mode()}</span>
 					{/if}
 				</div>
+				<!-- Selector de idioma -->
+				<LanguageSelector />
+			{:else}
+				<!-- Selector de idioma compacto cuando está colapsado -->
+				<LanguageSelector class="mx-auto" />
 			{/if}
-			<Button variant="ghost" size="icon" onclick={toggleSidebar} class="ml-auto hidden lg:flex">
+			
+			<!-- Botón toggle (desktop) -->
+			<Button variant="ghost" size="icon" onclick={toggleSidebar} class="hidden lg:flex shrink-0">
 				{#if collapsed}
 					<ChevronRight class="h-4 w-4" />
 				{:else}
 					<ChevronLeft class="h-4 w-4" />
 				{/if}
 			</Button>
-			<!-- Botón de cerrar para móvil -->
-			<Button variant="ghost" size="icon" onclick={closeMobile} class="ml-auto lg:hidden">
+			
+			<!-- Botón cerrar (móvil) -->
+			<Button variant="ghost" size="icon" onclick={closeMobile} class="lg:hidden shrink-0">
 				<ChevronLeft class="h-4 w-4" />
 			</Button>
 		</div>

@@ -4,12 +4,13 @@
 // Descripción: Página de logs de auditoría con lista de eventos del sistema.
 //              Requiere permiso audit:read - redirige si no tiene permiso.
 //
-// ADRs relacionados: 0022 (Frontend), 0006 (RBAC)
+// ADRs relacionados: 0022 (Frontend), 0006 (RBAC), 0023 (i18n)
 
 import DashboardLayout from "../../layouts/DashboardLayout.astro";
 import * as Card from "$lib/components/ui/card/index.js";
 import { Button } from "$lib/components/ui/button/index.js";
 import { ClipboardList, Download, Filter } from "lucide-svelte";
+import * as m from "$lib/paraglide/messages.js";
 
 // TODO: Implementar verificación SSR de permiso audit:read
 // const hasAuditRead = Astro.locals.user?.permissions?.includes('audit:read');
@@ -18,24 +19,24 @@ import { ClipboardList, Download, Filter } from "lucide-svelte";
 // }
 ---
 
-<DashboardLayout title="Audit Logs">
+<DashboardLayout title={m.audit_title_full()}>
 	<div class="space-y-6">
 		<!-- Header -->
 		<div class="flex items-center justify-between">
 			<div>
-				<h1 class="text-3xl font-bold tracking-tight">Audit Logs</h1>
+				<h1 class="text-3xl font-bold tracking-tight">{m.audit_title_full()}</h1>
 				<p class="text-muted-foreground mt-2">
-					System events and user activity tracking
+					{m.audit_description()}
 				</p>
 			</div>
 			<div class="flex gap-2">
 				<Button variant="outline" client:load>
 					<Filter class="h-4 w-4 mr-2" />
-					Filter
+					{m.action_filter()}
 				</Button>
 				<Button variant="outline" client:load>
 					<Download class="h-4 w-4 mr-2" />
-					Export
+					{m.action_export()}
 				</Button>
 			</div>
 		</div>
@@ -45,17 +46,17 @@ import { ClipboardList, Download, Filter } from "lucide-svelte";
 			<Card.Header>
 				<Card.Title class="flex items-center gap-2">
 					<ClipboardList class="h-5 w-5" />
-					System Events
+					{m.audit_system_events()}
 				</Card.Title>
 				<Card.Description>
-					Recent audit events from the system
+					{m.audit_recent_events()}
 				</Card.Description>
 			</Card.Header>
 			<Card.Content>
 				<!-- TODO: Implementar AuditLogTable component -->
 				<div class="py-8 text-center text-muted-foreground">
-					<p>Audit log table will be implemented in the next phase.</p>
-					<p class="text-sm mt-2">This will show events like user logins, data changes, etc.</p>
+					<p>{m.audit_table_placeholder()}</p>
+					<p class="text-sm mt-2">{m.audit_table_subtitle()}</p>
 				</div>
 			</Card.Content>
 		</Card.Root>
@@ -63,13 +64,11 @@ import { ClipboardList, Download, Filter } from "lucide-svelte";
 		<!-- Info Card -->
 		<Card.Root>
 			<Card.Header>
-				<Card.Title>About Audit Logs</Card.Title>
+				<Card.Title>{m.audit_about()}</Card.Title>
 				</Card.Header>
 			<Card.Content>
 				<p class="text-sm text-muted-foreground">
-					Audit logs track all significant events in the system including user authentication,
-					data modifications, and administrative actions. Logs are retained according to
-					the organization's data retention policy.
+					{m.audit_about_description()}
 				</p>
 			</Card.Content>
 		</Card.Root>

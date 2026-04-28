@@ -11,11 +11,10 @@
 		user?: User | null;
 		onSuccess?: () => void;
 		showTrigger?: boolean;
+		open?: boolean;
 	}
 
-	let { user = null, onSuccess, showTrigger = true }: Props = $props();
-
-	let open = $state(false);
+	let { user = null, onSuccess, showTrigger = true, open = $bindable(false) }: Props = $props();
 	let loading = $state(false);
 	let error = $state<string | null>(null);
 

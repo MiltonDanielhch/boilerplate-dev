@@ -4,7 +4,7 @@
   Descripción: Contenido de estadísticas que usa createQuery.
                Debe estar dentro de QueryClientProvider.
 
-  ADRs relacionados: 0022 (Frontend), 0021 (OpenAPI)
+  ADRs relacionados: 0022 (Frontend), 0021 (OpenAPI), 0023 (i18n)
 -->
 
 <script lang="ts">
@@ -12,6 +12,7 @@
 	import KpiCard from "./KpiCard.svelte";
 	import { listUsers } from "$lib/api/users";
 	import { isTauri } from "$lib/tauri";
+	import * as m from "$lib/paraglide/messages.js";
 
 	let usersTotal = $state<number | null>(null);
 	let usersLoading = $state(true);
@@ -76,37 +77,37 @@
 
 <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
 	<KpiCard
-		title="Total Users"
+		title={m.kpi_total_users()}
 		value={usersTotal ?? "—"}
-		badge={{ text: "Database", variant: "secondary" }}
-		change={{ value: 12, label: "from last month" }}
+		badge={{ text: m.database(), variant: "secondary" }}
+		change={{ value: 12, label: "+12%" }}
 	/>
 
 	<KpiCard
-		title="API Health"
-		value={healthData ? "OK" : healthLoading ? "Checking..." : "Error"}
+		title={m.kpi_api_health()}
+		value={healthData ? m.kpi_status_ok() : healthLoading ? m.kpi_status_checking() : m.kpi_status_error()}
 		badge={{
-			text: healthData ? "Online" : healthError ? "Offline" : "Checking",
+			text: healthData ? m.kpi_status_online() : healthError ? m.kpi_status_offline() : m.kpi_status_checking(),
 			variant: healthData ? "default" : healthError ? "destructive" : "outline"
 		}}
 	/>
 
 	<KpiCard
-		title="Active Sessions"
+		title={m.kpi_active_sessions()}
 		value="N/A"
-		badge={{ text: "Coming soon", variant: "outline" }}
+		badge={{ text: m.kpi_coming_soon(), variant: "outline" }}
 	/>
 
 	<KpiCard
-		title="Database"
+		title={m.kpi_database()}
 		value="SQLite"
-		badge={{ text: "Local", variant: "secondary" }}
-		change={{ value: 12, label: "Avg 12ms response", type: "neutral" }}
+		badge={{ text: m.kpi_local(), variant: "secondary" }}
+		change={{ value: 12, label: "~12ms", type: "neutral" }}
 	/>
 </div>
 
 {#if usersError}
 	<div class="mt-4 p-4 border border-red-200 bg-red-50 rounded text-red-700">
-		Error loading users: {usersError.message}
+		{m.error_loading()}: {usersError.message}
 	</div>
 {/if}
