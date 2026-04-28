@@ -61,9 +61,27 @@ export async function getUser(id: string): Promise<User> {
 	return api.get<User>(`/users/${id}`);
 }
 
-// Crear usuario (admin only)
+// Crear usuario (admin only) - usa /auth/register internally
 export async function createUser(data: UserCreateInput): Promise<User> {
-	return api.post<User>("/users", data);
+  // POST /auth/register returns { user_id, email, message }
+  const res = await api.post<{ user_id: string; email: string; message: string }>("/auth/register", {
+    email: data.email,
+    password: data.password,
+    name: data.name
+  });
+  // Convertir respuesta al formato User extendido
+  return {
+    id: res.user_id,
+    email: res.email,
+    name: data.name || null,
+    role: "user" as const,
+    isActive: true,
+    emailVerifiedAt: null,
+    lastLoginAt: null,
+    createdBy: null,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
 }
 
 // Actualizar usuario

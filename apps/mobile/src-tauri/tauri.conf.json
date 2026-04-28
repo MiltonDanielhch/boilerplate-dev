@@ -5,14 +5,15 @@
   "identifier": "com.laboratorio3030.boilerplate",
   "build": {
     "devUrl": "http://localhost:4321",
-    "beforeDevCommand": "cd ../../web && pnpm dev",
-    "beforeBuildCommand": "cd ../../web && pnpm build",
-    "frontendDist": "../../../apps/web/dist"
+    "beforeDevCommand": "pnpm --filter web dev",
+    "beforeBuildCommand": "pnpm --filter web build",
+    "frontendDist": "../../web/dist"
   },
   "app": {
     "security": {
-      "csp": "default-src 'self' http://localhost:8080"
-    }
+      "csp": "default-src 'self' http://localhost:4321 http://localhost:8080"
+    },
+    "withGlobalTauri": true
   },
   "bundle": {
     "active": true,

@@ -3,9 +3,10 @@ import { defineConfig } from 'astro/config';
 
 import svelte from '@astrojs/svelte';
 import node from '@astrojs/node';
-import tailwindcss from '@tailwindcss/vite';
 import sitemap from '@astrojs/sitemap';
 import AstroPWA from '@vite-pwa/astro';
+
+const isDev = process.env.NODE_ENV === 'development';
 
 // https://astro.build/config
 export default defineConfig({
@@ -52,7 +53,44 @@ export default defineConfig({
     })
   ],
   vite: {
-    plugins: [tailwindcss()]
+    optimizeDeps: {
+      exclude: ['bits-ui']
+    },
+    ssr: {
+      noExternal: ['bits-ui', '@internationalized/date']
+    },
+    plugins: [
+      {
+        name: 'handle-bits-ui-css',
+        enforce: 'pre',
+        async load(id) {
+          // Intercept bits-ui virtual CSS files
+          if (id.includes('bits-ui') && id.includes('?svelte&type=style')) {
+            // Read the file and clean it
+            const fs = await import('fs');
+            const path = await import('path');
+            
+            // Extract the actual file path (before the ?query)
+            const actualPath = id.split('?')[0];
+            
+            try {
+              let content = fs.readFileSync(actualPath, 'utf-8');
+              
+              // Extract just the CSS from the .svelte file
+              // Find <style> tag content
+              const styleMatch = content.match(/<style[^>]*>([\s\S]*?)<\/style>/);
+              if (styleMatch) {
+                return styleMatch[1].trim() || '/* no styles */';
+              }
+              
+              return '/* no styles */';
+            } catch (e) {
+              return '/* error loading */';
+            }
+          }
+        }
+      }
+    ]
   },
   i18n: {
     defaultLocale: 'es',

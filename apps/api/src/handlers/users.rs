@@ -6,13 +6,17 @@
 
 use crate::error::{ApiError, ApiResult};
 use crate::state::AppState;
-use application::users::{GetUserUseCase, ListUsersUseCase, SoftDeleteUserUseCase, UpdateUserUseCase, ImpersonateUserUseCase};
+use application::users::{GetUserUseCase, ImpersonateUserUseCase, ListUsersUseCase, SoftDeleteUserUseCase, UpdateUserUseCase};
+use domain::entities::User;
+use domain::ports::UserRepository;
+use domain::value_objects::{Email, PasswordHash, UserId};
+use auth::hash_password;
 use axum::{
     extract::{Path, Query, State},
     response::Json,
 };
-use domain::value_objects::UserId;
 use serde::{Deserialize, Serialize};
+use tracing::info;
 use utoipa::ToSchema;
 
 /// GET /api/v1/users/:id
@@ -107,11 +111,34 @@ pub async fn list(
     )
 )]
 pub async fn create(
-    State(_state): State<AppState>,
-    Json(_body): Json<CreateUserRequest>,
+    State(state): State<AppState>,
+    Json(body): Json<CreateUserRequest>,
 ) -> ApiResult<Json<UserResponse>> {
-    // TODO: Implementar cuando tengamos el caso de uso completo
-    Err(ApiError::Internal("Not implemented".to_string()))
+    let email = Email::new(&body.email)
+        .map_err(|e| ApiError::Validation(format!("Invalid email: {}", e)))?;
+
+    if let Some(_existing) = state.user_repo.find_active_by_email(&email).await? {
+        return Err(ApiError::Conflict(format!(
+            "Email '{}' already exists",
+            body.email
+        )));
+    }
+
+    let password_hash_str = hash_password(&body.password)
+        .map_err(|e| ApiError::Internal(format!("Password hashing failed: {}", e)))?;
+
+    let password_hash = PasswordHash::new(&password_hash_str)
+        .map_err(|e| ApiError::Internal(format!("Invalid password hash: {}", e)))?;
+
+    let user = User::new(email.clone(), password_hash, body.name.clone())
+        .map_err(|e| ApiError::Validation(format!("Invalid user data: {:?}", e)))?;
+
+    state.user_repo.save(&user).await
+        .map_err(|e| ApiError::Internal(format!("Failed to save user: {}", e)))?;
+    
+    info!(user_id = %user.id, "User created successfully");
+
+    Ok(Json(UserResponse::from(user)))
 }
 
 /// PUT /api/v1/users/:id

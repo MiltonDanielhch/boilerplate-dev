@@ -10,9 +10,10 @@
 	interface Props {
 		user?: User | null;
 		onSuccess?: () => void;
+		showTrigger?: boolean;
 	}
 
-	let { user = null, onSuccess }: Props = $props();
+	let { user = null, onSuccess, showTrigger = true }: Props = $props();
 
 	let open = $state(false);
 	let loading = $state(false);
@@ -87,9 +88,11 @@
 </script>
 
 <Dialog.Root bind:open onOpenChange={handleOpenChange}>
-	<Dialog.Trigger asChild>
-		<Button>Crear Usuario</Button>
-	</Dialog.Trigger>
+	{#if showTrigger}
+		<Dialog.Trigger asChild>
+			<Button>Crear Usuario</Button>
+		</Dialog.Trigger>
+	{/if}
 	<Dialog.Content class="sm:max-w-[425px]">
 		<Dialog.Header>
 			<Dialog.Title>{isEdit ? "Editar Usuario" : "Crear Usuario"}</Dialog.Title>

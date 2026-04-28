@@ -19,10 +19,11 @@
 	import TableRow from "$lib/components/ui/table/table-row.svelte";
 	import * as Card from "$lib/components/ui/card/index.js";
 	import { Badge } from "$lib/components/ui/badge/index.js";
-	import { ChevronLeft, ChevronRight, Search, Trash2, RefreshCw } from "lucide-svelte";
+	import { ChevronLeft, ChevronRight, Search, Trash2, RefreshCw, Plus } from "lucide-svelte";
 	import { listUsers, softDeleteUser, restoreUser } from "$lib/api/users";
 	import { PermissionGate } from "$lib/components/ui/permission-gate";
 	import UserEditDrawer from "./UserEditDrawer.svelte";
+	import UserForm from "./UserForm.svelte";
 	import type { User } from "$lib/types/user";
 
 	// Estado
@@ -40,6 +41,9 @@
 	// Drawer
 	let selectedUser = $state<User | null>(null);
 	let isDrawerOpen = $state(false);
+	
+	// Dialog for create user
+	let isCreateDialogOpen = $state(false);
 
 	function openEdit(user: User) {
 		selectedUser = user;
@@ -61,6 +65,7 @@
 			users = result.users;
 			total = result.total;
 		} catch (err) {
+			console.error("Error loading users:", err);
 			error = err instanceof Error ? err.message : "Failed to load users";
 		} finally {
 			loading = false;
@@ -114,10 +119,20 @@
 
 <Card.Root>
 	<Card.Header>
-		<Card.Title>Users</Card.Title>
-		<Card.Description>
-			Manage user accounts and permissions
-		</Card.Description>
+		<div class="flex items-center justify-between">
+			<div>
+				<Card.Title>Users</Card.Title>
+				<Card.Description>
+					Manage user accounts and permissions
+				</Card.Description>
+			</div>
+			<PermissionGate permission="users:write">
+				<Button onclick={() => isCreateDialogOpen = true}>
+					<Plus class="h-4 w-4 mr-2" />
+					Crear Usuario
+				</Button>
+			</PermissionGate>
+		</div>
 	</Card.Header>
 	<Card.Content>
 		<!-- Search -->
@@ -293,4 +308,9 @@
 	bind:open={isDrawerOpen} 
 	user={selectedUser} 
 	onUpdated={loadUsers} 
+/>
+
+<UserForm 
+	bind:open={isCreateDialogOpen} 
+	onSuccess={loadUsers} 
 />
