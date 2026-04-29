@@ -13,13 +13,23 @@
 		theme = newTheme;
 		if (typeof window !== "undefined") {
 			localStorage.setItem("theme", newTheme);
-			document.documentElement.setAttribute("data-theme", newTheme);
+			// Tailwind usa la clase .dark
+			if (newTheme === "dark") {
+				document.documentElement.classList.add("dark");
+			} else {
+				document.documentElement.classList.remove("dark");
+			}
 		}
 	}
 
 	$effect(() => {
 		if (typeof window !== "undefined") {
-			document.documentElement.setAttribute("data-theme", theme);
+			// Aplicar tema inicial
+			if (theme === "dark") {
+				document.documentElement.classList.add("dark");
+			} else {
+				document.documentElement.classList.remove("dark");
+			}
 		}
 	});
 </script>

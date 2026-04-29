@@ -14,6 +14,7 @@
 	import { Label } from "$lib/components/ui/label/index.js";
 	import * as Card from "$lib/components/ui/card/index.js";
 	import { register } from "$lib/api/auth";
+	import * as m from "$lib/paraglide/messages.js";
 
 	// Schema de validación inline (ArkType)
 	const RegisterSchema = type({
@@ -23,7 +24,7 @@
 		confirmPassword: "string"
 	}).narrow((data, problems) => {
 		if (data.password !== data.confirmPassword) {
-			problems.throw("Passwords do not match");
+			problems.throw(m.error_passwords_not_match());
 		}
 		return true;
 	});
@@ -44,20 +45,20 @@
 
 		const result = RegisterSchema({ email, password, name, confirmPassword });
 		if (result.errors) {
-			errorMessage = result.errors.summary ?? "Please check your inputs";
+			errorMessage = result.errors.summary ?? m.error_check_inputs();
 			return;
 		}
 
 		isSubmitting = true;
 		try {
 			await register({ email, password, name: name || undefined });
-			successMessage = "Account created successfully! Redirecting...";
+			successMessage = m.register_success();
 			// Redirect to dashboard after short delay
 			setTimeout(() => {
 				window.location.href = "/dashboard";
 			}, 1500);
 		} catch (err) {
-			errorMessage = err instanceof Error ? err.message : "Registration failed";
+			errorMessage = err instanceof Error ? err.message : m.error_generic();
 		} finally {
 			isSubmitting = false;
 		}
@@ -68,22 +69,22 @@
 	<Card.Content class="pt-6">
 		<form onsubmit={handleSubmit} class="space-y-4">
 			<div class="space-y-2">
-				<Label for="name">Name (optional)</Label>
+				<Label for="name">{m.register_name_optional()}</Label>
 				<Input
 					id="name"
 					type="text"
-					placeholder="John Doe"
+					placeholder={m.register_name_placeholder()}
 					bind:value={name}
 					disabled={isSubmitting}
 				/>
 			</div>
 
 			<div class="space-y-2">
-				<Label for="email">Email</Label>
+				<Label for="email">{m.register_email()}</Label>
 				<Input
 					id="email"
 					type="email"
-					placeholder="you@example.com"
+					placeholder={m.email_placeholder()}
 					bind:value={email}
 					disabled={isSubmitting}
 					required
@@ -91,11 +92,11 @@
 			</div>
 
 			<div class="space-y-2">
-				<Label for="password">Password</Label>
+				<Label for="password">{m.register_password()}</Label>
 				<Input
 					id="password"
 					type="password"
-					placeholder="••••••••"
+					placeholder={m.password_placeholder()}
 					bind:value={password}
 					disabled={isSubmitting}
 					required
@@ -103,11 +104,11 @@
 			</div>
 
 			<div class="space-y-2">
-				<Label for="confirmPassword">Confirm Password</Label>
+				<Label for="confirmPassword">{m.register_confirm_password()}</Label>
 				<Input
 					id="confirmPassword"
 					type="password"
-					placeholder="••••••••"
+					placeholder={m.password_placeholder()}
 					bind:value={confirmPassword}
 					disabled={isSubmitting}
 					required
@@ -127,7 +128,7 @@
 			{/if}
 
 			<Button type="submit" class="w-full" disabled={isSubmitting}>
-				{isSubmitting ? "Creating account..." : "Create account"}
+				{isSubmitting ? m.register_creating() : m.register_submit()}
 			</Button>
 		</form>
 	</Card.Content>

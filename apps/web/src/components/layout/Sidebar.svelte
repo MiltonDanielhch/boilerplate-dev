@@ -17,7 +17,6 @@
 	import { logout } from "$lib/api/auth";
 	import * as m from "$lib/paraglide/messages.js";
 	import { isTauri } from "$lib/tauri";
-	import LanguageSelector from "./LanguageSelector.svelte";
 
 	let { class: className }: { class?: string } = $props();
 
@@ -149,11 +148,9 @@
 						<span class="text-[10px] font-bold uppercase tracking-wider text-primary">{m.desktop_mode()}</span>
 					{/if}
 				</div>
-				<!-- Selector de idioma -->
-				<LanguageSelector />
 			{:else}
-				<!-- Selector de idioma compacto cuando está colapsado -->
-				<LanguageSelector class="mx-auto" />
+				<!-- Logo solo cuando colapsado -->
+				<span class="font-bold text-sidebar-foreground text-lg">🚀</span>
 			{/if}
 			
 			<!-- Botón toggle (desktop) -->

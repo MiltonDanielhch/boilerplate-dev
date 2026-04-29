@@ -17,6 +17,9 @@
 	import { authStore } from "$lib/stores/auth.svelte";
 	import { logout } from "$lib/api/auth";
 	import type { User } from "$lib/types/user";
+	import LanguageSelector from "./LanguageSelector.svelte";
+	import ThemeToggle from "$lib/components/ui/theme-toggle/theme-toggle.svelte";
+	import * as m from "$lib/paraglide/messages.js";
 
 	let { onSearchClick }: { onSearchClick?: () => void } = $props();
 
@@ -87,28 +90,34 @@
 					</button>
 				</DropdownMenu.Trigger>
 				<DropdownMenu.Content align="end" class="w-80">
-					<DropdownMenu.Label>Notifications</DropdownMenu.Label>
+					<DropdownMenu.Label>{m.notifications_title()}</DropdownMenu.Label>
 					<DropdownMenu.Separator />
 					<div class="max-h-64 overflow-y-auto">
 						<DropdownMenu.Item class="flex flex-col items-start gap-1 py-3">
-							<p class="text-sm font-medium">New user registered</p>
-							<p class="text-xs text-muted-foreground">john@example.com joined</p>
+							<p class="text-sm font-medium">{m.notification_new_user()}</p>
+							<p class="text-xs text-muted-foreground">john@example.com {m.notification_new_user_desc()}</p>
 						</DropdownMenu.Item>
 						<DropdownMenu.Item class="flex flex-col items-start gap-1 py-3">
-							<p class="text-sm font-medium">Audit log exported</p>
-							<p class="text-xs text-muted-foreground">Export completed successfully</p>
+							<p class="text-sm font-medium">{m.notification_audit_exported()}</p>
+							<p class="text-xs text-muted-foreground">{m.notification_audit_exported_desc()}</p>
 						</DropdownMenu.Item>
 						<DropdownMenu.Item class="flex flex-col items-start gap-1 py-3">
-							<p class="text-sm font-medium">System update</p>
-							<p class="text-xs text-muted-foreground">API v1.2.0 deployed</p>
+							<p class="text-sm font-medium">{m.notification_system_update()}</p>
+							<p class="text-xs text-muted-foreground">API v1.2.0 {m.notification_system_update_desc()}</p>
 						</DropdownMenu.Item>
 					</div>
 					<DropdownMenu.Separator />
 					<DropdownMenu.Item class="justify-center text-primary">
-						View all notifications
+						{m.notifications_view_all()}
 					</DropdownMenu.Item>
 				</DropdownMenu.Content>
 			</DropdownMenu.Root>
+
+			<!-- Theme Toggle -->
+			<ThemeToggle />
+
+			<!-- Language Selector -->
+			<LanguageSelector />
 
 			<!-- User Menu -->
 			<DropdownMenu.Root>

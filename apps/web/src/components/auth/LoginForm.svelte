@@ -15,6 +15,7 @@
 	import { Label } from "$lib/components/ui/label/index.js";
 	import * as Card from "$lib/components/ui/card/index.js";
 	import { login } from "$lib/api/auth";
+	import * as m from "$lib/paraglide/messages.js";
 
 	// Estado del formulario
 	let email = $state("");
@@ -35,12 +36,12 @@
 		errorMessage = null;
 
 		if (!isValidEmail(email)) {
-			errorMessage = "Please enter a valid email";
+			errorMessage = m.error_invalid_email();
 			return;
 		}
 
 		if (password.length < 8) {
-			errorMessage = "Password must be at least 8 characters";
+			errorMessage = m.error_password_length();
 			return;
 		}
 
@@ -50,7 +51,7 @@
 			// Redirect to dashboard on success
 			window.location.href = "/dashboard";
 		} catch (err) {
-			errorMessage = err instanceof Error ? err.message : "Login failed";
+			errorMessage = err instanceof Error ? err.message : m.login_failed();
 		} finally {
 			isSubmitting = false;
 		}
@@ -61,22 +62,22 @@
 	<Card.Content class="pt-6">
 		<form onsubmit={handleSubmit} class="space-y-4">
 			<div class="space-y-2">
-				<Label for="email">Email</Label>
+				<Label for="email">{m.login_email()}</Label>
 				<Input
 					id="email"
 					type="email"
-					placeholder="you@example.com"
+					placeholder={m.email_placeholder()}
 					bind:value={email}
 					disabled={isSubmitting}
 				/>
 			</div>
 
 			<div class="space-y-2">
-				<Label for="password">Password</Label>
+				<Label for="password">{m.login_password()}</Label>
 				<Input
 					id="password"
 					type="password"
-					placeholder="••••••••"
+					placeholder={m.password_placeholder()}
 					bind:value={password}
 					disabled={isSubmitting}
 				/>
@@ -89,7 +90,7 @@
 			{/if}
 
 			<Button type="submit" class="w-full" disabled={isSubmitting || !isValid}>
-				{isSubmitting ? "Signing in..." : "Sign in"}
+				{isSubmitting ? m.login_signing_in() : m.login_submit()}
 			</Button>
 		</form>
 	</Card.Content>

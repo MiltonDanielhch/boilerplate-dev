@@ -8,24 +8,25 @@
 
 import BaseLayout from "../layouts/BaseLayout.astro";
 import LoginForm from "../components/auth/LoginForm.svelte";
+import * as m from "../lib/paraglide/messages.js";
 ---
 
-<BaseLayout title="Login - Boilerplate">
+<BaseLayout title={`${m.login_title()} - ${m.app_name()}`}>
 	<div class="min-h-screen flex items-center justify-center px-4">
 		<div class="w-full max-w-md space-y-6">
 			<div class="text-center">
-				<h1 class="text-2xl font-bold tracking-tight">Welcome back</h1>
+				<h1 class="text-2xl font-bold tracking-tight">{m.login_welcome_back()}</h1>
 				<p class="text-sm text-muted-foreground mt-2">
-					Enter your credentials to access your account
+					{m.login_enter_credentials()}
 				</p>
 			</div>
 
 			<LoginForm client:only="svelte" />
 
 			<p class="text-center text-sm text-muted-foreground">
-				Don't have an account?{" "}
+				{m.login_no_account()}{" "}
 				<a href="/register" class="font-medium text-primary hover:underline">
-					Sign up
+					{m.login_sign_up()}
 				</a>
 			</p>
 		</div>

@@ -8,24 +8,25 @@
 
 import BaseLayout from "../layouts/BaseLayout.astro";
 import RegisterForm from "../components/auth/RegisterForm.svelte";
+import * as m from "../lib/paraglide/messages.js";
 ---
 
-<BaseLayout title="Register - Boilerplate">
+<BaseLayout title={`${m.register_title()} - ${m.app_name()}`}>
 	<div class="min-h-screen flex items-center justify-center px-4">
 		<div class="w-full max-w-md space-y-6">
 			<div class="text-center">
-				<h1 class="text-2xl font-bold tracking-tight">Create an account</h1>
+				<h1 class="text-2xl font-bold tracking-tight">{m.register_create_account()}</h1>
 				<p class="text-sm text-muted-foreground mt-2">
-					Enter your details to get started
+					{m.register_enter_details()}
 				</p>
 			</div>
 
 			<RegisterForm client:only="svelte" />
 
 			<p class="text-center text-sm text-muted-foreground">
-				Already have an account?{" "}
+				{m.register_have_account()}{" "}
 				<a href="/login" class="font-medium text-primary hover:underline">
-					Sign in
+					{m.register_sign_in()}
 				</a>
 			</p>
 		</div>
